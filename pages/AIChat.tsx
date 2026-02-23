@@ -35,15 +35,24 @@ const AIChat: React.FC<{
         if (found) {
           setSession(found);
           return;
+        } else {
+          // 如果提供了 ID 但歷史紀錄中沒找到，代表這是一個新建立的對話
+          setSession({
+            id: chatId,
+            title: '新對話',
+            timestamp: new Date().toLocaleTimeString(),
+            messages: []
+          });
+          return;
         }
       }
 
       // 如果沒有選中的 chatId，預設載入最新一筆或保持新對話狀態
-      if (data.history && data.history.length > 0 && !chatId) {
+      if (data.history && data.history.length > 0) {
         const latest = data.history[0];
         setSession(latest);
         onSelectChat(latest.id);
-      } else if (!chatId) {
+      } else {
         setSession({
           id: Date.now().toString(),
           title: '新對話',
@@ -74,14 +83,8 @@ const AIChat: React.FC<{
 
   const handleCreateNewChat = () => {
     const newId = Date.now().toString();
-    setSession({
-      id: newId,
-      title: '新對話',
-      timestamp: new Date().toLocaleTimeString(),
-      messages: []
-    });
+    onSelectChat(newId);
     setInput('');
-    onClearChatId();
     setShowHistory(false);
   };
 
@@ -215,10 +218,10 @@ const AIChat: React.FC<{
         {session.messages.map(m => (
           <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-300`}>
             <div className={`max-w-[90%] px-5 py-3.5 rounded-2xl shadow-sm text-[13px] leading-relaxed ${m.role === 'user'
-                ? 'bg-[#f5d8c6] text-dama-brown rounded-tr-sm'
-                : m.isEmergency
-                  ? 'bg-red-50 border-2 border-red-200 text-red-800 rounded-tl-sm'
-                  : 'bg-white border border-dama-sakura/10 text-dama-brown/90 rounded-tl-sm shadow-md'
+              ? 'bg-[#f5d8c6] text-dama-brown rounded-tr-sm'
+              : m.isEmergency
+                ? 'bg-red-50 border-2 border-red-200 text-red-800 rounded-tl-sm'
+                : 'bg-white border border-dama-sakura/10 text-dama-brown/90 rounded-tl-sm shadow-md'
               }`}>
               <div className="whitespace-pre-wrap">
                 {renderFormattedText(m.text)}
@@ -256,8 +259,8 @@ const AIChat: React.FC<{
             onClick={handleSend}
             disabled={!input.trim() || loading}
             className={`w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-90 shadow-md ${!input.trim() || loading
-                ? 'bg-dama-brown/5 text-dama-brown/20'
-                : 'bg-dama-sakura text-white'
+              ? 'bg-dama-brown/5 text-dama-brown/20'
+              : 'bg-dama-sakura text-white'
               }`}
           >
             <span className="material-symbols-outlined text-xl">send</span>

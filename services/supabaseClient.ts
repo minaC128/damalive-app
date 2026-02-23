@@ -3,6 +3,9 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.SUPABASE_URL || '';
 const supabaseAnonKey = import.meta.env.SUPABASE_ANON_KEY || '';
 
+console.log('DEBUG - SUPABASE_URL:', supabaseUrl);
+console.log('DEBUG - SUPABASE_ANON_KEY:', supabaseAnonKey ? 'Found' : 'Missing');
+
 
 const isUrlValid = (url: string) => {
     try {
