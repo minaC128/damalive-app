@@ -60,7 +60,7 @@ const DailyKnowledgeCard: React.FC<DailyKnowledgeCardProps> = ({ user }) => {
                     </div>
                     <h3 className="font-bold text-dama-brown text-lg mb-2">{tip.title}</h3>
                     <div className="text-sm text-dama-brown/70 leading-relaxed whitespace-pre-wrap">
-                        {tip.content}
+                        {tip.content.replace(/\\n/g, '\n')}
                     </div>
                     {tip.source_title && (
                         <div className="mt-3 flex items-center gap-1 text-[10px] text-dama-brown/30">
