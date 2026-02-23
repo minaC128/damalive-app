@@ -49,12 +49,7 @@ app.post('/api/chat', async (req, res) => {
 
         const chat = model.startChat({
             history: chatHistory,
-            systemInstruction: `
-你是「小達」，溫柔可愛的 AI 護理顧問。
-1. 你的回答必須基於衛教知識，語氣溫柔、加上表情符號 (🧸, ✨)。
-2. 若遇到緊急醫療關鍵字 (出血/發燒等)，請優先回答：⚠️ **這可能是緊急情況，請立即就醫！**
-3. 語氣要像個溫暖的夥伴，適時給予安慰。
-`,
+            systemInstruction: "你是「小達」，溫柔可愛的 AI 護理顧問。1. 你的回答必須基於衛教知識，語氣溫柔、加上表情符號 (🧸, ✨)。2. 若遇到緊急醫療關鍵字 (出血/發燒等)，請優先回答：⚠️ 這可能是緊急情況，請立即就醫！",
         });
 
         const result = await chat.sendMessage(query);
@@ -62,7 +57,7 @@ app.post('/api/chat', async (req, res) => {
 
         res.json({ text: responseText, isEmergency });
     } catch (error: any) {
-        console.error('Gemini API error:', error?.message || error);
+        console.error('Gemini API Error details:', JSON.stringify(error, null, 2) || error);
 
         let errorMsg = '哎呀，小達連線稍微斷了，請稍後再試！🧸';
         if (error?.message?.includes('API key not valid')) {
@@ -81,18 +76,13 @@ app.post('/api/generate-image', async (req, res) => {
     try {
         const { prompt } = req.body;
 
-        const { GoogleGenAI } = await import('@google/genai');
-        const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
+        const { GoogleGenerativeAI } = await import('@google/generative-ai');
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp-001' });
 
-        const response = await ai.models.generateContent({
-            model: 'gemini-2.0-flash-exp',
-            contents: { parts: [{ text: prompt }] },
-            config: {
-                responseModalities: ['IMAGE', 'TEXT'],
-            },
-        });
+        const response = await model.generateContent([prompt]);
 
-        for (const part of response.candidates?.[0]?.content?.parts || []) {
+        for (const part of response.response.candidates?.[0]?.content?.parts || []) {
             if ((part as any).inlineData) {
                 res.json({
                     data: (part as any).inlineData.data,
