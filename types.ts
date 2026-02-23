@@ -8,7 +8,8 @@ export interface Note {
   title: string;
   content: string;
   category: NoteCategory;
-  date: string;
+  date: string; // Creation date
+  targetDate?: string; // Scheduled date
   timestamp: number;
   completed?: boolean;
 }

@@ -41,6 +41,7 @@ export const getAllData = async (uid: string) => {
     content: n.content,
     category: n.category,
     date: n.date,
+    targetDate: n.target_date,
     timestamp: n.timestamp,
     completed: n.completed,
   }));
@@ -73,7 +74,10 @@ export const saveProfile = async (uid: string, profile: UserProfile, onSync?: an
 
 export const saveMood = async (uid: string, mood: 'happy' | 'calm' | 'tired' | 'sad', onSync?: any) => {
   onSync?.('syncing');
-  const date = new Date().toISOString().split('T')[0];
+  // 使用本地日期而非 UTC 日期，解決時區造成日期跳號問題
+  const d = new Date();
+  const date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
   await supabase.from('moods').upsert(
     { user_id: uid, date, mood },
     { onConflict: 'user_id,date' }
@@ -103,6 +107,7 @@ export const saveNote = async (uid: string, note: Note, onSync?: any) => {
     content: note.content,
     category: note.category,
     date: note.date,
+    target_date: note.targetDate,
     timestamp: note.timestamp,
     completed: note.completed,
   });

@@ -11,8 +11,8 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
   const [showAllNotes, setShowAllNotes] = useState(false);
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [form, setForm] = useState(user);
-  const [noteForm, setNoteForm] = useState<{ title: string, content: string, category: NoteCategory }>({
-    title: '', content: '', category: 'note'
+  const [noteForm, setNoteForm] = useState<{ title: string, content: string, category: NoteCategory, targetDate: string }>({
+    title: '', content: '', category: 'note', targetDate: ''
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -59,7 +59,7 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
       completed: false
     };
     await saveNote(user.uid, newNote, onSyncStatus);
-    setNoteForm({ title: '', content: '', category: 'note' });
+    setNoteForm({ title: '', content: '', category: 'note', targetDate: '' });
     setShowNoteModal(false);
     const data = await getAllData(user.uid);
     setDbData(prev => ({ ...prev, notes: data.notes }));
@@ -124,7 +124,8 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
     // 填充日期
     for (let i = 1; i <= daysInMonth; i++) {
       const date = new Date(year, month, i);
-      const dateStr = date.toISOString().split('T')[0];
+      // 改用在地日期字串，避免 ISOString 時區偏移問題
+      const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
       const record = dbData.moods.find(m => m.date === dateStr);
       calendarItems.push({
         day: i,
@@ -217,7 +218,10 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
                       <h4 className={`font-bold text-dama-brown text-sm truncate ${note.completed ? 'line-through' : ''}`}>
                         {note.title}
                       </h4>
-                      <span className="text-[8px] text-dama-brown/30 font-bold whitespace-nowrap ml-2">{note.date}</span>
+                      <div className="flex flex-col items-end whitespace-nowrap ml-2">
+                        {note.targetDate && <span className="text-[9px] text-dama-sakura font-bold">預計：{note.targetDate}</span>}
+                        <span className="text-[7px] text-dama-brown/20 font-bold">{note.date} 建立</span>
+                      </div>
                     </div>
                     <div className="w-full h-1 bg-dama-bg rounded-full overflow-hidden mt-1 opacity-60">
                       <div className={`h-full transition-all duration-500 ${note.completed ? 'bg-dama-matcha' : (note.category === 'meeting' ? 'bg-blue-200' : note.category === 'task' ? 'bg-dama-matcha/40' : 'bg-orange-200')}`} style={{ width: note.completed ? '100%' : '30%' }}></div>
@@ -466,6 +470,15 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
                     </button>
                   ))}
                 </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">計畫日期</label>
+                <input
+                  type="date"
+                  value={noteForm.targetDate}
+                  onChange={e => setNoteForm({ ...noteForm, targetDate: e.target.value })}
+                  className="w-full bg-dama-bg border-none rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-dama-sakura"
+                />
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">內容</label>

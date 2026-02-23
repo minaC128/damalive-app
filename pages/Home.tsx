@@ -14,7 +14,8 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
   useEffect(() => {
     const checkTodayMood = async () => {
       const data = await getAllData(user.uid);
-      const today = new Date().toISOString().split('T')[0];
+      const d = new Date();
+      const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
       const hasMood = data.moods.some(m => m.date === today);
       setMoodAdded(hasMood);
     };
@@ -58,7 +59,8 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
           ageText = `a fetus at ${currentWeek} weeks of pregnancy, which is roughly the size of a ${fruitStage}`;
         }
 
-        const todayStr = new Date().toISOString().split('T')[0];
+        const d = new Date();
+        const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
         const prompt = `(Date: ${todayStr}) A heartwarming, cozy, hand-drawn watercolor illustration representing ${ageText}. The style should be soft lighting, pastel colors, aesthetic, dreamy atmosphere, white background, high quality, artistic.`;
 
         const response = await fetch('/api/generate-image', {

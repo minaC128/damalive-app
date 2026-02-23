@@ -87,6 +87,7 @@ create table if not exists notes (
   content text not null default '',
   category text not null check (category in ('task', 'meeting', 'note')),
   date text not null,
+  target_date text,
   timestamp bigint not null,
   completed boolean not null default false,
   created_at timestamptz not null default now()
