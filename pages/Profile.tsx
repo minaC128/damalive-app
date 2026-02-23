@@ -109,20 +109,33 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
     const today = new Date();
     const year = today.getFullYear();
     const month = today.getMonth();
+
+    // 獲取當月第一天是星期幾 (0-6, 0 是星期日)
+    const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-    const days = [];
+    const calendarItems = [];
+
+    // 填充第一天之前的空白
+    for (let i = 0; i < firstDay; i++) {
+      calendarItems.push({ isPadding: true, key: `pad-${i}` });
+    }
+
+    // 填充日期
     for (let i = 1; i <= daysInMonth; i++) {
       const date = new Date(year, month, i);
       const dateStr = date.toISOString().split('T')[0];
       const record = dbData.moods.find(m => m.date === dateStr);
-      days.push({
+      calendarItems.push({
         day: i,
         dateStr,
-        mood: record ? record.mood : null
+        mood: record ? record.mood : null,
+        isPadding: false,
+        key: `day-${i}`
       });
     }
-    return { days, monthName: today.toLocaleDateString('zh-TW', { month: 'long' }) };
+
+    return { calendarItems, monthName: today.toLocaleDateString('zh-TW', { month: 'long' }) };
   }, [dbData.moods]);
 
   const displayedNotes = useMemo(() => {
@@ -191,7 +204,7 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
 
                   {/* 分類圖標：調整樣式以符合設計圖 */}
                   <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-inner ${note.category === 'meeting' ? 'bg-blue-50 text-blue-400' :
-                      note.category === 'task' ? 'bg-dama-matcha/10 text-dama-matcha' : 'bg-orange-50 text-orange-400'
+                    note.category === 'task' ? 'bg-dama-matcha/10 text-dama-matcha' : 'bg-orange-50 text-orange-400'
                     }`}>
                     <span className="material-symbols-outlined text-xl">
                       {note.category === 'meeting' ? 'calendar_month' : note.category === 'task' ? 'task_alt' : 'sticky_note_2'}
@@ -269,12 +282,16 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
             {['日', '一', '二', '三', '四', '五', '六'].map(d => (
               <div key={d} className="text-center text-[10px] font-bold text-dama-brown/30 pb-2">{d}</div>
             ))}
-            {monthCalendarData.days.map(d => (
-              <div key={d.day} className="flex flex-col items-center gap-1">
-                <span className="text-[8px] font-bold text-dama-brown/20">{d.day}</span>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm shadow-sm transition-all ${d.mood ? 'bg-dama-bg' : 'bg-dama-bg/30'}`}>
-                  {d.mood ? moodEmojis[d.mood] : ''}
-                </div>
+            {monthCalendarData.calendarItems.map(item => (
+              <div key={item.key} className="flex flex-col items-center gap-1">
+                {!item.isPadding && (
+                  <>
+                    <span className="text-[8px] font-bold text-dama-brown/20">{item.day}</span>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm shadow-sm transition-all ${item.mood ? 'bg-dama-bg' : 'bg-dama-bg/30'}`}>
+                      {item.mood ? moodEmojis[item.mood] : ''}
+                    </div>
+                  </>
+                )}
               </div>
             ))}
           </div>
