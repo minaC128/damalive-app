@@ -48,7 +48,18 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
     const generateDailyIllustration = async (retries = 2) => {
       setIsGenerating(true);
       try {
-        const prompt = `A heartwarming, cozy, hand-drawn watercolor illustration of a cute baby and a ${fruitStage} theme. Soft lighting, pastel colors, aesthetic, dreamy atmosphere, white background, high quality.`;
+        let ageText = '';
+        if (user.isPostpartum) {
+          const days = user.birthDate
+            ? Math.ceil((new Date().getTime() - new Date(user.birthDate).getTime()) / (1000 * 60 * 60 * 24))
+            : 1;
+          ageText = `a newborn baby about ${days} days old`;
+        } else {
+          ageText = `a fetus at ${currentWeek} weeks of pregnancy, which is roughly the size of a ${fruitStage}`;
+        }
+
+        const todayStr = new Date().toISOString().split('T')[0];
+        const prompt = `(Date: ${todayStr}) A heartwarming, cozy, hand-drawn watercolor illustration representing ${ageText}. The style should be soft lighting, pastel colors, aesthetic, dreamy atmosphere, white background, high quality, artistic.`;
 
         const response = await fetch('/api/generate-image', {
           method: 'POST',
@@ -71,7 +82,9 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
           setTimeout(() => generateDailyIllustration(retries - 1), 2000);
           return;
         }
-        setGeneratedImg(`https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${fruitStage}&backgroundColor=FFB7C5`);
+        // Fallback to a nice colored placeholder if AI fails
+        const fallbackUrl = `https://api.dicebear.com/7.x/not-avataaars/svg?seed=${fruitStage}&backgroundColor=f2cece,f5d8c6`;
+        setGeneratedImg(fallbackUrl);
         setIsGenerating(false);
       }
     };
