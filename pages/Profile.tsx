@@ -9,6 +9,7 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
   const [editing, setEditing] = useState(false);
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [showAllNotes, setShowAllNotes] = useState(false);
+  const [calendarDate, setCalendarDate] = useState(new Date());
   const [form, setForm] = useState(user);
   const [noteForm, setNoteForm] = useState<{ title: string, content: string, category: NoteCategory }>({
     title: '', content: '', category: 'note'
@@ -106,9 +107,8 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
   }, [dbData.moods]);
 
   const monthCalendarData = useMemo(() => {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth();
+    const year = calendarDate.getFullYear();
+    const month = calendarDate.getMonth();
 
     // 獲取當月第一天是星期幾 (0-6, 0 是星期日)
     const firstDay = new Date(year, month, 1).getDay();
@@ -135,8 +135,8 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
       });
     }
 
-    return { calendarItems, monthName: today.toLocaleDateString('zh-TW', { month: 'long' }) };
-  }, [dbData.moods]);
+    return { calendarItems, monthName: calendarDate.toLocaleDateString('zh-TW', { month: 'long', year: 'numeric' }) };
+  }, [dbData.moods, calendarDate]);
 
   const displayedNotes = useMemo(() => {
     return showAllNotes ? dbData.notes : dbData.notes.slice(0, 3);
@@ -275,7 +275,29 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
             <span className="material-symbols-outlined text-dama-sakura text-lg">calendar_month</span>
             情緒月份紀錄
           </h3>
-          <span className="text-[10px] font-bold text-dama-brown/30 uppercase tracking-widest">{monthCalendarData.monthName}</span>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => {
+                const newDate = new Date(calendarDate);
+                newDate.setMonth(newDate.getMonth() - 1);
+                setCalendarDate(newDate);
+              }}
+              className="w-8 h-8 rounded-full bg-dama-bg text-dama-brown/40 flex items-center justify-center hover:bg-dama-sakura/10 hover:text-dama-sakura transition-all"
+            >
+              <span className="material-symbols-outlined text-sm">chevron_left</span>
+            </button>
+            <span className="text-[10px] font-bold text-dama-brown/30 uppercase tracking-widest">{monthCalendarData.monthName}</span>
+            <button
+              onClick={() => {
+                const newDate = new Date(calendarDate);
+                newDate.setMonth(newDate.getMonth() + 1);
+                setCalendarDate(newDate);
+              }}
+              className="w-8 h-8 rounded-full bg-dama-bg text-dama-brown/40 flex items-center justify-center hover:bg-dama-sakura/10 hover:text-dama-sakura transition-all"
+            >
+              <span className="material-symbols-outlined text-sm">chevron_right</span>
+            </button>
+          </div>
         </div>
         <div className="bg-white p-6 rounded-[40px] shadow-sm border border-dama-sakura/5">
           <div className="grid grid-cols-7 gap-3">
