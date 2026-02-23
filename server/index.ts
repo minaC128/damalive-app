@@ -83,8 +83,8 @@ app.post('/api/generate-image', async (req, res) => {
 
         const { GoogleGenerativeAI } = await import('@google/generative-ai');
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
-        // 使用具備圖像生成能力的實驗性模型
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp-image-generation' });
+        // 使用經測試可產生圖像的 Nano Banana 模型
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-image' });
 
         const response = await model.generateContent([prompt]);
 
