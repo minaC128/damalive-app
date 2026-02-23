@@ -28,7 +28,8 @@ app.post('/api/chat', async (req, res) => {
 
         const { GoogleGenerativeAI } = await import('@google/generative-ai');
         const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+        // 使用最基礎的模型名稱，不帶任何後綴或 systemInstruction 測試
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
         const KNOWLEDGE_BASE = `
 # 衛教資料庫 (重要參考)
