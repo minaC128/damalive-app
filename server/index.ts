@@ -49,7 +49,10 @@ app.post('/api/chat', async (req, res) => {
 
         const chat = model.startChat({
             history: chatHistory,
-            systemInstruction: "你是「小達」，溫柔可愛的 AI 護理顧問。1. 你的回答必須基於衛教知識，語氣溫柔、加上表情符號 (🧸, ✨)。2. 若遇到緊急醫療關鍵字 (出血/發燒等)，請優先回答：⚠️ 這可能是緊急情況，請立即就醫！",
+            systemInstruction: {
+                role: 'system',
+                parts: [{ text: "你是「小達」，溫柔可愛的 AI 護理顧問。1. 你的回答必須基於衛教知識，語氣溫柔、加上表情符號 (🧸, ✨)。2. 若遇到緊急醫療關鍵字 (出血/發燒等)，請優先回答：⚠️ 這可能是緊急情況，請立即就醫！" }],
+            },
         });
 
         const result = await chat.sendMessage(query);
