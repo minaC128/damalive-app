@@ -1,0 +1,167 @@
+
+import React, { useState, useMemo, useEffect } from 'react';
+import { UserProfile, MoodRecord } from '../types';
+import { saveMood, getAllData } from '../services/storageService';
+
+import DailyKnowledgeCard from '../components/DailyKnowledgeCard';
+
+const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSyncStatus }) => {
+  const [moodAdded, setMoodAdded] = useState(false);
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [generatedImg, setGeneratedImg] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  useEffect(() => {
+    const checkTodayMood = async () => {
+      const data = await getAllData(user.uid);
+      const today = new Date().toISOString().split('T')[0];
+      const hasMood = data.moods.some(m => m.date === today);
+      setMoodAdded(hasMood);
+    };
+    checkTodayMood();
+  }, [user.uid]);
+
+  const currentWeek = useMemo(() => {
+    let week = 12;
+    if (user.dueDate) {
+      const due = new Date(user.dueDate);
+      const today = new Date();
+      week = 40 - Math.floor((due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24) / 7);
+    } else if (user.lmpDate) {
+      const lmp = new Date(user.lmpDate);
+      week = Math.floor(Math.abs(new Date().getTime() - lmp.getTime()) / (1000 * 60 * 60 * 24) / 7) || 1;
+    }
+    return Math.max(1, Math.min(42, week));
+  }, [user.lmpDate, user.dueDate]);
+
+  const fruitStage = useMemo(() => {
+    if (user.isPostpartum) return 'newborn baby';
+    if (currentWeek >= 36) return 'watermelon';
+    if (currentWeek >= 28) return 'eggplant';
+    if (currentWeek >= 20) return 'banana';
+    if (currentWeek >= 12) return 'lemon';
+    if (currentWeek >= 8) return 'strawberry';
+    return 'poppy seed';
+  }, [currentWeek, user.isPostpartum]);
+
+  useEffect(() => {
+    const generateDailyIllustration = async (retries = 2) => {
+      setIsGenerating(true);
+      try {
+        const prompt = `A heartwarming, cozy, hand-drawn watercolor illustration of a cute baby and a ${fruitStage} theme. Soft lighting, pastel colors, aesthetic, dreamy atmosphere, white background, high quality.`;
+
+        const response = await fetch('/api/generate-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.data) {
+            setGeneratedImg(`data:${data.mimeType || 'image/png'};base64,${data.data}`);
+            setIsGenerating(false);
+            return;
+          }
+        }
+        throw new Error('Image generation failed');
+      } catch (error: any) {
+        console.error("Home card image generation failed:", error);
+        if (retries > 0) {
+          setTimeout(() => generateDailyIllustration(retries - 1), 2000);
+          return;
+        }
+        setGeneratedImg(`https://api.dicebear.com/7.x/bottts-neutral/svg?seed=${fruitStage}&backgroundColor=FFB7C5`);
+        setIsGenerating(false);
+      }
+    };
+
+    generateDailyIllustration();
+  }, [fruitStage]);
+
+  const moods = [
+    { icon: '🍡', label: '愉快', key: 'happy' as const },
+    { icon: '🍵', label: '平靜', key: 'calm' as const },
+    { icon: '🧸', label: '疲憊', key: 'tired' as const },
+    { icon: '☁️', label: '沮喪', key: 'sad' as const },
+  ];
+
+  const handleMood = async (key: 'happy' | 'calm' | 'tired' | 'sad') => {
+    setMoodAdded(true);
+    await saveMood(user.uid, key, onSyncStatus);
+  };
+
+  return (
+    <div className="px-6 py-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-32">
+      <header className="flex justify-between items-center mb-8">
+        <div>
+          <a href="https://1125anton.my.canva.site/damalive" target="_blank" rel="noopener noreferrer" className="block hover:opacity-80 transition-opacity">
+            <h1 className="text-3xl font-display font-bold text-dama-sakura tracking-tight">DAMALIVE</h1>
+          </a>
+          <p className="text-[10px] text-dama-brown/60 tracking-widest mt-1 uppercase font-bold">早安，{user.name} • {user.isPostpartum && user.birthDate ? `寶寶 ${Math.ceil((new Date().getTime() - new Date(user.birthDate).getTime()) / (1000 * 60 * 60 * 24))} 天大` : `懷孕第 ${currentWeek} 週`}</p>
+        </div>
+        <img src={user.avatar} className="w-12 h-12 rounded-full border-2 border-dama-sakura shadow-sm object-cover" alt="avatar" />
+      </header>
+
+      <section className="bg-white/60 p-6 rounded-[32px] border-2 border-dashed border-dama-sakura mb-10 shadow-sm">
+        <h3 className="font-bold text-dama-brown mb-4">今日心情 Check-in {moodAdded && '✨'}</h3>
+        <div className="flex justify-between">
+          {moods.map(m => (
+            <button key={m.key} onClick={() => handleMood(m.key)} className="flex flex-col items-center gap-2 group active:scale-90 transition-all">
+              <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center text-3xl shadow-sm border-2 border-transparent group-hover:border-dama-sakura transition-all">{m.icon}</div>
+              <span className="text-[10px] font-bold text-dama-brown/60">{m.label}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* 每日 AI 插畫 (保留翻轉效果，背面改為顯示 DailyKnowledgeCard 的簡介或其他) */}
+      <section className="flex flex-col items-center mb-10">
+        <div
+          className="perspective-1000 w-full aspect-[4/3] max-w-[320px] cursor-pointer group"
+          onClick={() => setIsFlipped(!isFlipped)}
+        >
+          <div className={`relative w-full h-full transition-all duration-700 preserve-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
+
+            {/* Front Side: AI Image */}
+            <div className="absolute inset-0 backface-hidden bg-white rounded-[40px] shadow-xl border-4 border-dama-sakura/10 overflow-hidden flex flex-col items-center justify-center p-2">
+              <div className="w-full h-full relative ring-4 ring-dama-sakura/5 rounded-[32px] overflow-hidden">
+                {isGenerating && !generatedImg ? (
+                  <div className="w-full h-full bg-dama-bg rounded-[32px] flex flex-col items-center justify-center gap-3">
+                    <span className="material-symbols-outlined text-4xl text-dama-sakura animate-spin">auto_awesome</span>
+                    <p className="text-[10px] font-bold text-dama-sakura/60 uppercase tracking-widest">繪製暖心插畫中...</p>
+                  </div>
+                ) : (
+                  <img
+                    src={generatedImg || 'https://api.dicebear.com/7.x/shapes/svg?seed=loading'}
+                    className="w-full h-full object-cover rounded-[32px] animate-in fade-in duration-1000"
+                    alt="Daily Illustration"
+                  />
+                )}
+                <div className="absolute bottom-4 left-4 right-4 bg-white/80 backdrop-blur-sm py-2 px-4 rounded-full text-center shadow-sm">
+                  <p className="text-[10px] font-bold text-dama-sakura tracking-wider">今日 {fruitStage} 插畫</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Back Side: Simple quote or mood */}
+            <div className="absolute inset-0 backface-hidden rotate-y-180 bg-white rounded-[40px] shadow-xl border-4 border-dama-sakura/10 p-7 flex flex-col items-center justify-center text-center">
+              <h3 className="font-bold text-dama-brown text-lg mb-2">每一天都是禮物</h3>
+              <p className="text-xs text-dama-brown/60 leading-relaxed">
+                無論這段旅程多麼辛苦，<br />記得妳並不孤單。<br />寶寶正在用自己的方式努力長大喔！
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* 新增：每日小知識卡片 (動態載入) */}
+      <DailyKnowledgeCard user={user} />
+
+      <p className="mt-8 text-center text-[10px] text-dama-brown/30 font-bold italic tracking-wide">「 與寶寶一同成長的每一刻 」</p>
+    </div>
+  );
+};
+
+export default Home;

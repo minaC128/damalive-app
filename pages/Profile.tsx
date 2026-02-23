@@ -1,0 +1,474 @@
+
+import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { UserProfile, ChatSession, MoodRecord, Note, NoteCategory } from '../types';
+import { getAllData, saveProfile, saveNote, deleteNote } from '../services/storageService';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => void, onOpenChat: (id: string) => void, onSyncStatus: any, onLogout: () => void }> = ({ user, onUpdateUser, onOpenChat, onSyncStatus, onLogout }) => {
+  const [dbData, setDbData] = useState<{ moods: MoodRecord[], history: ChatSession[], notes: Note[] }>({ moods: [], history: [], notes: [] });
+  const [editing, setEditing] = useState(false);
+  const [showNoteModal, setShowNoteModal] = useState(false);
+  const [showAllNotes, setShowAllNotes] = useState(false);
+  const [form, setForm] = useState(user);
+  const [noteForm, setNoteForm] = useState<{ title: string, content: string, category: NoteCategory }>({
+    title: '', content: '', category: 'note'
+  });
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const load = async () => {
+      const data = await getAllData(user.uid);
+      setDbData({ moods: data.moods, history: data.history, notes: data.notes });
+    };
+    load();
+  }, [user.uid, onSyncStatus]);
+
+  const moodValueMap: Record<string, number> = { happy: 4, calm: 3, tired: 2, sad: 1 };
+  const moodEmojis: Record<string, string> = { happy: '🍡', calm: '🍵', tired: '🧸', sad: '☁️' };
+
+  const calculateDueDate = (lmp: string) => {
+    if (!lmp) return "";
+    const date = new Date(lmp);
+    if (isNaN(date.getTime())) return "";
+    date.setDate(date.getDate() + 280);
+    return date.toISOString().split('T')[0];
+  };
+
+  const calculateLMP = (due: string) => {
+    if (!due) return "";
+    const date = new Date(due);
+    if (isNaN(date.getTime())) return "";
+    date.setDate(date.getDate() - 280);
+    return date.toISOString().split('T')[0];
+  };
+
+  const handleSaveProfile = async () => {
+    await saveProfile(user.uid, form, onSyncStatus);
+    onUpdateUser(form);
+    setEditing(false);
+  };
+
+  const handleAddNote = async () => {
+    if (!noteForm.title.trim()) return;
+    const newNote: Note = {
+      id: Date.now().toString(),
+      ...noteForm,
+      date: new Date().toLocaleDateString('zh-TW'),
+      timestamp: Date.now(),
+      completed: false
+    };
+    await saveNote(user.uid, newNote, onSyncStatus);
+    setNoteForm({ title: '', content: '', category: 'note' });
+    setShowNoteModal(false);
+    const data = await getAllData(user.uid);
+    setDbData(prev => ({ ...prev, notes: data.notes }));
+  };
+
+  const handleDeleteNote = async (id: string) => {
+    if (confirm('確定要刪除這條紀錄嗎？')) {
+      await deleteNote(user.uid, id, onSyncStatus);
+      const data = await getAllData(user.uid);
+      setDbData(prev => ({ ...prev, notes: data.notes }));
+    }
+  };
+
+  const handleToggleNote = async (note: Note) => {
+    const updatedNote = { ...note, completed: !note.completed };
+    await saveNote(user.uid, updatedNote, onSyncStatus);
+    const data = await getAllData(user.uid);
+    setDbData(prev => ({ ...prev, notes: data.notes }));
+  };
+
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => setForm(prev => ({ ...prev, avatar: reader.result as string }));
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const weeklyTrendData = useMemo(() => {
+    const chartData = [];
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(today.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      const record = dbData.moods.find(m => m.date === dateStr);
+      chartData.push({
+        name: d.toLocaleDateString('zh-TW', { weekday: 'short' }),
+        value: record ? moodValueMap[record.mood] : null,
+        displayMood: record ? moodEmojis[record.mood] : ''
+      });
+    }
+    return chartData;
+  }, [dbData.moods]);
+
+  const monthCalendarData = useMemo(() => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+    const days = [];
+    for (let i = 1; i <= daysInMonth; i++) {
+      const date = new Date(year, month, i);
+      const dateStr = date.toISOString().split('T')[0];
+      const record = dbData.moods.find(m => m.date === dateStr);
+      days.push({
+        day: i,
+        dateStr,
+        mood: record ? record.mood : null
+      });
+    }
+    return { days, monthName: today.toLocaleDateString('zh-TW', { month: 'long' }) };
+  }, [dbData.moods]);
+
+  const displayedNotes = useMemo(() => {
+    return showAllNotes ? dbData.notes : dbData.notes.slice(0, 3);
+  }, [dbData.notes, showAllNotes]);
+
+  return (
+    <div className="p-6 animate-in fade-in duration-500 pb-32">
+      <div className="flex flex-col items-center mb-8 mt-4">
+        <a href="https://1125anton.my.canva.site/damalive" target="_blank" rel="noopener noreferrer" className="block hover:opacity-80 transition-opacity">
+          <h1 className="text-3xl font-display font-bold text-dama-sakura tracking-tight uppercase">DAMALIVE</h1>
+        </a>
+        <div className="h-0.5 w-12 bg-dama-sakura/30 rounded-full mt-1"></div>
+      </div>
+
+      <div className="bg-white rounded-[40px] p-8 shadow-xl border border-dama-sakura/20 mb-8 relative overflow-hidden group">
+        <button onClick={() => { setForm(user); setEditing(true); }} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-dama-bg text-dama-sakura flex items-center justify-center hover:bg-dama-sakura hover:text-white transition-all shadow-sm z-10">
+          <span className="material-symbols-outlined text-lg">edit</span>
+        </button>
+        <div className="flex flex-col items-center">
+          <div className="relative mb-4">
+            <img src={user.avatar} className="w-24 h-24 rounded-full border-4 border-dama-cream shadow-md object-cover" alt="avatar" />
+            {user.isPostpartum && (
+              <div className="absolute -bottom-1 -right-1 bg-dama-matcha text-white w-7 h-7 rounded-full flex items-center justify-center border-2 border-white">
+                <span className="material-symbols-outlined text-[16px]">child_care</span>
+              </div>
+            )}
+          </div>
+          <h2 className="text-2xl font-bold text-dama-brown">{user.name}</h2>
+          <span className={`mt-2 px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${user.isPostpartum ? 'bg-dama-matcha/20 text-dama-matcha' : 'bg-dama-sakura/20 text-dama-sakura'}`}>
+            {user.isPostpartum ? '產後護理階段' : '孕期階段'}
+          </span>
+        </div>
+      </div>
+
+      <section className="mb-10">
+        <div className="flex justify-between items-center mb-5 px-1">
+          <h3 className="font-bold text-dama-brown flex items-center gap-2">
+            <span className="material-symbols-outlined text-dama-sakura text-lg">edit_calendar</span>
+            媽咪計畫本
+          </h3>
+          <button
+            onClick={() => setShowNoteModal(true)}
+            className="w-8 h-8 rounded-full bg-dama-sakura text-white flex items-center justify-center shadow-md active:scale-90 transition-transform"
+          >
+            <span className="material-symbols-outlined text-sm">add</span>
+          </button>
+        </div>
+        <div className="space-y-4">
+          {dbData.notes.length === 0 ? (
+            <div className="bg-white/40 border border-dashed border-dama-sakura/30 p-8 rounded-[32px] text-center">
+              <p className="text-xs text-dama-brown/40 font-bold italic">還沒有任何紀錄嗎？<br />記錄下一次的產檢或是寶寶的任務吧！</p>
+            </div>
+          ) : (
+            <>
+              {displayedNotes.map(note => (
+                <div key={note.id} className={`bg-white p-3 rounded-[32px] shadow-sm border border-dama-sakura/5 flex gap-3 items-center group relative transition-all hover:bg-dama-bg/50 ${note.completed ? 'opacity-60' : ''}`}>
+                  {/* 打勾框：調整為帶圓角的正方形樣式 */}
+                  <button
+                    onClick={() => handleToggleNote(note)}
+                    className={`w-10 h-10 rounded-2xl border-2 flex items-center justify-center shrink-0 transition-all ${note.completed ? 'bg-dama-matcha border-dama-matcha text-white' : 'border-dama-sakura/20 text-transparent'
+                      }`}
+                  >
+                    <span className="material-symbols-outlined text-xl font-bold">check</span>
+                  </button>
+
+                  {/* 分類圖標：調整樣式以符合設計圖 */}
+                  <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-inner ${note.category === 'meeting' ? 'bg-blue-50 text-blue-400' :
+                      note.category === 'task' ? 'bg-dama-matcha/10 text-dama-matcha' : 'bg-orange-50 text-orange-400'
+                    }`}>
+                    <span className="material-symbols-outlined text-xl">
+                      {note.category === 'meeting' ? 'calendar_month' : note.category === 'task' ? 'task_alt' : 'sticky_note_2'}
+                    </span>
+                  </div>
+
+                  {/* 文字與進度裝飾 */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-baseline mb-0.5">
+                      <h4 className={`font-bold text-dama-brown text-sm truncate ${note.completed ? 'line-through' : ''}`}>
+                        {note.title}
+                      </h4>
+                      <span className="text-[8px] text-dama-brown/30 font-bold whitespace-nowrap ml-2">{note.date}</span>
+                    </div>
+                    <div className="w-full h-1 bg-dama-bg rounded-full overflow-hidden mt-1 opacity-60">
+                      <div className={`h-full transition-all duration-500 ${note.completed ? 'bg-dama-matcha' : (note.category === 'meeting' ? 'bg-blue-200' : note.category === 'task' ? 'bg-dama-matcha/40' : 'bg-orange-200')}`} style={{ width: note.completed ? '100%' : '30%' }}></div>
+                    </div>
+                  </div>
+
+                  {/* 刪除按鈕：常駐顯示，位於右側方塊內 */}
+                  <div className="flex items-center justify-center border-l border-dama-sakura/5 pl-2 h-10">
+                    <button
+                      onClick={() => handleDeleteNote(note.id)}
+                      className="w-10 h-10 rounded-2xl bg-dama-bg/50 flex items-center justify-center text-dama-brown/20 hover:text-red-400 hover:bg-red-50 transition-all"
+                    >
+                      <span className="material-symbols-outlined text-xl">delete</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+
+              {dbData.notes.length > 3 && (
+                <button
+                  onClick={() => setShowAllNotes(!showAllNotes)}
+                  className="w-full py-2 text-[10px] font-bold text-dama-brown/30 hover:text-dama-sakura transition-colors flex items-center justify-center gap-1"
+                >
+                  {showAllNotes ? '收納計畫' : `還有 ${dbData.notes.length - 3} 項計畫...`}
+                  <span className={`material-symbols-outlined text-xs transition-transform ${showAllNotes ? 'rotate-180' : ''}`}>expand_more</span>
+                </button>
+              )}
+            </>
+          )}
+        </div>
+      </section>
+
+      <section className="mb-10">
+        <div className="flex justify-between items-center mb-5 px-1">
+          <h3 className="font-bold text-dama-brown flex items-center gap-2">
+            <span className="material-symbols-outlined text-dama-sakura text-lg">trending_up</span>
+            情緒趨勢
+          </h3>
+        </div>
+        <div className="bg-white p-6 rounded-[32px] shadow-sm border border-dama-sakura/5 h-48">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={weeklyTrendData}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F2CECE50" />
+              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#5c4d4d80', fontWeight: 'bold' }} dy={10} />
+              <YAxis hide domain={[0, 5]} />
+              <Line type="monotone" dataKey="value" stroke="#FFB7C5" strokeWidth={4} dot={{ r: 6, fill: '#FFB7C5', stroke: '#fff' }} connectNulls />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </section>
+
+      <section className="mb-8">
+        <div className="flex justify-between items-center mb-5 px-1">
+          <h3 className="font-bold text-dama-brown flex items-center gap-2">
+            <span className="material-symbols-outlined text-dama-sakura text-lg">calendar_month</span>
+            情緒月份紀錄
+          </h3>
+          <span className="text-[10px] font-bold text-dama-brown/30 uppercase tracking-widest">{monthCalendarData.monthName}</span>
+        </div>
+        <div className="bg-white p-6 rounded-[40px] shadow-sm border border-dama-sakura/5">
+          <div className="grid grid-cols-7 gap-3">
+            {['日', '一', '二', '三', '四', '五', '六'].map(d => (
+              <div key={d} className="text-center text-[10px] font-bold text-dama-brown/30 pb-2">{d}</div>
+            ))}
+            {monthCalendarData.days.map(d => (
+              <div key={d.day} className="flex flex-col items-center gap-1">
+                <span className="text-[8px] font-bold text-dama-brown/20">{d.day}</span>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm shadow-sm transition-all ${d.mood ? 'bg-dama-bg' : 'bg-dama-bg/30'}`}>
+                  {d.mood ? moodEmojis[d.mood] : ''}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {editing && (
+        <div className="fixed inset-0 bg-dama-brown/40 backdrop-blur-md z-[120] flex items-center justify-center p-6 animate-in fade-in">
+          <div className="bg-white w-full max-w-sm rounded-[40px] p-8 shadow-2xl relative animate-in zoom-in-95 overflow-y-auto max-h-[90vh] no-scrollbar">
+            <h2 className="text-xl font-bold text-dama-brown mb-6 text-center">編輯個人檔案</h2>
+            <div className="flex flex-col items-center gap-4 mb-6">
+              <div className="relative group">
+                <div className="w-24 h-24 rounded-full border-2 border-dama-sakura p-1 bg-white">
+                  <img src={form.avatar} className="w-full h-full rounded-full object-cover" alt="preview" />
+                </div>
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-dama-sakura text-white flex items-center justify-center border-2 border-white shadow-md active:scale-90 transition-transform"
+                >
+                  <span className="material-symbols-outlined text-lg">edit</span>
+                </button>
+              </div>
+              <input type="file" ref={fileInputRef} className="hidden" onChange={handleAvatarChange} accept="image/*" />
+            </div>
+            <div className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">姓名 / 暱稱</label>
+                <input
+                  value={form.name}
+                  onChange={e => setForm({ ...form, name: e.target.value })}
+                  placeholder="輸入您的姓名"
+                  className="w-full bg-dama-bg border-none rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-dama-sakura"
+                />
+              </div>
+              {!form.isPostpartum ? (
+                <>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">最後一次經期日期 (LMP)</label>
+                    <input
+                      type="date"
+                      value={form.lmpDate}
+                      onChange={e => {
+                        const newVal = e.target.value;
+                        setForm({
+                          ...form,
+                          lmpDate: newVal,
+                          dueDate: calculateDueDate(newVal)
+                        });
+                      }}
+                      className="w-full bg-dama-bg border-none rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-dama-sakura"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">預定產期 (DUE DATE)</label>
+                    <input
+                      type="date"
+                      value={form.dueDate}
+                      onChange={e => {
+                        const newVal = e.target.value;
+                        setForm({
+                          ...form,
+                          dueDate: newVal,
+                          lmpDate: calculateLMP(newVal)
+                        });
+                      }}
+                      className="w-full bg-dama-bg border-none rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-dama-sakura"
+                    />
+                  </div>
+                  <button
+                    onClick={() => setForm({ ...form, isPostpartum: true })}
+                    className="w-full py-3 bg-dama-matcha/10 text-dama-matcha rounded-2xl font-bold text-xs flex items-center justify-center gap-2 border border-dama-matcha/20 active:scale-95 transition-all"
+                  >
+                    <span className="material-symbols-outlined text-sm">child_care</span>
+                    切換至產後階段
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">寶寶姓名</label>
+                    <input
+                      value={form.babyName || ''}
+                      onChange={e => setForm({ ...form, babyName: e.target.value })}
+                      placeholder="輸入寶寶姓名"
+                      className="w-full bg-dama-bg border-none rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-dama-sakura"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">寶寶出生日期</label>
+                    <input
+                      type="date"
+                      value={form.birthDate || ''}
+                      onChange={e => setForm({ ...form, birthDate: e.target.value })}
+                      className="w-full bg-dama-bg border-none rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-dama-sakura"
+                    />
+                  </div>
+                  <button
+                    onClick={() => setForm({ ...form, isPostpartum: false })}
+                    className="w-full py-3 bg-dama-sakura/10 text-dama-sakura rounded-2xl font-bold text-xs flex items-center justify-center gap-2 border border-dama-sakura/20 active:scale-95 transition-all"
+                  >
+                    <span className="material-symbols-outlined text-sm">pregnant_woman</span>
+                    返回孕期階段
+                  </button>
+                </>
+              )}
+            </div>
+            <div className="mt-8 flex flex-col gap-2">
+              <button
+                onClick={handleSaveProfile}
+                className="w-full bg-dama-sakura text-white py-4 rounded-full font-bold shadow-lg shadow-dama-sakura/20 active:scale-95 transition-all text-sm"
+              >
+                更新資料
+              </button>
+              <button
+                onClick={() => setEditing(false)}
+                className="w-full py-3 font-bold text-dama-brown/30 text-xs hover:text-dama-brown transition-colors"
+              >
+                取消
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showNoteModal && (
+        <div className="fixed inset-0 bg-dama-brown/40 backdrop-blur-md z-[120] flex items-center justify-center p-6 animate-in fade-in">
+          <div className="bg-white w-full max-w-sm rounded-[40px] p-8 shadow-2xl relative animate-in zoom-in-95">
+            <h2 className="text-xl font-bold text-dama-brown mb-6">新增計畫紀錄</h2>
+            <div className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">標題</label>
+                <input
+                  value={noteForm.title}
+                  onChange={e => setNoteForm({ ...noteForm, title: e.target.value })}
+                  className="w-full bg-dama-bg border-none rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-dama-sakura"
+                  placeholder="如：產檢紀錄、寶寶預防針"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">分類</label>
+                <div className="flex gap-2">
+                  {(['note', 'task', 'meeting'] as NoteCategory[]).map(cat => (
+                    <button
+                      key={cat}
+                      onClick={() => setNoteForm({ ...noteForm, category: cat })}
+                      className={`flex-1 py-2 rounded-xl text-[10px] font-bold transition-all border ${noteForm.category === cat ? 'bg-dama-sakura border-dama-sakura text-white' : 'bg-white border-dama-sakura/20 text-dama-brown/40'
+                        }`}
+                    >
+                      {cat === 'note' ? '筆記' : cat === 'task' ? '任務' : '安排'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">內容</label>
+                <textarea
+                  rows={4}
+                  value={noteForm.content}
+                  onChange={e => setNoteForm({ ...noteForm, content: e.target.value })}
+                  className="w-full bg-dama-bg border-none rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-dama-sakura no-scrollbar"
+                  placeholder="寫下詳細內容..."
+                />
+              </div>
+            </div>
+            <div className="mt-8 flex flex-col gap-2">
+              <button
+                onClick={handleAddNote}
+                className="w-full bg-dama-sakura text-white py-4 rounded-full font-bold shadow-lg shadow-dama-sakura/20 active:scale-95 transition-all text-sm"
+              >
+                儲存紀錄
+              </button>
+              <button
+                onClick={() => setShowNoteModal(false)}
+                className="w-full py-3 font-bold text-dama-brown/30 text-xs"
+              >
+                取消
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 登出按鈕 */}
+      <div className="mt-8 pb-8 flex justify-center">
+        <button
+          onClick={onLogout}
+          className="flex items-center gap-2 px-8 py-3 rounded-full border-2 border-red-200 text-red-400 font-bold text-sm hover:bg-red-50 active:scale-95 transition-all"
+        >
+          <span className="material-symbols-outlined text-lg">logout</span>
+          登出帳號
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default Profile;
