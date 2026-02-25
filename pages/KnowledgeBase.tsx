@@ -8,7 +8,7 @@ const KnowledgeBase: React.FC<{ user: UserProfile }> = ({ user }) => {
   const [activeCategory, setActiveCategory] = useState<Category>('wellness');
 
   // 官方衛教資訊內容庫
-  const data = {
+  const pregnancyData = {
     nutrition: [
       {
         title: '葉酸 (Folate)',
@@ -69,34 +69,81 @@ const KnowledgeBase: React.FC<{ user: UserProfile }> = ({ user }) => {
     ],
     wellness: [
       {
-        title: '產後憂鬱與焦慮',
-        subtitle: '妳的心靈與孩子一樣重要',
-        desc: '情感波動是轉換期的正常反應，學會觀察自己，適時尋求愛與支持。',
-        tips: ['量表自評', '家人傾聽陪伴', '醫療諮詢'],
-        source: '產後心理調適指南',
+        title: '心理安適',
+        subtitle: '保持心情平和愉快',
+        desc: '孕期情緒波動大是正常的。多參與舒適社交，或透過冥想維持內心平靜。',
+        tips: ['深呼吸與伸展', '每天 5 分鐘書寫', '聽柔和音樂'],
+        source: '產前心理健康手冊',
+        icon: 'favorite',
+        color: 'bg-rose-50'
+      }
+    ]
+  };
+
+  const postpartumData = {
+    nutrition: [ // 這裡變更為「寶寶照顧」
+      {
+        title: '新生兒安全守則',
+        subtitle: '睡眠與環境安全',
+        desc: '仰睡最安全，避免趴睡風險。維持室溫24度，並採取「洋蔥式穿法」以應對溫差。',
+        tips: ['仰睡避猝死', '避免同床睡', '床墊要平整'],
+        source: '兒童健康手冊 (1-122行)',
+        icon: 'shield_moon',
+        color: 'bg-blue-50'
+      },
+      {
+        title: '看懂寶寶語言',
+        subtitle: '解讀哭泣與需求',
+        desc: '寶寶透過哭聲表達需求：肚子餓頻率高低交替，尿布濕伴隨蹬腳，想睡則煩躁不安。',
+        tips: ['尋乳反應', '蹬腳與煩躁', '2-3小時換尿布'],
+        source: '育兒常識指南 (95-118行)',
+        icon: 'chat_bubble',
+        color: 'bg-amber-50'
+      }
+    ],
+    exercise: [ // 這裡變更為「育兒技巧」
+      {
+        title: '餵食與拍嗝技術',
+        subtitle: '哺乳與奶瓶餵養',
+        desc: '支撐頭頸部，掌握空掌輕拍技巧。親餵時利用哺乳枕支撐，減少媽咪體力消耗。',
+        tips: ['支撐頭頸', '空掌拍嗝', '瓶餵傾斜角度'],
+        source: '產後照護指南 (26-86行)',
+        icon: 'baby_changing_station',
+        color: 'bg-dama-matcha/10'
+      },
+      {
+        title: '基礎清潔護理',
+        subtitle: '洗澡與臍帶護理',
+        desc: '橄欖球抱法洗臉頭。臍帶使用75%酒精消毒後，再以95%酒精幫助乾燥。',
+        tips: ['橄欖球抱法', '臍帶雙重消毒', '洗屁屁代替濕巾'],
+        source: '新生兒護理 (43-78行)',
+        icon: 'soap',
+        color: 'bg-cyan-50'
+      }
+    ],
+    wellness: [ // 身心調適
+      {
+        title: '爸媽心靈導航',
+        subtitle: '產後憂鬱與焦慮',
+        desc: '接受「不完美父母」是常態。情緒要說出來而不是硬撐，家人支持與專業諮詢是關鍵。',
+        tips: ['愛丁堡量表自評', '情緒書寫5分鐘', '產後社群交流'],
+        source: '產後調適手冊 (284-384行)',
         icon: 'favorite',
         color: 'bg-rose-50'
       },
       {
-        title: '睡眠不足應對',
-        subtitle: '新手爸媽的生存補眠攻略',
-        desc: '練習有效補眠：白天跟著寶寶一起睡，並與伴侶實施輪流值夜班制度。',
-        tips: ['跟著寶寶睡', '輪流值班', '優先順序'],
-        source: '睡眠管理建議',
+        title: '睡眠補給策略',
+        subtitle: '應對睡眠不足',
+        desc: '白天找機會跟著寶寶睡。實施輪流值夜班制，並利用散步曬太陽來調節生理鐘與好心情。',
+        tips: ['跟著寶寶睡', '輪流值班歇息', '白天多曬太陽'],
+        source: '產後生存指引 (306-343行)',
         icon: 'bed',
         color: 'bg-indigo-50'
-      },
-      {
-        title: '壓力管理與調適',
-        subtitle: '接受不完美父母的勇氣',
-        desc: '情緒要說出來而不是硬撐。接受混亂是常態，調整對自己的過高期待。',
-        tips: ['情緒書寫', '輕度活動', '支持社群'],
-        source: '心理復原力錦囊',
-        icon: 'self_improvement',
-        color: 'bg-teal-50'
       }
     ]
   };
+
+  const data = user.isPostpartum ? postpartumData : pregnancyData;
 
   const getFooterButtonInfo = () => {
     if (activeCategory === 'nutrition') {
@@ -136,15 +183,15 @@ const KnowledgeBase: React.FC<{ user: UserProfile }> = ({ user }) => {
             }`}
         >
           <span className="material-symbols-outlined text-xs">restaurant</span>
-          營養補充
+          {user.isPostpartum ? '寶寶照顧' : '營養補充'}
         </button>
         <button
           onClick={() => setActiveCategory('exercise')}
           className={`flex-1 py-3 rounded-full text-[10px] font-bold transition-all flex items-center justify-center gap-1 ${activeCategory === 'exercise' ? 'bg-dama-matcha text-white shadow-md' : 'text-dama-brown/40'
             }`}
         >
-          <span className="material-symbols-outlined text-xs">fitness_center</span>
-          運動指南
+          <span className="material-symbols-outlined text-xs">baby_changing_station</span>
+          {user.isPostpartum ? '育兒技巧' : '運動指南'}
         </button>
         <button
           onClick={() => setActiveCategory('wellness')}
