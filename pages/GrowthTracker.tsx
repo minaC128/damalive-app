@@ -173,7 +173,7 @@ const GrowthTracker: React.FC<{ user: UserProfile }> = ({ user }) => {
     const generateImage = async (retries = 2) => {
       setIsGenerating(true);
       try {
-        const prompt = `A beautiful, close-up, warm, hand-drawn colored pencil and watercolor illustration of a single ${data.fruitName}. The subject fills the entire square frame from edge to edge. Artistic, cute, soft pastel tones, cozy atmosphere, high quality, vibrant but soft colors, hand-painted texture.`;
+        const prompt = `A playful and childlike children's book illustration of a cute ${data.fruitName} with a happy, smiling face and tiny hands/feet. Style: soft colored pencils, kawaii nursery art, vibrant pastel tones, hand-drawn with heart, whimsical and friendly, fills the frame, high quality.`;
 
         const response = await fetch('/api/generate-image', {
           method: 'POST',

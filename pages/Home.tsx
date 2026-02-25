@@ -61,7 +61,7 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
 
         const d = new Date();
         const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-        const prompt = `(Date: ${todayStr}) A heartwarming, cozy, hand-drawn watercolor illustration representing ${ageText}. The style should be soft lighting, pastel colors, aesthetic, dreamy atmosphere, white background, high quality, artistic.`;
+        const prompt = `(Date: ${todayStr}) A super cute, childlike, and joyful nursery - style illustration of ${ageText}. The baby has a big, happy, adorable smile and sparkling eyes. Style: hand-drawn crayon and soft watercolor, playful children's book illustration, vibrant but gentle pastel colors, whimsical, warm and cozy, white background.`;
 
         const response = await fetch('/api/generate-image', {
           method: 'POST',
