@@ -159,12 +159,39 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
               </div>
             </div>
 
-            {/* Back Side: Simple quote or mood */}
+            {/* Back Side: Dynamic Growth Insight */}
             <div className="absolute inset-0 backface-hidden rotate-y-180 bg-white rounded-[40px] shadow-xl border-4 border-dama-sakura/10 p-7 flex flex-col items-center justify-center text-center">
-              <h3 className="font-bold text-dama-brown text-lg mb-2">每一天都是禮物</h3>
-              <p className="text-xs text-dama-brown/60 leading-relaxed">
-                無論這段旅程多麼辛苦，<br />記得妳並不孤單。<br />寶寶正在用自己的方式努力長大喔！
+              <div className="w-12 h-12 bg-dama-sakura/10 rounded-full flex items-center justify-center mb-4">
+                <span className="material-symbols-outlined text-dama-sakura">auto_awesome</span>
+              </div>
+              <h3 className="font-bold text-dama-brown text-lg mb-3">
+                {user.isPostpartum ? `寶寶第 ${Math.ceil((new Date().getTime() - new Date(user.birthDate!).getTime()) / (1000 * 60 * 60 * 24 * 30))} 個月` : `懷孕第 ${currentWeek} 週`}
+              </h3>
+              <p className="text-xs text-dama-brown/70 leading-relaxed max-w-[240px]">
+                {user.isPostpartum ? (() => {
+                  const months = Math.ceil((new Date().getTime() - new Date(user.birthDate!).getTime()) / (1000 * 60 * 60 * 24 * 30));
+                  if (months <= 1) return "主要活動是睡眠，這正在幫助大腦快速成長。視力雖模糊，但對聲音已有反應感囉。";
+                  if (months <= 2) return "寶寶出現「抓握反射」，常跟他握握手或擊掌，能幫助小肌肉與協調性發展。";
+                  if (months <= 3) return "現在是抬頭練習期！頸部肌肉變強，寶寶正努力抬起頭觀察這個世界。";
+                  if (months <= 4) return "寶寶開始嘗試翻身了！大腦正積極接收各種刺激，多跟他說話可以幫助認知發展。";
+                  if (months <= 6) return "副食品時間到囉！這是口腔發展的重要階段，讓寶寶嘗試各種新滋味的奇妙體驗。";
+                  return "寶寶正努力學習平衡、爬行與坐立，每一點進步都是他探索世界的勇氣。";
+                })() : (() => {
+                  if (currentWeek <= 4) return "寶寶現在只有 1 公釐，像顆小芝麻。雖然心臟還在萌芽，但生命力已經非常頑強！";
+                  if (currentWeek <= 8) return "心臟、肝臟、腎臟等主要臟器已在形成。在超音波也能聽見寶寶強而有力的心跳聲了。";
+                  if (currentWeek <= 12) return "寶寶由「胎芽」畢業成為「胎兒」囉！面部表情神經正在發育，模樣越來越可愛。";
+                  if (currentWeek <= 16) return "腦部開始運作！寶寶最喜歡心情平和的媽媽，妳的快樂就是對他最好的胎教。";
+                  if (currentWeek <= 20) return "第一次胎動！那是寶寶在跟妳打招呼，說他在裡面住得很舒服、很活潑。";
+                  if (currentWeek <= 28) return "寶寶開始能察覺周遭明暗，也會記憶媽咪聲音的節奏。多跟他說說話吧！";
+                  if (currentWeek <= 36) return "皮下脂肪附著，可愛的臉蛋出現嬰兒肥囉。寶寶正在為來到這世界做最後衝刺！";
+                  return "落紅、破水、規律收縮都是信號。放輕鬆呼吸，妳即將見到一生中最珍貴的禮物。";
+                })()}
               </p>
+              <div className="mt-5 pt-5 border-t border-dama-sakura/10 w-full">
+                <p className="text-[10px] font-bold text-dama-sakura uppercase tracking-widest">
+                  {user.isPostpartum ? "育兒階段小撇步" : "孕期成長小叮嚀"}
+                </p>
+              </div>
             </div>
 
           </div>
