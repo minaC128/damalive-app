@@ -2,10 +2,10 @@
 import React, { useState } from 'react';
 import { UserProfile } from '../types';
 
-type Category = 'nutrition' | 'exercise';
+type Category = 'nutrition' | 'exercise' | 'wellness';
 
 const KnowledgeBase: React.FC<{ user: UserProfile }> = ({ user }) => {
-  const [activeCategory, setActiveCategory] = useState<Category>('nutrition');
+  const [activeCategory, setActiveCategory] = useState<Category>('wellness');
 
   // 官方衛教資訊內容庫
   const data = {
@@ -66,6 +66,35 @@ const KnowledgeBase: React.FC<{ user: UserProfile }> = ({ user }) => {
         icon: 'self_improvement',
         color: 'bg-orange-50'
       }
+    ],
+    wellness: [
+      {
+        title: '產後憂鬱與焦慮',
+        subtitle: '妳的心靈與孩子一樣重要',
+        desc: '情感波動是轉換期的正常反應，學會觀察自己，適時尋求愛與支持。',
+        tips: ['量表自評', '家人傾聽陪伴', '醫療諮詢'],
+        source: '產後心理調適指南',
+        icon: 'favorite',
+        color: 'bg-rose-50'
+      },
+      {
+        title: '睡眠不足應對',
+        subtitle: '新手爸媽的生存補眠攻略',
+        desc: '練習有效補眠：白天跟著寶寶一起睡，並與伴侶實施輪流值夜班制度。',
+        tips: ['跟著寶寶睡', '輪流值班', '優先順序'],
+        source: '睡眠管理建議',
+        icon: 'bed',
+        color: 'bg-indigo-50'
+      },
+      {
+        title: '壓力管理與調適',
+        subtitle: '接受不完美父母的勇氣',
+        desc: '情緒要說出來而不是硬撐。接受混亂是常態，調整對自己的過高期待。',
+        tips: ['情緒書寫', '輕度活動', '支持社群'],
+        source: '心理復原力錦囊',
+        icon: 'self_improvement',
+        color: 'bg-teal-50'
+      }
     ]
   };
 
@@ -76,42 +105,54 @@ const KnowledgeBase: React.FC<{ user: UserProfile }> = ({ user }) => {
         url: 'https://cookpad.com/tw/%E6%90%9C%E5%B0%8B/%E6%9C%88%E5%AD%90%E9%A4%90'
       };
     }
+    if (activeCategory === 'exercise') {
+      return {
+        label: '產前瑜珈訓練',
+        url: 'https://www.youtube.com/watch?v=-sGq96tPV9E&list=PLiS4JNqIKmHZMeJxpb9goA--kncMWIX6y'
+      };
+    }
     return {
-      label: '產前瑜珈訓練',
-      url: 'https://www.youtube.com/watch?v=-sGq96tPV9E&list=PLiS4JNqIKmHZMeJxpb9goA--kncMWIX6y'
+      label: '更多育兒技巧',
+      url: 'https://1125anton.my.canva.site/damalive'
     };
   };
 
   const footerBtn = getFooterButtonInfo();
 
   return (
-    <div className="px-6 py-6 min-h-screen bg-dama-bg pb-32">
-      <header className="flex flex-col items-center mb-10 mt-4">
+    <div className="px-3 md:px-6 py-6 min-h-screen bg-dama-bg pb-32">
+      <header className="flex flex-col items-center mb-8 mt-4">
         {/* 根據截圖：刪除 DAMALIVE 字樣，並將「生育知識庫」放大變為大標題並改變顏色 */}
         <a href="https://1125anton.my.canva.site/damalive" target="_blank" rel="noopener noreferrer" className="block hover:opacity-80 transition-opacity">
           <h1 className="text-2xl font-bold text-dama-brown tracking-widest">生育知識庫</h1>
         </a>
       </header>
 
-      {/* 分類選擇標籤 */}
+      {/* 分類選擇標籤 - 三個標籤 */}
       <div className="flex p-1 bg-white/50 backdrop-blur-sm rounded-full mb-10 shadow-inner border border-dama-sakura/10">
-        <button 
+        <button
           onClick={() => setActiveCategory('nutrition')}
-          className={`flex-1 py-3 rounded-full text-xs font-bold transition-all flex items-center justify-center gap-2 ${
-            activeCategory === 'nutrition' ? 'bg-dama-sakura text-white shadow-md' : 'text-dama-brown/40'
-          }`}
+          className={`flex-1 py-3 rounded-full text-[10px] font-bold transition-all flex items-center justify-center gap-1 ${activeCategory === 'nutrition' ? 'bg-dama-sakura text-white shadow-md' : 'text-dama-brown/40'
+            }`}
         >
-          <span className="material-symbols-outlined text-sm">restaurant</span>
+          <span className="material-symbols-outlined text-xs">restaurant</span>
           營養補充
         </button>
-        <button 
+        <button
           onClick={() => setActiveCategory('exercise')}
-          className={`flex-1 py-3 rounded-full text-xs font-bold transition-all flex items-center justify-center gap-2 ${
-            activeCategory === 'exercise' ? 'bg-dama-matcha text-white shadow-md' : 'text-dama-brown/40'
-          }`}
+          className={`flex-1 py-3 rounded-full text-[10px] font-bold transition-all flex items-center justify-center gap-1 ${activeCategory === 'exercise' ? 'bg-dama-matcha text-white shadow-md' : 'text-dama-brown/40'
+            }`}
         >
-          <span className="material-symbols-outlined text-sm">fitness_center</span>
+          <span className="material-symbols-outlined text-xs">fitness_center</span>
           運動指南
+        </button>
+        <button
+          onClick={() => setActiveCategory('wellness')}
+          className={`flex-1 py-3 rounded-full text-[10px] font-bold transition-all flex items-center justify-center gap-1 ${activeCategory === 'wellness' ? 'bg-dama-sakura text-white shadow-md' : 'text-dama-brown/40'
+            }`}
+        >
+          <span className="material-symbols-outlined text-xs">favorite</span>
+          身心調適
         </button>
       </div>
 
@@ -123,7 +164,7 @@ const KnowledgeBase: React.FC<{ user: UserProfile }> = ({ user }) => {
               <div className="absolute -top-4 -right-4 opacity-5 scale-150 rotate-12 transition-transform group-hover:rotate-45">
                 <span className="material-symbols-outlined text-9xl">{item.icon}</span>
               </div>
-              
+
               <div className="flex items-start justify-between mb-4 relative z-10">
                 <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm">
                   <span className="material-symbols-outlined text-dama-brown">{item.icon}</span>
@@ -132,7 +173,7 @@ const KnowledgeBase: React.FC<{ user: UserProfile }> = ({ user }) => {
                   {item.source}
                 </span>
               </div>
-              
+
               <div className="relative z-10">
                 <h3 className="text-xl font-bold text-dama-brown">{item.title}</h3>
                 <p className="text-[10px] font-bold text-dama-brown/40 uppercase tracking-widest mt-1">{item.subtitle}</p>
@@ -143,7 +184,7 @@ const KnowledgeBase: React.FC<{ user: UserProfile }> = ({ user }) => {
               <p className="text-sm text-dama-brown/70 leading-relaxed mb-6 font-medium">
                 {item.desc}
               </p>
-              
+
               <div className="bg-dama-bg p-5 rounded-3xl border-2 border-dashed border-dama-sakura/20">
                 <p className="text-[10px] font-bold text-dama-brown/40 mb-3 flex items-center gap-2">
                   <span className="material-symbols-outlined text-xs">edit_note</span>
@@ -167,7 +208,7 @@ const KnowledgeBase: React.FC<{ user: UserProfile }> = ({ user }) => {
         <p className="text-[10px] text-dama-brown/30 font-bold mb-4">
           以上資訊僅供參考，如有特定疾病或不適請務必諮詢您的主治醫師。
         </p>
-        <button 
+        <button
           onClick={() => window.open(footerBtn.url, '_blank')}
           className="bg-white border-2 border-dama-sakura text-dama-sakura px-8 py-4 rounded-full font-bold text-sm shadow-lg active:scale-95 transition-all hover:bg-dama-sakura hover:text-white"
         >
