@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { UserProfile } from '../types';
 
 type Category = 'nutrition' | 'exercise' | 'wellness';
@@ -7,159 +7,91 @@ type Category = 'nutrition' | 'exercise' | 'wellness';
 const KnowledgeBase: React.FC<{ user: UserProfile }> = ({ user }) => {
   const [activeCategory, setActiveCategory] = useState<Category>('wellness');
 
-  // 官方衛教資訊內容庫
-  const pregnancyData = {
+  // 每日隨機種子演算法：確保今日內容固定，明日自動更換
+  const getDailySubset = (pool: any[]) => {
+    const today = new Date();
+    const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+
+    // 簡單的隨機打亂演算法 (Fisher-Yates with seed)
+    const shuffled = [...pool];
+    let m = shuffled.length, t, i;
+    let s = seed;
+    while (m) {
+      s = (s * 9301 + 49297) % 233280;
+      i = Math.floor((s / 233280) * m--);
+      t = shuffled[m];
+      shuffled[m] = shuffled[i];
+      shuffled[i] = t;
+    }
+    // 每天顯示 3 條隨機內容
+    return shuffled.slice(0, 3);
+  };
+
+  // 官方衛教資訊內容庫 - 完整池
+  const pregnancyPool = {
     nutrition: [
-      {
-        title: '葉酸 (Folate)',
-        subtitle: '神經管發育的守護者',
-        desc: '懷孕前三個月是寶寶大腦發育關鍵，建議每日攝取 600 微克。',
-        tips: ['菠菜、蘆筍', '動物肝臟', '柑橘類水果'],
-        source: '國健署：孕期營養指南',
-        icon: 'eco',
-        color: 'bg-dama-sakura/10'
-      },
-      {
-        title: '鐵質 (Iron)',
-        subtitle: '供應寶寶血氧動力',
-        desc: '懷孕後期及分娩時失血量大，需加強補充。鐵質吸收建議搭配維生素 C。',
-        tips: ['紅肉、黑木耳', '葡萄乾', '紅莧菜'],
-        source: '衛福部：孕產婦健康手冊',
-        icon: 'bloodtype',
-        color: 'bg-red-50'
-      },
-      {
-        title: '鈣質 (Calcium)',
-        subtitle: '強化母體與寶寶骨骼',
-        desc: '每日建議攝取 1000 毫克，能預防媽咪半夜抽筋與維持骨密度。',
-        tips: ['鮮乳、起司', '小魚乾', '黑芝麻'],
-        source: '國健署：飲食參考攝取量',
-        icon: 'monitor_weight',
-        color: 'bg-blue-50'
-      }
+      { title: '葉酸 (Folate)', subtitle: '神經管守護者', desc: '懷孕前三個月關鍵，建議每日 600 微克。', tips: ['菠菜、蘆筍', '動物肝臟', '柑橘'], source: '孕期營養 (2).txt', icon: 'eco', color: 'bg-dama-sakura/10' },
+      { title: '鐵質 (Iron)', subtitle: '供應血氧團隊', desc: '後期及分娩時失血量大，需加強補充。', tips: ['紅肉、黑木耳', '葡萄乾', '紅莧菜'], source: '孕期營養 (2).txt', icon: 'bloodtype', color: 'bg-red-50' },
+      { title: '鈣質 (Calcium)', subtitle: '骨骼強化動力', desc: '預防媽咪半夜抽筋與維持骨密度。', tips: ['鮮乳、起司', '小魚乾', '黑芝麻'], source: '孕期營養 (2).txt', icon: 'monitor_weight', color: 'bg-blue-50' },
+      { title: 'DHA/Omega-3', subtitle: '腦部發展黃金期', desc: '有助於寶寶腦部與視網膜發育。', tips: ['深海魚', '核桃', '藻油'], source: '孕期營養 (2).txt', icon: 'psychology', color: 'bg-cyan-50' },
+      { title: '膳食纖維', subtitle: '腸胃順暢不卡關', desc: '緩解孕期常見的便秘不適。', tips: ['地瓜、玉米', '燕麥', '各種綠葉菜'], source: '孕期營養 (2).txt', icon: 'energy_savings_leaf', color: 'bg-green-50' }
     ],
     exercise: [
-      {
-        title: '散步慢走',
-        subtitle: '最安全的日常有氧',
-        desc: '每日 20-30 分鐘微喘的強度，有助於維持心肺功能，減輕水腫不適。',
-        tips: ['穿著舒適運動鞋', '避開極端氣候', '隨時補充水分'],
-        source: 'WHO：孕期身體活動建議',
-        icon: 'directions_walk',
-        color: 'bg-dama-matcha/10'
-      },
-      {
-        title: '凱格爾運動',
-        subtitle: '強化盆底肌群',
-        desc: '針對骨盆底肌進行收縮訓練，預防懷孕後期與產後的漏尿問題。',
-        tips: ['收縮 5 秒放鬆 5 秒', '不要憋氣', '隨時隨地可練習'],
-        source: '婦產科醫學會指南',
-        icon: 'settings_accessibility',
-        color: 'bg-purple-50'
-      },
-      {
-        title: '孕婦瑜珈',
-        subtitle: '提升肌肉彈性與穩定度',
-        desc: '透過柔和的延展，緩解腰痠背痛，並練習呼吸控制幫助順產。',
-        tips: ['尋求專業教練指導', '避免壓迫腹部', '聽從身體訊號'],
-        source: '產前健康指導手冊',
-        icon: 'self_improvement',
-        color: 'bg-orange-50'
-      }
+      { title: '散步慢走', subtitle: '最安全有氧', desc: '每日 20-30 分鐘，維持心肺功能。', tips: ['舒適運動鞋', '避開極端氣候', '補充水分'], source: '運動指南 (2).txt', icon: 'directions_walk', color: 'bg-dama-matcha/10' },
+      { title: '凱格爾運動', subtitle: '強化盆底肌', desc: '訓練骨盆肌肉感，預防產後漏尿。', tips: ['收縮5秒放鬆5秒', '不要憋氣', '隨時練習'], source: '運動指南 (2).txt', icon: 'settings_accessibility', color: 'bg-purple-50' },
+      { title: '孕婦瑜珈', subtitle: '肌肉穩定延伸', desc: '緩解腰痠背痛，練習呼吸幫助順產。', tips: ['專業指導', '避免壓腹', '聽從訊號'], source: '運動指南 (2).txt', icon: 'self_improvement', color: 'bg-orange-50' },
+      { title: '產前呼吸法', subtitle: '生產痛感管理', desc: '透過調節呼吸，幫助待產時放鬆子宮頸。', tips: ['腹式呼吸', '拉梅茲', '冥想配合'], source: '運動指南 (2).txt', icon: 'air', color: 'bg-blue-50' }
     ],
     wellness: [
-      {
-        title: '心理安適',
-        subtitle: '保持心情平和愉快',
-        desc: '孕期情緒波動大是正常的。多參與舒適社交，或透過冥想維持內心平靜。',
-        tips: ['深呼吸與伸展', '每天 5 分鐘書寫', '聽柔和音樂'],
-        source: '產前心理健康手冊',
-        icon: 'favorite',
-        color: 'bg-rose-50'
-      }
+      { title: '心理安適', subtitle: '保持心情愉快', desc: '情緒波動是正常的。透過社交維持平衡。', tips: ['深呼吸', '每日5分鐘書寫', '輕快音樂'], source: '心靈錦囊-465行', icon: 'favorite', color: 'bg-rose-50' },
+      { title: '隊友支持', subtitle: '最強神隊友', desc: '請先生共同參與產檢，分擔家務壓力。', tips: ['有效溝通', '一起佈置寶寶房', '按摩肩頸'], source: '心靈錦囊-465行', icon: 'groups', color: 'bg-indigo-50' }
     ]
   };
 
-  const postpartumData = {
-    nutrition: [ // 這裡變更為「寶寶照顧」
-      {
-        title: '新生兒安全守則',
-        subtitle: '睡眠與環境安全',
-        desc: '仰睡最安全，避免趴睡風險。維持室溫24度，並採取「洋蔥式穿法」以應對溫差。',
-        tips: ['仰睡避猝死', '避免同床睡', '床墊要平整'],
-        source: '兒童健康手冊 (1-122行)',
-        icon: 'shield_moon',
-        color: 'bg-blue-50'
-      },
-      {
-        title: '看懂寶寶語言',
-        subtitle: '解讀哭泣與需求',
-        desc: '寶寶透過哭聲表達需求：肚子餓頻率高低交替，尿布濕伴隨蹬腳，想睡則煩躁不安。',
-        tips: ['尋乳反應', '蹬腳與煩躁', '2-3小時換尿布'],
-        source: '育兒常識指南 (95-118行)',
-        icon: 'chat_bubble',
-        color: 'bg-amber-50'
-      }
+  const postpartumPool = {
+    nutrition: [ // 寶寶照顧
+      { title: '安全睡眠環境', subtitle: '仰睡最安全', desc: '避免同床，床墊要平整，不放多餘填充玩偶。', tips: ['仰睡避猝死', '室溫24度', '洋蔥式穿法'], source: '照顧手冊-10行', icon: 'shield_moon', color: 'bg-blue-50' },
+      { title: '看懂聽懂語言', subtitle: '哭泣的需求', desc: '肚子餓、尿布濕、想睡覺，哭聲都有細微差異。', tips: ['尋乳動作', '蹬腳表情', '揉眼哈欠'], source: '照顧手冊-95行', icon: 'chat_bubble', color: 'bg-amber-50' },
+      { title: '體溫調節', subtitle: '冷暖判斷標準', desc: '不要過度包裹。判斷寶寶冷熱，摸後頸最準確。', tips: ['後頸溫熱即剛好', '流汗要脫衣', '避免同床過熱'], source: '照顧手冊-12行', icon: 'thermostat', color: 'bg-red-50' }
     ],
-    exercise: [ // 這裡變更為「育兒技巧」
-      {
-        title: '餵食與拍嗝技術',
-        subtitle: '哺乳與奶瓶餵養',
-        desc: '支撐頭頸部，掌握空掌輕拍技巧。親餵時利用哺乳枕支撐，減少媽咪體力消耗。',
-        tips: ['支撐頭頸', '空掌拍嗝', '瓶餵傾斜角度'],
-        source: '產後照護指南 (26-86行)',
-        icon: 'baby_changing_station',
-        color: 'bg-dama-matcha/10'
-      },
-      {
-        title: '基礎清潔護理',
-        subtitle: '洗澡與臍帶護理',
-        desc: '橄欖球抱法洗臉頭。臍帶使用75%酒精消毒後，再以95%酒精幫助乾燥。',
-        tips: ['橄欖球抱法', '臍帶雙重消毒', '洗屁屁代替濕巾'],
-        source: '新生兒護理 (43-78行)',
-        icon: 'soap',
-        color: 'bg-cyan-50'
-      }
+    exercise: [ // 育兒技巧
+      { title: '洗澡：橄欖球抱', subtitle: '安全洗滌法', desc: '側抱腋下支撐後頸，拇指扣住耳朵避進水。', tips: ['先洗臉再洗頭', '後洗身體皺褶', '布巾輕擦乾'], source: '育兒技巧-43行', icon: 'soap', color: 'bg-cyan-50' },
+      { title: '拍嗝與瓶餵', subtitle: '消化不擊敗', desc: '托住下巴側坐，空掌輕拍背部直到排氣。', tips: ['奶嘴充滿奶水', '不要強迫餵完', '托下巴頸部'], source: '育兒技巧-82行', icon: 'baby_changing_station', color: 'bg-dama-matcha/10' },
+      { title: '臍帶與清潔', subtitle: '基礎護理必修', desc: '75%酒精由內往外環狀消毒，95%酒精乾燥。', tips: ['根部由內往外', '保持乾燥', '洗屁屁更勝濕巾'], source: '育兒技巧-76行', icon: 'medical_services', color: 'bg-teal-50' },
+      { title: '哄睡與安撫', subtitle: '高質量睡眠', desc: '揉眼哈欠即是信號。輕拍背部或溫柔撫摸。', tips: ['安撫奶嘴', '白噪音模擬子宮', '避免過度勞累'], source: '育兒技巧-70行', icon: 'bedtime', color: 'bg-indigo-50' }
     ],
     wellness: [ // 身心調適
-      {
-        title: '爸媽心靈導航',
-        subtitle: '產後憂鬱與焦慮',
-        desc: '接受「不完美父母」是常態。情緒要說出來而不是硬撐，家人支持與專業諮詢是關鍵。',
-        tips: ['愛丁堡量表自評', '情緒書寫5分鐘', '產後社群交流'],
-        source: '產後調適手冊 (284-384行)',
-        icon: 'favorite',
-        color: 'bg-rose-50'
-      },
-      {
-        title: '睡眠補給策略',
-        subtitle: '應對睡眠不足',
-        desc: '白天找機會跟著寶寶睡。實施輪流值夜班制，並利用散步曬太陽來調節生理鐘與好心情。',
-        tips: ['跟著寶寶睡', '輪流值班歇息', '白天多曬太陽'],
-        source: '產後生存指引 (306-343行)',
-        icon: 'bed',
-        color: 'bg-indigo-50'
-      }
+      { title: '心靈導航', subtitle: '不完美父母', desc: '接受混亂是轉換期常態。累了要說，不是硬撐。', tips: ['愛丁堡量表', '家人傾聽', '調整期待'], source: '身心調適-353行', icon: 'favorite', color: 'bg-rose-50' },
+      { title: '補眠生存戰', subtitle: '碎片化休息', desc: '跟著寶寶一起睡。實施輪流值班，保障深夜睡眠。', tips: ['白天曬太陽', '輪流夜半值勤', '家務非首要'], source: '身心調適-322行', icon: 'king_bed', color: 'bg-indigo-50' },
+      { title: '自我時間', subtitle: '壓力管理', desc: '每天給自己 5 分鐘情緒書寫，舒緩身心壓力。', tips: ['情緒書寫', '輕度活動', '新手爸媽社群'], source: '身心調適-368行', icon: 'self_improvement', color: 'bg-teal-50' }
     ]
   };
 
-  const data = user.isPostpartum ? postpartumData : pregnancyData;
+  // 每日本月隨機選取的結果
+  const data = useMemo(() => {
+    const pool = user.isPostpartum ? postpartumPool : pregnancyPool;
+    return {
+      nutrition: getDailySubset(pool.nutrition),
+      exercise: getDailySubset(pool.exercise),
+      wellness: getDailySubset(pool.wellness)
+    };
+  }, [user.isPostpartum]);
 
   const getFooterButtonInfo = () => {
     if (activeCategory === 'nutrition') {
       return {
-        label: '查看營養菜譜',
-        url: 'https://cookpad.com/tw/%E6%90%9C%E5%B0%8B/%E6%9C%88%E5%AD%90%E9%A4%90'
+        label: user.isPostpartum ? '查看育兒好物' : '查看健康食譜',
+        url: user.isPostpartum ? 'https://www.mamiessentials.com.tw' : 'https://cookpad.com/tw/%E6%90%9C%E5%B0%8B/%E5%AD%95%E5%A9%A6'
       };
     }
     if (activeCategory === 'exercise') {
       return {
-        label: '產前瑜珈訓練',
-        url: 'https://www.youtube.com/watch?v=-sGq96tPV9E&list=PLiS4JNqIKmHZMeJxpb9goA--kncMWIX6y'
+        label: user.isPostpartum ? '產後修復運動' : '孕期瑜珈教學',
+        url: user.isPostpartum ? 'https://www.youtube.com/results?search_query=%E7%94%A2%E5%BE%8C%E9%81%8B%E5%8B%95' : 'https://www.youtube.com/results?search_query=%E5%AD%95%E5%A9%A6%E7%91%9C%E7%8F%88'
       };
     }
     return {
-      label: '更多育兒技巧',
+      label: '更多育兒指南',
       url: 'https://1125anton.my.canva.site/damalive'
     };
   };
@@ -169,13 +101,12 @@ const KnowledgeBase: React.FC<{ user: UserProfile }> = ({ user }) => {
   return (
     <div className="px-3 md:px-6 py-6 min-h-screen bg-dama-bg pb-32">
       <header className="flex flex-col items-center mb-8 mt-4">
-        {/* 根據截圖：刪除 DAMALIVE 字樣，並將「生育知識庫」放大變為大標題並改變顏色 */}
         <a href="https://1125anton.my.canva.site/damalive" target="_blank" rel="noopener noreferrer" className="block hover:opacity-80 transition-opacity">
           <h1 className="text-2xl font-bold text-dama-brown tracking-widest">生育知識庫</h1>
         </a>
       </header>
 
-      {/* 分類選擇標籤 - 三個標籤 */}
+      {/* 分類選擇標籤 */}
       <div className="flex p-1 bg-white/50 backdrop-blur-sm rounded-full mb-10 shadow-inner border border-dama-sakura/10">
         <button
           onClick={() => setActiveCategory('nutrition')}
@@ -209,7 +140,7 @@ const KnowledgeBase: React.FC<{ user: UserProfile }> = ({ user }) => {
 
       {/* 衛教內容顯示 */}
       <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        {data[activeCategory].map((item, idx) => (
+        {data[activeCategory].map((item: any, idx: number) => (
           <div key={idx} className="bg-white rounded-[40px] shadow-xl border border-dama-sakura/5 overflow-hidden group">
             <div className={`p-8 ${item.color} relative overflow-hidden`}>
               <div className="absolute -top-4 -right-4 opacity-5 scale-150 rotate-12 transition-transform group-hover:rotate-45">
@@ -242,7 +173,7 @@ const KnowledgeBase: React.FC<{ user: UserProfile }> = ({ user }) => {
                   重點筆記
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {item.tips.map((tip, i) => (
+                  {item.tips.map((tip: string, i: number) => (
                     <span key={i} className="px-3 py-1.5 bg-white rounded-full text-[10px] font-bold text-dama-brown shadow-sm border border-black/5">
                       {tip}
                     </span>
@@ -257,7 +188,7 @@ const KnowledgeBase: React.FC<{ user: UserProfile }> = ({ user }) => {
       {/* 底部行動呼籲 */}
       <div className="mt-12 text-center pb-10">
         <p className="text-[10px] text-dama-brown/30 font-bold mb-4">
-          以上資訊僅供參考，如有特定疾病或不適請務必諮詢您的主治醫師。
+          「 每天一點新知識，陪妳溫柔啟航 」
         </p>
         <button
           onClick={() => window.open(footerBtn.url, '_blank')}
