@@ -20,6 +20,7 @@ export const getAllData = async (uid: string) => {
       birthDate: profileRes.data.birth_date,
       babyName: profileRes.data.baby_name,
       isPostpartum: profileRes.data.is_postpartum,
+      email: profileRes.data.email,
     } as UserProfile
     : null;
 
@@ -61,6 +62,7 @@ export const saveProfile = async (uid: string, profile: UserProfile, onSync?: an
     birth_date: profile.birthDate || null,
     baby_name: profile.babyName || null,
     is_postpartum: profile.isPostpartum,
+    email: profile.email || null,
     updated_at: new Date().toISOString(),
   });
 

@@ -23,6 +23,7 @@ export interface UserProfile {
   birthDate?: string;
   babyName?: string;
   isPostpartum: boolean;
+  email?: string;
 }
 
 export interface ChatSession {

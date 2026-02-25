@@ -25,7 +25,13 @@ const App: React.FC = () => {
       if (session?.user) {
         const data = await getAllData(session.user.id);
         if (data.profile) {
-          setUser(data.profile);
+          // 如果 profile 存在但沒有 email (可能是舊用戶)，補上 email
+          if (!data.profile.email && session.user.email) {
+            const updatedProfile = { ...data.profile, email: session.user.email };
+            setUser(updatedProfile);
+          } else {
+            setUser(data.profile);
+          }
         } else {
           // session 存在但 profile 不在 → 建立預設的
           const defaultProfile: UserProfile = {
@@ -33,6 +39,7 @@ const App: React.FC = () => {
             name: session.user.email?.split('@')[0] || 'User',
             avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${session.user.email}`,
             isPostpartum: false,
+            email: session.user.email,
           };
           setUser(defaultProfile);
         }
