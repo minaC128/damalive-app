@@ -51,7 +51,9 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
         }
       }
 
-      const knowledge = await getDailyKnowledge(user.isPostpartum, daysDiff);
+      // 產後請求月份建議，孕期請求每週技巧
+      const type = user.isPostpartum ? 'month' : 'week';
+      const knowledge = await getDailyKnowledge(user.isPostpartum, daysDiff, type);
       if (knowledge && knowledge.length > 0) {
         setDailyKnowledge({ title: knowledge[0].title, content: knowledge[0].content });
       }
