@@ -182,7 +182,9 @@ const KnowledgeBase: React.FC<{ user: UserProfile }> = ({ user }) => {
           className={`flex-1 py-3 rounded-full text-[10px] font-bold transition-all flex items-center justify-center gap-1 ${activeCategory === 'nutrition' ? 'bg-dama-sakura text-white shadow-md' : 'text-dama-brown/40'
             }`}
         >
-          <span className="material-symbols-outlined text-xs">restaurant</span>
+          <span className="material-symbols-outlined text-xs">
+            {user.isPostpartum ? 'baby_changing_station' : 'restaurant'}
+          </span>
           {user.isPostpartum ? '寶寶照顧' : '營養補充'}
         </button>
         <button
@@ -190,7 +192,9 @@ const KnowledgeBase: React.FC<{ user: UserProfile }> = ({ user }) => {
           className={`flex-1 py-3 rounded-full text-[10px] font-bold transition-all flex items-center justify-center gap-1 ${activeCategory === 'exercise' ? 'bg-dama-matcha text-white shadow-md' : 'text-dama-brown/40'
             }`}
         >
-          <span className="material-symbols-outlined text-xs">baby_changing_station</span>
+          <span className="material-symbols-outlined text-xs">
+            {user.isPostpartum ? 'child_care' : 'fitness_center'}
+          </span>
           {user.isPostpartum ? '育兒技巧' : '運動指南'}
         </button>
         <button
