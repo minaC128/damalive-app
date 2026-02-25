@@ -136,11 +136,9 @@ export const getDailyKnowledge = async (
   }
 
   if (!isPostpartum) {
-    periodType = 'month';
-    // 假設 daysDiff 為懷孕天數，換算成懷孕第幾個月
-    periodValue = Math.ceil(daysDiff / 30);
-    // 簡單處理：如果超過 10 個月就顯示第 9 個月（產前）
-    if (periodValue > 9) periodValue = 9;
+    periodType = 'week';
+    periodValue = Math.ceil(daysDiff / 7);
+    if (periodValue > 40) periodValue = 40;
   }
 
   // 校正：如果算出來是 0，設為 1
