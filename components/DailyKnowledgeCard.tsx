@@ -10,36 +10,62 @@ const DailyKnowledgeCard: React.FC<DailyKnowledgeCardProps> = ({ user }) => {
     const [tips, setTips] = useState<KnowledgeItem[]>([]);
     const [loading, setLoading] = useState(true);
 
+    // 預設內容 (當資料庫尚未匯入時顯示)
+    const fallbackItem: KnowledgeItem = {
+        id: '0',
+        category: user.isPostpartum ? 'postpartum' : 'pregnancy',
+        period_type: 'month',
+        period_value: 1,
+        title: user.isPostpartum ? '產後第一個月：好好休息' : '孕期生活：保持愉快心情',
+        content: user.isPostpartum
+            ? '這段時間媽咪最重要的事情就是照顧好自己。記得跟著寶寶一起小睡，並多喝水與補充營養。'
+            : '寶寶正慢慢長大，這是妳與寶寶連結的開始。多聽聽音樂、散散步，讓自己維持放鬆的狀態吧！'
+    };
+
     useEffect(() => {
         const fetchTips = async () => {
             if (!user) return;
+            setLoading(true);
 
             let daysDiff = 0;
             if (user.isPostpartum && user.birthDate) {
                 const birth = new Date(user.birthDate);
                 const today = new Date();
                 daysDiff = Math.floor((today.getTime() - birth.getTime()) / (1000 * 60 * 60 * 24));
-                if (daysDiff < 1) daysDiff = 1;
-            } else if (!user.isPostpartum && user.lmpDate) {
-                const lmp = new Date(user.lmpDate);
-                const today = new Date();
-                daysDiff = Math.floor((today.getTime() - lmp.getTime()) / (1000 * 60 * 60 * 24));
-                if (daysDiff < 1) daysDiff = 1;
+            } else {
+                const reference = user.dueDate ? new Date(user.dueDate) : new Date(user.lmpDate!);
+                const now = new Date();
+                if (user.dueDate) {
+                    daysDiff = 280 - Math.ceil((reference.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                } else {
+                    daysDiff = Math.ceil((now.getTime() - reference.getTime()) / (1000 * 60 * 60 * 24));
+                }
             }
 
-            const data = await getDailyKnowledge(user.isPostpartum, daysDiff, 'month');
-            setTips(data);
-            setLoading(false);
+            try {
+                const data = await getDailyKnowledge(user.isPostpartum, daysDiff, 'month');
+                if (data && data.length > 0) {
+                    setTips(data);
+                }
+            } catch (err) {
+                console.error("Fetch tips error:", err);
+            } finally {
+                setLoading(false);
+            }
         };
 
         fetchTips();
-    }, [user]);
+    }, [user, user.uid, user.isPostpartum]);
 
-    if (loading) return <div className="animate-pulse h-32 bg-dama-brown/5 rounded-3xl mt-6"></div>;
-    if (tips.length === 0) return null;
+    if (loading) return (
+        <div className="mt-6 bg-white/50 animate-pulse rounded-3xl p-6 h-36 flex flex-col gap-3">
+            <div className="h-4 bg-dama-sakura/10 w-1/4 rounded-full"></div>
+            <div className="h-6 bg-dama-brown/5 w-3/4 rounded-full"></div>
+            <div className="h-4 bg-dama-brown/5 w-full rounded-full"></div>
+        </div>
+    );
 
-    // 隨機選一條或全部顯示
-    const tip = tips[0];
+    const tip = tips.length > 0 ? tips[0] : fallbackItem;
 
     return (
         <div className="mt-6 bg-white rounded-3xl p-6 shadow-sm border border-dama-sakura/10 relative overflow-hidden group">
