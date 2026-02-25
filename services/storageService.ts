@@ -135,12 +135,19 @@ export const getDailyKnowledge = async (
     periodValue = Math.ceil(daysDiff / 7);
     if (!isPostpartum && periodValue > 40) periodValue = 40;
     if (isPostpartum && periodValue > 4 && !preferredType) {
-      // 產後預設 4 週後轉月份 (舊邏輯相容)
       periodType = 'month';
       periodValue = Math.ceil(daysDiff / 30);
     }
   } else {
-    periodValue = Math.ceil(daysDiff / 30);
+    // 月份計算優化
+    if (!isPostpartum) {
+      // 孕期：每 4 週 (28天) 為一個月
+      periodValue = Math.ceil(daysDiff / 28);
+      if (periodValue > 10) periodValue = 10;
+    } else {
+      // 產後：每 30 天為一個月
+      periodValue = Math.ceil(daysDiff / 30);
+    }
   }
 
   if (periodValue < 1) periodValue = 1;

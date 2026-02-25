@@ -36,11 +36,12 @@ const DailyKnowledgeCard: React.FC<DailyKnowledgeCardProps> = ({ user }) => {
                 const reference = user.dueDate ? new Date(user.dueDate) : new Date(user.lmpDate!);
                 const now = new Date();
                 if (user.dueDate) {
-                    daysDiff = 280 - Math.ceil((reference.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                    daysDiff = 280 - Math.floor((reference.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
                 } else {
-                    daysDiff = Math.ceil((now.getTime() - reference.getTime()) / (1000 * 60 * 60 * 24));
+                    daysDiff = Math.floor((now.getTime() - reference.getTime()) / (1000 * 60 * 60 * 24));
                 }
             }
+            if (daysDiff < 1) daysDiff = 1;
 
             try {
                 const data = await getDailyKnowledge(user.isPostpartum, daysDiff, 'month');
@@ -55,7 +56,7 @@ const DailyKnowledgeCard: React.FC<DailyKnowledgeCardProps> = ({ user }) => {
         };
 
         fetchTips();
-    }, [user, user.uid, user.isPostpartum]);
+    }, [user.uid, user.isPostpartum, user.lmpDate, user.dueDate, user.birthDate]);
 
     if (loading) return (
         <div className="mt-6 bg-white/50 animate-pulse rounded-3xl p-6 h-36 flex flex-col gap-3">
