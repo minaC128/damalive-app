@@ -27,7 +27,7 @@ const DailyKnowledgeCard: React.FC<DailyKnowledgeCardProps> = ({ user }) => {
                 if (daysDiff < 1) daysDiff = 1;
             }
 
-            const data = await getDailyKnowledge(user.isPostpartum, daysDiff);
+            const data = await getDailyKnowledge(user.isPostpartum, daysDiff, 'month');
             setTips(data);
             setLoading(false);
         };
@@ -52,7 +52,7 @@ const DailyKnowledgeCard: React.FC<DailyKnowledgeCardProps> = ({ user }) => {
                 <div>
                     <div className="flex items-center gap-2 mb-1">
                         <span className="text-[10px] font-bold text-dama-matcha uppercase tracking-wider bg-dama-matcha/10 px-2 py-0.5 rounded-full">
-                            每日小知識
+                            本月小知識
                         </span>
                         <span className="text-[10px] text-dama-brown/40 font-bold">
                             {tip.period_type === 'week' ? `第 ${tip.period_value} 週` : `第 ${tip.period_value} 個月`}

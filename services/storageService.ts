@@ -124,25 +124,27 @@ export const deleteNote = async (uid: string, noteId: string, onSync?: any) => {
 
 export const getDailyKnowledge = async (
   isPostpartum: boolean,
-  daysDiff: number
+  daysDiff: number,
+  preferredType?: 'week' | 'month'
 ): Promise<any[]> => {
   const category = isPostpartum ? 'postpartum' : 'pregnancy';
-  let periodType = 'week';
-  let periodValue = Math.ceil(daysDiff / 7);
+  let periodType: 'week' | 'month' = preferredType || 'week';
+  let periodValue = 1;
 
-  if (isPostpartum && periodValue > 4) {
-    periodType = 'month';
+  if (periodType === 'week') {
+    periodValue = Math.ceil(daysDiff / 7);
+    if (!isPostpartum && periodValue > 40) periodValue = 40;
+    if (isPostpartum && periodValue > 4 && !preferredType) {
+      // 產後預設 4 週後轉月份 (舊邏輯相容)
+      periodType = 'month';
+      periodValue = Math.ceil(daysDiff / 30);
+    }
+  } else {
     periodValue = Math.ceil(daysDiff / 30);
   }
 
-  if (!isPostpartum) {
-    periodType = 'week';
-    periodValue = Math.ceil(daysDiff / 7);
-    if (periodValue > 40) periodValue = 40;
-  }
-
-  // 校正：如果算出來是 0，設為 1
   if (periodValue < 1) periodValue = 1;
+  if (periodType === 'month' && periodValue > 12) periodValue = 12;
 
   console.log(`Fetching knowledge for: ${category}, ${periodType} ${periodValue}`);
 
