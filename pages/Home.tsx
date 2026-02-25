@@ -3,7 +3,6 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { UserProfile, MoodRecord } from '../types';
 import { saveMood, getAllData, getDailyKnowledge } from '../services/storageService';
 
-import DailyKnowledgeCard from '../components/DailyKnowledgeCard';
 
 const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSyncStatus }) => {
   const [moodAdded, setMoodAdded] = useState(false);
@@ -222,8 +221,6 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
         </div>
       </section>
 
-      {/* 新增：每日小知識卡片 (動態載入) */}
-      <DailyKnowledgeCard user={user} />
 
       <p className="mt-8 text-center text-[10px] text-dama-brown/30 font-bold italic tracking-wide">「 與寶寶一同成長的每一刻 」</p>
     </div>
