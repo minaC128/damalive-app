@@ -11,6 +11,7 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
   const [showAllNotes, setShowAllNotes] = useState(false);
   const [showPlannerCalendar, setShowPlannerCalendar] = useState(false);
   const [expandedSavedIdx, setExpandedSavedIdx] = useState<number | null>(null);
+  const [expandedNoteId, setExpandedNoteId] = useState<string | null>(null);
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [plannerDate, setPlannerDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -315,42 +316,58 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
           ) : (
             <>
               {displayedNotes.map(note => (
-                <div key={note.id} className={`bg-white p-3 rounded-[32px] shadow-sm border border-dama-sakura/5 flex gap-3 items-center group relative transition-all hover:bg-dama-bg/50 ${note.completed ? 'opacity-60' : ''}`}>
-                  <button
-                    onClick={() => handleToggleNote(note)}
-                    className={`w-10 h-10 rounded-2xl border-2 flex items-center justify-center shrink-0 transition-all ${note.completed ? 'bg-dama-matcha border-dama-matcha text-white' : 'border-dama-sakura/20 text-transparent'
-                      }`}
+                <div key={note.id} className="bg-white rounded-[32px] shadow-sm border border-dama-sakura/5 overflow-hidden transition-all">
+                  <div
+                    onClick={() => setExpandedNoteId(expandedNoteId === note.id ? null : note.id)}
+                    className={`p-3 flex gap-3 items-center group relative cursor-pointer hover:bg-dama-bg/50 ${note.completed ? 'opacity-60' : ''}`}
                   >
-                    <span className="material-symbols-outlined text-xl font-bold">check</span>
-                  </button>
-                  <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-inner ${note.category === 'meeting' ? 'bg-blue-50 text-blue-400' :
-                    note.category === 'task' ? 'bg-dama-matcha/10 text-dama-matcha' : 'bg-orange-50 text-orange-400'
-                    }`}>
-                    <span className="material-symbols-outlined text-xl">
-                      {note.category === 'meeting' ? 'calendar_month' : note.category === 'task' ? 'task_alt' : 'sticky_note_2'}
-                    </span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex justify-between items-baseline mb-0.5">
-                      <h4 className={`font-bold text-dama-brown text-sm truncate ${note.completed ? 'line-through' : ''}`}>
-                        {note.title}
-                      </h4>
-                      <div className="flex flex-col items-end whitespace-nowrap ml-2">
-                        {note.targetDate && <span className="text-[9px] text-dama-sakura font-bold">預計：{note.targetDate}</span>}
-                        <span className="text-[7px] text-dama-brown/20 font-bold">{note.date} 建立</span>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); handleToggleNote(note); }}
+                      className={`w-10 h-10 rounded-2xl border-2 flex items-center justify-center shrink-0 transition-all ${note.completed ? 'bg-dama-matcha border-dama-matcha text-white' : 'border-dama-sakura/20 text-transparent'
+                        }`}
+                    >
+                      <span className="material-symbols-outlined text-xl font-bold">check</span>
+                    </button>
+                    <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-inner ${note.category === 'meeting' ? 'bg-blue-50 text-blue-400' :
+                      note.category === 'task' ? 'bg-dama-matcha/10 text-dama-matcha' : 'bg-orange-50 text-orange-400'
+                      }`}>
+                      <span className="material-symbols-outlined text-xl">
+                        {note.category === 'meeting' ? 'calendar_month' : note.category === 'task' ? 'task_alt' : 'sticky_note_2'}
+                      </span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-baseline mb-0.5">
+                        <h4 className={`font-bold text-dama-brown text-sm truncate ${note.completed ? 'line-through' : ''}`}>
+                          {note.title}
+                        </h4>
+                        <div className="flex flex-col items-end whitespace-nowrap ml-2">
+                          {note.targetDate && <span className="text-[9px] text-dama-sakura font-bold">預計：{note.targetDate}</span>}
+                          <span className="text-[7px] text-dama-brown/20 font-bold">{note.date} 建立</span>
+                        </div>
+                      </div>
+                      <div className="w-full h-1 bg-dama-bg rounded-full overflow-hidden mt-1 opacity-60">
+                        <div className={`h-full transition-all duration-500 ${note.completed ? 'bg-dama-matcha' : (note.category === 'meeting' ? 'bg-blue-200' : note.category === 'task' ? 'bg-dama-matcha/40' : 'bg-orange-200')}`} style={{ width: note.completed ? '100%' : '30%' }}></div>
                       </div>
                     </div>
-                    <div className="w-full h-1 bg-dama-bg rounded-full overflow-hidden mt-1 opacity-60">
-                      <div className={`h-full transition-all duration-500 ${note.completed ? 'bg-dama-matcha' : (note.category === 'meeting' ? 'bg-blue-200' : note.category === 'task' ? 'bg-dama-matcha/40' : 'bg-orange-200')}`} style={{ width: note.completed ? '100%' : '30%' }}></div>
+                    <div className="flex items-center justify-center border-l border-dama-sakura/5 pl-2 h-10 gap-1">
+                      <span className={`material-symbols-outlined text-dama-brown/20 text-xs transition-transform duration-300 ${expandedNoteId === note.id ? 'rotate-180' : ''}`}>
+                        expand_more
+                      </span>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDeleteNote(note.id); }}
+                        className="w-10 h-10 rounded-2xl bg-dama-bg/50 flex items-center justify-center text-dama-brown/20 hover:text-red-400 hover:bg-red-50 transition-all"
+                      >
+                        <span className="material-symbols-outlined text-xl">delete</span>
+                      </button>
                     </div>
                   </div>
-                  <div className="flex items-center justify-center border-l border-dama-sakura/5 pl-2 h-10">
-                    <button
-                      onClick={() => handleDeleteNote(note.id)}
-                      className="w-10 h-10 rounded-2xl bg-dama-bg/50 flex items-center justify-center text-dama-brown/20 hover:text-red-400 hover:bg-red-50 transition-all"
-                    >
-                      <span className="material-symbols-outlined text-xl">delete</span>
-                    </button>
+
+                  <div className={`transition-all duration-500 overflow-hidden ${expandedNoteId === note.id ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <div className="px-5 pb-5 pt-2 border-t border-dama-sakura/5 mx-3 mb-1">
+                      <div className="bg-dama-bg/30 p-4 rounded-2xl text-xs text-dama-brown/80 leading-relaxed font-medium whitespace-pre-wrap">
+                        {note.content || '無詳細內容描述'}
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}
