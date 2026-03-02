@@ -37,11 +37,9 @@ export interface ChatSession {
 }
 
 export interface ChatMessage {
-  id: string;
-  role: 'user' | 'model';
-  text: string;
-  timestamp: string;
-  isEmergency?: boolean;
+  role: 'user' | 'assistant';
+  content: string;
+  timestamp: number;
 }
 
 export interface MoodRecord {
@@ -51,11 +49,12 @@ export interface MoodRecord {
 
 export interface KnowledgeItem {
   id: string;
-  category: 'pregnancy' | 'postpartum';
-  period_type: 'week' | 'month' | 'day';
-  period_value: number;
   title: string;
+  subtitle: string;
   content: string;
-  source_title?: string;
-  source_url?: string;
+  fullContent: string;
+  tips: string[];
+  source: string;
+  icon: string;
+  color: string;
 }

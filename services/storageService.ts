@@ -1,6 +1,6 @@
 
 import { supabase } from './supabaseClient';
-import { UserProfile, ChatSession, MoodRecord, Note } from '../types';
+import { UserProfile, ChatSession, ChatMessage, MoodRecord, Note } from '../types';
 
 export const getAllData = async (uid: string) => {
   const [profileRes, moodsRes, historyRes, notesRes] = await Promise.all([
@@ -22,6 +22,7 @@ export const getAllData = async (uid: string) => {
       isPostpartum: profileRes.data.is_postpartum,
       email: profileRes.data.email,
       fontSize: profileRes.data.font_size,
+      preferredLanguage: profileRes.data.preferred_language || 'zh',
       savedKnowledgeIds: profileRes.data.saved_knowledge_ids || [],
     } as UserProfile
     : null;
@@ -66,6 +67,7 @@ export const saveProfile = async (uid: string, profile: UserProfile, onSync?: an
     is_postpartum: profile.isPostpartum,
     email: profile.email || null,
     font_size: profile.fontSize || 'medium',
+    preferred_language: profile.preferredLanguage || 'zh',
     saved_knowledge_ids: profile.savedKnowledgeIds || [],
     updated_at: new Date().toISOString(),
   });
@@ -91,17 +93,31 @@ export const saveMood = async (uid: string, mood: 'happy' | 'calm' | 'tired' | '
   onSync?.('synced');
 };
 
-export const saveChat = async (uid: string, session: ChatSession, onSync?: any) => {
+export const saveChatMessage = async (uid: string, chatId: string, messages: any[], onSync?: any) => {
   onSync?.('syncing');
   await supabase.from('chat_sessions').upsert({
-    id: session.id,
+    id: chatId,
     user_id: uid,
-    title: session.title,
-    timestamp: session.timestamp,
-    messages: session.messages,
+    title: messages[0]?.content?.slice(0, 20) || 'New Chat',
+    messages: messages,
     updated_at: new Date().toISOString(),
   });
   onSync?.('synced');
+};
+
+export const deleteChatSession = async (uid: string, chatId: string, onSync?: any) => {
+  onSync?.('syncing');
+  await supabase.from('chat_sessions').delete().eq('id', chatId).eq('user_id', uid);
+  onSync?.('synced');
+};
+
+export const getChatHistory = async (uid: string) => {
+  const { data } = await supabase.from('chat_sessions').select('*').eq('user_id', uid).order('updated_at', { ascending: false });
+  const history: Record<string, ChatMessage[]> = {};
+  (data || []).forEach((h: any) => {
+    history[h.id] = h.messages || [];
+  });
+  return history;
 };
 
 export const saveNote = async (uid: string, note: Note, onSync?: any) => {
