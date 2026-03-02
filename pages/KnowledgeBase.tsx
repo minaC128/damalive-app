@@ -6,13 +6,12 @@ type Category = 'nutrition' | 'exercise' | 'wellness';
 
 const KnowledgeBase: React.FC<{ user: UserProfile }> = ({ user }) => {
   const [activeCategory, setActiveCategory] = useState<Category>('wellness');
+  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
 
-  // 每日隨機種子演算法：確保今日內容固定，明日自動更換
+  // 每日隨機種子演算法
   const getDailySubset = (pool: any[]) => {
     const today = new Date();
     const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
-
-    // 簡單的隨機打亂演算法 (Fisher-Yates with seed)
     const shuffled = [...pool];
     let m = shuffled.length, t, i;
     let s = seed;
@@ -23,51 +22,148 @@ const KnowledgeBase: React.FC<{ user: UserProfile }> = ({ user }) => {
       shuffled[m] = shuffled[i];
       shuffled[i] = t;
     }
-    // 每天顯示 3 條隨機內容
     return shuffled.slice(0, 3);
   };
 
-  // 官方衛教資訊內容庫 - 完整池
+  // 衛教資訊內容庫
   const pregnancyPool = {
     nutrition: [
-      { title: '葉酸 (Folate)', subtitle: '神經管守護者', desc: '懷孕前三個月關鍵，建議每日 600 微克。', tips: ['菠菜、蘆筍', '動物肝臟', '柑橘'], source: '孕期營養 (2).txt', icon: 'eco', color: 'bg-dama-sakura/10' },
-      { title: '鐵質 (Iron)', subtitle: '供應血氧團隊', desc: '後期及分娩時失血量大，需加強補充。', tips: ['紅肉、黑木耳', '葡萄乾', '紅莧菜'], source: '孕期營養 (2).txt', icon: 'bloodtype', color: 'bg-red-50' },
-      { title: '鈣質 (Calcium)', subtitle: '骨骼強化動力', desc: '預防媽咪半夜抽筋與維持骨密度。', tips: ['鮮乳、起司', '小魚乾', '黑芝麻'], source: '孕期營養 (2).txt', icon: 'monitor_weight', color: 'bg-blue-50' },
-      { title: 'DHA/Omega-3', subtitle: '腦部發展黃金期', desc: '有助於寶寶腦部與視網膜發育。', tips: ['深海魚', '核桃', '藻油'], source: '孕期營養 (2).txt', icon: 'psychology', color: 'bg-cyan-50' },
-      { title: '膳食纖維', subtitle: '腸胃順暢不卡關', desc: '緩解孕期常見的便秘不適。', tips: ['地瓜、玉米', '燕麥', '各種綠葉菜'], source: '孕期營養 (2).txt', icon: 'energy_savings_leaf', color: 'bg-green-50' }
+      {
+        title: '葉酸 (Folate)',
+        subtitle: '神經管守護者',
+        desc: '下圖查看更多詳細內容。',
+        fullContent: '🧠 葉酸｜幫助寶寶腦部和脊髓發育\n\n* 為什麼重要？\n懷孕初期是寶寶腦部與神經發育的關鍵時期，葉酸不夠，會增加先天性神經發育問題的風險。\n\n* 什麼時候最重要？\n👉 懷孕前～懷孕 12 週特別重要\n\n* 怎麼補充？\n- 深綠色蔬菜（菠菜、紅莧菜、韭菜、空心菜、紅鳳菜）\n- 豆類、豆製品（燕麥、紅藜、紅豆、綠豆、鷹嘴豆、碗豆仁）\n- 動物（豬肝、雞肝、鯖魚、牡蠣、淡菜）\n- 也可依醫師建議補充葉酸',
+        tips: ['菠菜、蘆筍', '動物肝臟', '柑橘'],
+        source: '孕期營養',
+        icon: 'eco',
+        color: 'bg-dama-sakura/10'
+      },
+      {
+        title: '鐵質 (Iron)',
+        subtitle: '供應血氧團隊',
+        desc: '後期及分娩時失血量大，需加強補充。',
+        fullContent: '🩸 鐵｜預防貧血與早產\n\n* 為什麼重要？\n懷孕時，媽媽的血量會增加，若鐵不夠，容易貧血，也可能影響寶寶成長，增加早產風險。\n\n* 怎麼補充？\n- 紅肉（牛肉、豬肉）\n- 深綠色蔬菜\n- 豆干、豆腐等豆類\n- 到懷孕後期，鐵的需求會增加，可依醫師建議補充',
+        tips: ['紅肉、黑木耳', '葡萄乾', '紅莧菜'],
+        source: '孕期營養',
+        icon: 'bloodtype',
+        color: 'bg-red-50'
+      },
+      {
+        title: '碘 (Iodine)',
+        subtitle: '智力發展關鍵',
+        desc: '幫助寶寶生長與智力發展。',
+        fullContent: '🧂 碘｜幫助寶寶生長與智力發展\n\n* 為什麼重要？\n碘不足可能影響寶寶的成長與學習能力，嚴重時甚至增加流產風險。\n\n* 怎麼補充？\n- 家中料理使用「加碘鹽」\n- 適量吃海帶、海藻類\n- ⚠️ 提醒：若有甲狀腺疾病，請先詢問醫師',
+        tips: ['加碘鹽', '海帶', '海藻'],
+        source: '孕期營養',
+        icon: 'science',
+        color: 'bg-blue-50'
+      }
     ],
     exercise: [
-      { title: '散步慢走', subtitle: '最安全有氧', desc: '每日 20-30 分鐘，維持心肺功能。', tips: ['舒適運動鞋', '避開極端氣候', '補充水分'], source: '運動指南 (2).txt', icon: 'directions_walk', color: 'bg-dama-matcha/10' },
-      { title: '凱格爾運動', subtitle: '強化盆底肌', desc: '訓練骨盆肌肉感，預防產後漏尿。', tips: ['收縮5秒放鬆5秒', '不要憋氣', '隨時練習'], source: '運動指南 (2).txt', icon: 'settings_accessibility', color: 'bg-purple-50' },
-      { title: '孕婦瑜珈', subtitle: '肌肉穩定延伸', desc: '緩解腰痠背痛，練習呼吸幫助順產。', tips: ['專業指導', '避免壓腹', '聽從訊號'], source: '運動指南 (2).txt', icon: 'self_improvement', color: 'bg-orange-50' },
-      { title: '產前呼吸法', subtitle: '生產痛感管理', desc: '透過調節呼吸，幫助待產時放鬆子宮頸。', tips: ['腹式呼吸', '拉梅茲', '冥想配合'], source: '運動指南 (2).txt', icon: 'air', color: 'bg-blue-50' }
+      {
+        title: '步行散步',
+        subtitle: '安全有氧',
+        desc: '日常最簡單且有效的運動方式。',
+        fullContent: '🚶‍♀️ 步行\n最簡單、安全、隨時做得到！有助心肺健康。\n\n運動的好處：\n- 增強心肺功能 & 血液循環\n- 減少疲倦和水腫\n- 幫助控制體重\n- 減少腰背疼痛\n- 能提升睡眠品質',
+        tips: ['舒適運動鞋', '避開極端氣候', '補充水分'],
+        source: '運動指南',
+        icon: 'directions_walk',
+        color: 'bg-dama-matcha/10'
+      },
+      {
+        title: '游泳運動',
+        subtitle: '水中浮力',
+        desc: '水的浮力能減輕身體重量，使運動更舒服。',
+        fullContent: '🏊‍♀️ 游泳或水中運動\n水的浮力能減輕身體重量，使運動更舒服，尤其是背部不適時很適合。\n\n⚠️ 運動時要注意的事：\n- 呼吸變很困難即停止\n- 注意防滑\n- 視身體狀況調整強度',
+        tips: ['溫水泳池', '避開人群', '慢慢游'],
+        source: '運動指南',
+        icon: 'pool',
+        color: 'bg-cyan-50'
+      }
     ],
     wellness: [
-      { title: '心理安適', subtitle: '保持心情愉快', desc: '情緒波動是正常的。透過社交維持平衡。', tips: ['深呼吸', '每日5分鐘書寫', '輕快音樂'], source: '心靈錦囊-465行', icon: 'favorite', color: 'bg-rose-50' },
-      { title: '隊友支持', subtitle: '最強神隊友', desc: '請先生共同參與產檢，分擔家務壓力。', tips: ['有效溝通', '一起佈置寶寶房', '按摩肩頸'], source: '心靈錦囊-465行', icon: 'groups', color: 'bg-indigo-50' }
+      {
+        title: '心理安適',
+        subtitle: '保持心情愉快',
+        desc: '情緒波動是正常的。點擊查看更多放鬆方法。',
+        fullContent: '保持心情愉快的好方法：\n\n1. 追求興趣愛好\n2. 保持積極的社交活動：與朋友和家人共度時光，分享快樂和興趣。\n3. 設定小目標和獎勳：提升自信和滿足感。\n4. 寫日記：將感受和思緒寫下來，幫助釋放情緒、了解內心變化。\n5. 規劃未來的期待：專注於對未來的美好期待，像是準備寶寶的房間。',
+        tips: ['深呼吸', '寫日記', '輕快音樂'],
+        source: '心靈錦囊',
+        icon: 'favorite',
+        color: 'bg-rose-50'
+      }
     ]
   };
 
   const postpartumPool = {
-    nutrition: [ // 寶寶照顧
-      { title: '安全睡眠環境', subtitle: '仰睡最安全', desc: '避免同床，床墊要平整，不放多餘填充玩偶。', tips: ['仰睡避猝死', '室溫24度', '洋蔥式穿法'], source: '照顧手冊-10行', icon: 'shield_moon', color: 'bg-blue-50' },
-      { title: '看懂聽懂語言', subtitle: '哭泣的需求', desc: '肚子餓、尿布濕、想睡覺，哭聲都有細微差異。', tips: ['尋乳動作', '蹬腳表情', '揉眼哈欠'], source: '照顧手冊-95行', icon: 'chat_bubble', color: 'bg-amber-50' },
-      { title: '體溫調節', subtitle: '冷暖判斷標準', desc: '不要過度包裹。判斷寶寶冷熱，摸後頸最準確。', tips: ['後頸溫熱即剛好', '流汗要脫衣', '避免同床過熱'], source: '照顧手冊-12行', icon: 'thermostat', color: 'bg-red-50' }
+    nutrition: [
+      {
+        title: '安全睡眠環境',
+        subtitle: '仰睡最安全',
+        desc: '點擊查看新生兒睡眠關鍵事項。',
+        fullContent: '新生兒注意事項：\n\n1. 仰睡最安全：新生兒應該採仰睡，不能趴睡，因為趴睡會增加新生兒猝死症的風險。\n2. 夜間留意寶寶：睡覺時建議留一盞小燈，方便隨時注意寶寶的狀況。\n3. 避免同床：新生兒不應與父母睡在同一張床上，以免大人睡熟時翻身壓到實寶。\n4. 床墊與環境：床墊要平整不能太軟，下方不應放枕頭、棉被、毯子或是填充玩偶。\n5. 避免過熱：房間保持在24度上下，棉被只需蓋到胸口。',
+        tips: ['仰睡避猝死', '室溫24度', '防護堵口鼻'],
+        source: '照顧手冊',
+        icon: 'shield_moon',
+        color: 'bg-blue-50'
+      },
+      {
+        title: '看懂寶寶語言',
+        subtitle: '哭泣的需求',
+        desc: '肚子餓、尿布濕、想睡覺，哭聲都有細微差異。',
+        fullContent: '看懂寶寶的「語言」- 嬰兒的哭及肢體：\n\n1. 肚子餓：一開始哭聲會升高，再來逐漸減弱，頻率高高低低的。\n2. 尿布濕：哭聲會較大聲，且不停地啼哭，會有蹬腳的動作。\n3. 想睡覺：哭聲是一陣一陣的，行為舉止變成煩躁不安，會揉眼睛、打哈欠。\n4. 想被安撫：這時記得請多抱抱他，不需擔心寵壞孩子。\n5. 身體不舒服：像是常見的腸絞痛，寶寶哭時可能兩腿會捲縮。',
+        tips: ['尋乳動作', '蹬腳表情', '揉眼哈欠'],
+        source: '照顧手冊',
+        icon: 'chat_bubble',
+        color: 'bg-amber-50'
+      }
     ],
-    exercise: [ // 育兒技巧
-      { title: '洗澡：橄欖球抱', subtitle: '安全洗滌法', desc: '側抱腋下支撐後頸，拇指扣住耳朵避進水。', tips: ['先洗臉再洗頭', '後洗身體皺褶', '布巾輕擦乾'], source: '育兒技巧-43行', icon: 'soap', color: 'bg-cyan-50' },
-      { title: '拍嗝與瓶餵', subtitle: '消化不擊敗', desc: '托住下巴側坐，空掌輕拍背部直到排氣。', tips: ['奶嘴充滿奶水', '不要強迫餵完', '托下巴頸部'], source: '育兒技巧-82行', icon: 'baby_changing_station', color: 'bg-dama-matcha/10' },
-      { title: '臍帶與清潔', subtitle: '基礎護理必修', desc: '75%酒精由內往外環狀消毒，95%酒精乾燥。', tips: ['根部由內往外', '保持乾燥', '洗屁屁更勝濕巾'], source: '育兒技巧-76行', icon: 'medical_services', color: 'bg-teal-50' },
-      { title: '哄睡與安撫', subtitle: '高質量睡眠', desc: '揉眼哈欠即是信號。輕拍背部或溫柔撫摸。', tips: ['安撫奶嘴', '白噪音模擬子宮', '避免過度勞累'], source: '育兒技巧-70行', icon: 'bedtime', color: 'bg-indigo-50' }
+    exercise: [
+      {
+        title: '洗澡與護理',
+        subtitle: '橄欖球抱法',
+        desc: '安全洗滌法與頸部支撐技巧。',
+        fullContent: '洗澡 （橄欖球側抱法）：\n\n* 抱好寶寶：將寶寶以橄欖球姿勢側抱在腋下，讓他枕靠在同側手臂上同時支托住後頸，用大拇指輕按耳朵。\n* 先洗臉：另一手拿洗淨擰乾的布巾輕輕擦洗臉部。\n* 再洗頭：幫寶寶輕輕搓洗頭皮，並以清水沖淨，輕輕擦乾。\n* 最後身體：最後下水洗身體，留意後頸、腋下、生殖器等皺褶處。',
+        tips: ['支托後頸', '先洗臉再洗頭', '保持乾燥'],
+        source: '育兒技巧',
+        icon: 'soap',
+        color: 'bg-cyan-50'
+      },
+      {
+        title: '拍嗝與瓶餵',
+        subtitle: '消化不擊敗',
+        desc: '瓶餵姿勢與拍嗝的關鍵步驟。',
+        fullContent: '瓶餵協助：\n1. 輕點嘴唇：將奶瓶輕點寶寶嘴唇並完整放入口中。\n2. 奶瓶傾斜：使奶水充滿奶嘴，避免吞下空氣。\n3. 暫停拍嗝：不要強迫已不想喝奶的嬰兒喝完。\n\n拍嗝方法：\n1. 抱好寶寶: 讓寶寶側身坐在大人腿上，托住下巴、頸部與肩膀。\n2. 空掌輕拍: 另一手微彎呈空掌，在寶寶背上輕拍。',
+        tips: ['不要強迫', '空掌輕拍', '托住下巴'],
+        source: '育兒技巧',
+        icon: 'baby_changing_station',
+        color: 'bg-dama-matcha/10'
+      }
     ],
-    wellness: [ // 身心調適
-      { title: '心靈導航', subtitle: '不完美父母', desc: '接受混亂是轉換期常態。累了要說，不是硬撐。', tips: ['愛丁堡量表', '家人傾聽', '調整期待'], source: '身心調適-353行', icon: 'favorite', color: 'bg-rose-50' },
-      { title: '補眠生存戰', subtitle: '碎片化休息', desc: '跟著寶寶一起睡。實施輪流值班，保障深夜睡眠。', tips: ['白天曬太陽', '輪流夜半值勤', '家務非首要'], source: '身心調適-322行', icon: 'king_bed', color: 'bg-indigo-50' },
-      { title: '自我時間', subtitle: '壓力管理', desc: '每天給自己 5 分鐘情緒書寫，舒緩身心壓力。', tips: ['情緒書寫', '輕度活動', '新手爸媽社群'], source: '身心調適-368行', icon: 'self_improvement', color: 'bg-teal-50' }
+    wellness: [
+      {
+        title: '心靈導航',
+        subtitle: '產後心理調適',
+        desc: '接受不完美，並學會說出情緒。',
+        fullContent: '產後心理調適：\n\n1.接受「不完美父母」是常態：照顧新生兒本來就會手忙腳亂，這是轉換期的正常反應。\n2.情緒要「說出來」，不是撐過去：把「我很累／我有點撐不住」說出口，是保護，不是脆弱。\n3.調整期待，而非責怪自己：放下「應該要很快上手」、接受生活暫時混亂。',
+        tips: ['愛丁堡量表', '情感宣洩', '降低期待'],
+        source: '身心調適',
+        icon: 'favorite',
+        color: 'bg-rose-50'
+      },
+      {
+        title: '自我時間',
+        subtitle: '壓力管理',
+        desc: '每天 5 分鐘書寫，舒緩身心壓力。',
+        fullContent: '壓力管理技巧：\n\n1.情緒書寫（每天 5 分鐘）：有助於情緒紓解和自我察覺。\n2.輕度活動：有助於睡眠品質、情緒穩定和壓力釋放。\n\n支持資源：\n找尋新手爸媽社群，有同儕的幫助和交流會多一個有效的情緒抒發出口。',
+        tips: ['書寫情緒', '新手爸媽社群', '碎片休息'],
+        source: '身心調適',
+        icon: 'self_improvement',
+        color: 'bg-teal-50'
+      }
     ]
   };
 
-  // 每日本月隨機選取的結果
   const data = useMemo(() => {
     const pool = user.isPostpartum ? postpartumPool : pregnancyPool;
     return {
@@ -106,12 +202,10 @@ const KnowledgeBase: React.FC<{ user: UserProfile }> = ({ user }) => {
         </a>
       </header>
 
-      {/* 分類選擇標籤 */}
       <div className="flex p-1 bg-white/50 backdrop-blur-sm rounded-full mb-10 shadow-inner border border-dama-sakura/10">
         <button
-          onClick={() => setActiveCategory('nutrition')}
-          className={`flex-1 py-3 rounded-full text-[10px] font-bold transition-all flex items-center justify-center gap-1 ${activeCategory === 'nutrition' ? 'bg-dama-sakura text-white shadow-md' : 'text-dama-brown/40'
-            }`}
+          onClick={() => { setActiveCategory('nutrition'); setExpandedIdx(null); }}
+          className={`flex-1 py-3 rounded-full text-[10px] font-bold transition-all flex items-center justify-center gap-1 ${activeCategory === 'nutrition' ? 'bg-dama-sakura text-white shadow-md' : 'text-dama-brown/40'}`}
         >
           <span className="material-symbols-outlined text-xs">
             {user.isPostpartum ? 'baby_changing_station' : 'restaurant'}
@@ -119,9 +213,8 @@ const KnowledgeBase: React.FC<{ user: UserProfile }> = ({ user }) => {
           {user.isPostpartum ? '寶寶照顧' : '營養補充'}
         </button>
         <button
-          onClick={() => setActiveCategory('exercise')}
-          className={`flex-1 py-3 rounded-full text-[10px] font-bold transition-all flex items-center justify-center gap-1 ${activeCategory === 'exercise' ? 'bg-dama-matcha text-white shadow-md' : 'text-dama-brown/40'
-            }`}
+          onClick={() => { setActiveCategory('exercise'); setExpandedIdx(null); }}
+          className={`flex-1 py-3 rounded-full text-[10px] font-bold transition-all flex items-center justify-center gap-1 ${activeCategory === 'exercise' ? 'bg-dama-matcha text-white shadow-md' : 'text-dama-brown/40'}`}
         >
           <span className="material-symbols-outlined text-xs">
             {user.isPostpartum ? 'child_care' : 'fitness_center'}
@@ -129,70 +222,86 @@ const KnowledgeBase: React.FC<{ user: UserProfile }> = ({ user }) => {
           {user.isPostpartum ? '育兒技巧' : '運動指南'}
         </button>
         <button
-          onClick={() => setActiveCategory('wellness')}
-          className={`flex-1 py-3 rounded-full text-[10px] font-bold transition-all flex items-center justify-center gap-1 ${activeCategory === 'wellness' ? 'bg-dama-sakura text-white shadow-md' : 'text-dama-brown/40'
-            }`}
+          onClick={() => { setActiveCategory('wellness'); setExpandedIdx(null); }}
+          className={`flex-1 py-3 rounded-full text-[10px] font-bold transition-all flex items-center justify-center gap-1 ${activeCategory === 'wellness' ? 'bg-dama-sakura text-white shadow-md' : 'text-dama-brown/40'}`}
         >
           <span className="material-symbols-outlined text-xs">favorite</span>
           身心調適
         </button>
       </div>
 
-      {/* 衛教內容顯示 */}
-      <div className="space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         {data[activeCategory].map((item: any, idx: number) => (
-          <div key={idx} className="bg-white rounded-[40px] shadow-xl border border-dama-sakura/5 overflow-hidden group">
-            <div className={`p-8 ${item.color} relative overflow-hidden`}>
+          <div
+            key={idx}
+            onClick={() => setExpandedIdx(expandedIdx === idx ? null : idx)}
+            className="bg-white rounded-[32px] shadow-lg border border-dama-sakura/5 overflow-hidden cursor-pointer transition-all active:scale-[0.98] group"
+          >
+            <div className={`p-6 ${item.color} relative overflow-hidden transition-all duration-500 ${expandedIdx === idx ? 'pb-8' : ''}`}>
               <div className="absolute -top-4 -right-4 opacity-5 scale-150 rotate-12 transition-transform group-hover:rotate-45">
                 <span className="material-symbols-outlined text-9xl">{item.icon}</span>
               </div>
 
               <div className="flex items-start justify-between mb-4 relative z-10">
-                <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm">
-                  <span className="material-symbols-outlined text-dama-brown">{item.icon}</span>
+                <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                  <span className="material-symbols-outlined text-dama-brown text-sm">{item.icon}</span>
                 </div>
-                <span className="text-[8px] bg-white/80 px-3 py-1 rounded-full font-bold text-dama-brown/60 uppercase tracking-tighter">
-                  {item.source}
-                </span>
+                <div className="flex flex-col items-end gap-1">
+                  <span className="text-[7px] bg-white/80 px-2 py-0.5 rounded-full font-bold text-dama-brown/60 uppercase tracking-tighter">
+                    {item.source}
+                  </span>
+                  <span className="material-symbols-outlined text-dama-brown/20 text-xs">
+                    {expandedIdx === idx ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}
+                  </span>
+                </div>
               </div>
 
               <div className="relative z-10">
-                <h3 className="text-xl font-bold text-dama-brown">{item.title}</h3>
-                <p className="text-[10px] font-bold text-dama-brown/40 uppercase tracking-widest mt-1">{item.subtitle}</p>
+                <h3 className="text-lg font-bold text-dama-brown">{item.title}</h3>
+                <p className="text-[9px] font-bold text-dama-brown/40 uppercase tracking-widest mt-1">{item.subtitle}</p>
               </div>
             </div>
 
-            <div className="p-8">
-              <p className="text-sm text-dama-brown/70 leading-relaxed mb-6 font-medium">
-                {item.desc}
-              </p>
+            <div className={`transition-all duration-500 overflow-hidden ${expandedIdx === idx ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+              <div className="p-6 border-t border-dama-sakura/5 bg-white">
+                <div className="text-sm text-dama-brown/80 leading-relaxed whitespace-pre-wrap font-medium bg-dama-bg/30 p-4 rounded-2xl mb-6">
+                  {item.fullContent}
+                </div>
 
-              <div className="bg-dama-bg p-5 rounded-3xl border-2 border-dashed border-dama-sakura/20">
-                <p className="text-[10px] font-bold text-dama-brown/40 mb-3 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-xs">edit_note</span>
-                  重點筆記
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {item.tips.map((tip: string, i: number) => (
-                    <span key={i} className="px-3 py-1.5 bg-white rounded-full text-[10px] font-bold text-dama-brown shadow-sm border border-black/5">
-                      {tip}
-                    </span>
-                  ))}
+                <div className="bg-white p-5 rounded-3xl border-2 border-dashed border-dama-sakura/10">
+                  <p className="text-[10px] font-bold text-dama-brown/40 mb-3 flex items-center gap-2">
+                    <span className="material-symbols-outlined text-xs">edit_note</span>
+                    重點筆記
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {item.tips.map((tip: string, i: number) => (
+                      <span key={i} className="px-3 py-1.5 bg-dama-sakura/5 rounded-full text-[10px] font-bold text-dama-brown shadow-sm border border-dama-sakura/5">
+                        {tip}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
+
+            {!expandedIdx && expandedIdx !== idx && (
+              <div className="px-6 pb-6 pt-2">
+                <p className="text-[11px] text-dama-brown/60 line-clamp-2">
+                  {item.desc}
+                </p>
+              </div>
+            )}
           </div>
         ))}
       </div>
 
-      {/* 底部行動呼籲 */}
       <div className="mt-12 text-center pb-10">
         <p className="text-[10px] text-dama-brown/30 font-bold mb-4">
           「 每天一點新知識，陪妳溫柔啟航 」
         </p>
         <button
           onClick={() => window.open(footerBtn.url, '_blank')}
-          className="bg-white border-2 border-dama-sakura text-dama-sakura px-8 py-4 rounded-full font-bold text-sm shadow-lg active:scale-95 transition-all hover:bg-dama-sakura hover:text-white"
+          className="bg-white border-2 border-dama-sakura text-dama-sakura px-8 py-3 rounded-full font-bold text-xs shadow-lg active:scale-95 transition-all hover:bg-dama-sakura hover:text-white"
         >
           {footerBtn.label}
         </button>
