@@ -25,7 +25,7 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
   }, [user.uid, onSyncStatus]);
 
   const moodValueMap: Record<string, number> = { happy: 4, calm: 3, tired: 2, sad: 1 };
-  const moodEmojis: Record<string, string> = { happy: '🍡', calm: '🍵', tired: '🧸', sad: '☁️' };
+  const moodEmojis: Record<string, string> = { happy: '😄', calm: '😌', tired: '🥱', sad: '😔' };
 
   const calculateDueDate = (lmp: string) => {
     if (!lmp) return "";
@@ -189,8 +189,8 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
                     saveProfile(user.uid, updatedUser, onSyncStatus);
                   }}
                   className={`px-4 py-1.5 rounded-xl text-[10px] font-bold transition-all ${(user.fontSize || 'medium') === size
-                      ? 'bg-white text-dama-sakura shadow-sm'
-                      : 'text-dama-brown/30'
+                    ? 'bg-white text-dama-sakura shadow-sm'
+                    : 'text-dama-brown/30'
                     }`}
                 >
                   {size === 'small' ? '小' : size === 'medium' ? '中' : '大'}

@@ -120,10 +120,10 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
   }, [fruitStage]);
 
   const moods = [
-    { icon: '🍡', label: '愉快', key: 'happy' as const },
-    { icon: '🍵', label: '平靜', key: 'calm' as const },
-    { icon: '🧸', label: '疲憊', key: 'tired' as const },
-    { icon: '☁️', label: '沮喪', key: 'sad' as const },
+    { icon: '😄', label: '愉快', key: 'happy' as const },
+    { icon: '😌', label: '平靜', key: 'calm' as const },
+    { icon: '🥱', label: '疲憊', key: 'tired' as const },
+    { icon: '😔', label: '沮喪', key: 'sad' as const },
   ];
 
   const handleMood = async (key: 'happy' | 'calm' | 'tired' | 'sad') => {
