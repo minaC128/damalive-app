@@ -176,7 +176,7 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
                 {isGenerating && !generatedImg ? (
                   <div className="w-full h-full bg-dama-bg rounded-[32px] flex flex-col items-center justify-center gap-3">
                     <span className="material-symbols-outlined text-4xl text-dama-sakura animate-spin">auto_awesome</span>
-                    <p className="text-[10px] font-bold text-dama-sakura/60 uppercase tracking-widest">繪製暖心插畫中...</p>
+                    <p className="text-[10px] font-bold text-dama-sakura/60 uppercase tracking-widest">{t.drawing}</p>
                   </div>
                 ) : (
                   <img

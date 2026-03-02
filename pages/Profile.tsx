@@ -216,7 +216,25 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
         </div>
 
         <div className="mt-8 pt-6 border-t border-dama-sakura/10 w-full space-y-4">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center px-2 py-1">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-dama-sakura text-lg">translate</span>
+              <span className="text-xs font-bold text-dama-brown">Language / 語言系統</span>
+            </div>
+            <div className="flex bg-dama-bg p-1 rounded-2xl border border-dama-sakura/10">
+              {(['zh', 'en', 'ja'] as Language[]).map((l) => (
+                <button
+                  key={l}
+                  onClick={() => handleLanguageChange(l)}
+                  className={`px-4 py-1.5 rounded-xl text-[10px] font-bold transition-all ${lang === l ? 'bg-white text-dama-sakura shadow-sm' : 'text-dama-brown/30'}`}
+                >
+                  {l === 'zh' ? '中文' : l === 'en' ? 'EN' : 'JP'}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex justify-between items-center px-2 pt-2 border-t border-dama-sakura/5">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-dama-sakura text-lg">format_size</span>
               <span className="text-xs font-bold text-dama-brown">{tc.fontSize}</span>
@@ -237,24 +255,6 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
                     }`}
                 >
                   {size === 'small' ? tc.small : size === 'medium' ? tc.medium : tc.large}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex justify-between items-center bg-dama-sakura/5 -mx-8 px-8 py-4 border-y border-dama-sakura/5">
-            <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-dama-sakura text-lg">translate</span>
-              <span className="text-xs font-bold text-dama-brown">{tc.language}</span>
-            </div>
-            <div className="flex bg-dama-bg p-1 rounded-2xl">
-              {(['zh', 'en', 'ja'] as Language[]).map((l) => (
-                <button
-                  key={l}
-                  onClick={() => handleLanguageChange(l)}
-                  className={`px-4 py-1.5 rounded-xl text-[10px] font-bold transition-all ${lang === l ? 'bg-white text-dama-sakura shadow-sm' : 'text-dama-brown/30'}`}
-                >
-                  {l === 'zh' ? '中文' : l === 'en' ? 'EN' : 'JP'}
                 </button>
               ))}
             </div>

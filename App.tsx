@@ -1,4 +1,5 @@
 
+// DAMALIVE App v1.1 - Internationalization
 import React, { useState, useEffect } from 'react';
 import Home from './pages/Home';
 import GrowthTracker from './pages/GrowthTracker';
