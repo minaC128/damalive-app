@@ -6,7 +6,7 @@ import { pregnancyPool, postpartumPool } from '../data/knowledgePool';
 
 type Category = 'nutrition' | 'exercise' | 'wellness';
 
-const KnowledgeBase: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSyncStatus }) => {
+const KnowledgeBase: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => void, onSyncStatus: any }> = ({ user, onUpdateUser, onSyncStatus }) => {
   const [activeCategory, setActiveCategory] = useState<Category>('wellness');
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
 
@@ -44,7 +44,9 @@ const KnowledgeBase: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ use
       ? currentSaved.filter(iid => iid !== id)
       : [...currentSaved, id];
 
-    await saveProfile(user.uid, { ...user, savedKnowledgeIds: nextSaved }, onSyncStatus);
+    const updatedUser = { ...user, savedKnowledgeIds: nextSaved };
+    await saveProfile(user.uid, updatedUser, onSyncStatus);
+    onUpdateUser(updatedUser);
   };
 
   const getFooterButtonInfo = () => {
