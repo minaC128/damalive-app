@@ -9,8 +9,11 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
   const [editing, setEditing] = useState(false);
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [showAllNotes, setShowAllNotes] = useState(false);
+  const [showPlannerCalendar, setShowPlannerCalendar] = useState(false);
   const [expandedSavedIdx, setExpandedSavedIdx] = useState<number | null>(null);
   const [calendarDate, setCalendarDate] = useState(new Date());
+  const [plannerDate, setPlannerDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [form, setForm] = useState(user);
   const [noteForm, setNoteForm] = useState<{ title: string, content: string, category: NoteCategory, targetDate: string }>({
     title: '', content: '', category: 'note', targetDate: ''
@@ -135,9 +138,39 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
     return { calendarItems, monthName: calendarDate.toLocaleDateString('zh-TW', { month: 'long', year: 'numeric' }) };
   }, [dbData.moods, calendarDate]);
 
+  const plannerCalendarData = useMemo(() => {
+    const year = plannerDate.getFullYear();
+    const month = plannerDate.getMonth();
+    const firstDay = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const calendarItems = [];
+
+    for (let i = 0; i < firstDay; i++) {
+      calendarItems.push({ isPadding: true, key: `pad-${i}` });
+    }
+
+    for (let i = 1; i <= daysInMonth; i++) {
+      const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
+      const hasNote = dbData.notes.some(n => n.targetDate === dateStr);
+      calendarItems.push({
+        day: i,
+        dateStr,
+        hasNote,
+        isPadding: false,
+        key: `day-${i}`
+      });
+    }
+
+    return { calendarItems, monthName: plannerDate.toLocaleDateString('zh-TW', { month: 'long', year: 'numeric' }) };
+  }, [dbData.notes, plannerDate]);
+
   const displayedNotes = useMemo(() => {
-    return showAllNotes ? dbData.notes : dbData.notes.slice(0, 3);
-  }, [dbData.notes, showAllNotes]);
+    let filtered = dbData.notes;
+    if (showPlannerCalendar && selectedDate) {
+      filtered = filtered.filter(n => n.targetDate === selectedDate);
+    }
+    return showAllNotes ? filtered : filtered.slice(0, 3);
+  }, [dbData.notes, showAllNotes, showPlannerCalendar, selectedDate]);
 
   const savedItems = useMemo(() => {
     if (!user.savedKnowledgeIds) return [];
@@ -208,16 +241,72 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
       <section className="mb-10">
         <div className="flex justify-between items-center mb-5 px-1">
           <h3 className="font-bold text-dama-brown flex items-center gap-2">
-            <span className="material-symbols-outlined text_dama-sakura text-lg">edit_calendar</span>
+            <span className="material-symbols-outlined text-dama-sakura text-lg">edit_calendar</span>
             媽咪計畫本
           </h3>
-          <button
-            onClick={() => setShowNoteModal(true)}
-            className="w-8 h-8 rounded-full bg-dama-sakura text-white flex items-center justify-center shadow-md active:scale-90 transition-transform"
-          >
-            <span className="material-symbols-outlined text-sm">add</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowPlannerCalendar(!showPlannerCalendar)}
+              className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${showPlannerCalendar ? 'bg-dama-sakura text-white' : 'bg-white text-dama-sakura border border-dama-sakura/20'}`}
+            >
+              <span className="material-symbols-outlined text-sm">{showPlannerCalendar ? 'view_list' : 'calendar_month'}</span>
+            </button>
+            <button
+              onClick={() => setShowNoteModal(true)}
+              className="w-8 h-8 rounded-full bg-dama-sakura text-white flex items-center justify-center shadow-md active:scale-90 transition-transform"
+            >
+              <span className="material-symbols-outlined text-sm">add</span>
+            </button>
+          </div>
         </div>
+
+        {showPlannerCalendar && (
+          <div className="bg-white p-6 rounded-[40px] shadow-sm border border-dama-sakura/5 mb-6 animate-in slide-in-from-top-2">
+            <div className="flex justify-between items-center mb-4">
+              <button
+                onClick={() => {
+                  const newDate = new Date(plannerDate);
+                  newDate.setMonth(newDate.getMonth() - 1);
+                  setPlannerDate(newDate);
+                }}
+                className="w-8 h-8 rounded-full bg-dama-bg text-dama-brown/40 flex items-center justify-center hover:bg-dama-sakura/10 hover:text-dama-sakura"
+              >
+                <span className="material-symbols-outlined text-sm">chevron_left</span>
+              </button>
+              <span className="text-[10px] font-bold text-dama-brown/60 uppercase tracking-widest">{plannerCalendarData.monthName}</span>
+              <button
+                onClick={() => {
+                  const newDate = new Date(plannerDate);
+                  newDate.setMonth(newDate.getMonth() + 1);
+                  setPlannerDate(newDate);
+                }}
+                className="w-8 h-8 rounded-full bg-dama-bg text-dama-brown/40 flex items-center justify-center hover:bg-dama-sakura/10 hover:text-dama-sakura"
+              >
+                <span className="material-symbols-outlined text-sm">chevron_right</span>
+              </button>
+            </div>
+            <div className="grid grid-cols-7 gap-1">
+              {['日', '一', '二', '三', '四', '五', '六'].map(d => (
+                <div key={d} className="text-center text-[10px] font-bold text-dama-brown/30 pb-2">{d}</div>
+              ))}
+              {plannerCalendarData.calendarItems.map(item => (
+                <div
+                  key={item.key}
+                  onClick={() => !item.isPadding && setSelectedDate(selectedDate === item.dateStr ? null : item.dateStr)}
+                  className={`flex flex-col items-center py-2 rounded-2xl cursor-pointer transition-all ${item.isPadding ? 'opacity-0 pointer-events-none' : ''} ${selectedDate === item.dateStr ? 'bg-dama-sakura/10 border border-dama-sakura/20' : 'hover:bg-dama-bg'}`}
+                >
+                  <span className={`text-[10px] font-bold ${selectedDate === item.dateStr ? 'text-dama-sakura' : 'text-dama-brown/40'}`}>{item.day}</span>
+                  {item.hasNote && <div className="w-1.5 h-1.5 rounded-full bg-dama-sakura mt-1"></div>}
+                </div>
+              ))}
+            </div>
+            {selectedDate && (
+              <div className="mt-4 pt-4 border-t border-dama-sakura/5 text-center">
+                <span className="text-[9px] font-bold text-dama-sakura/60 uppercase tracking-widest">{selectedDate} 的計畫</span>
+              </div>
+            )}
+          </div>
+        )}
         <div className="space-y-4">
           {dbData.notes.length === 0 ? (
             <div className="bg-white/40 border border-dashed border-dama-sakura/30 p-8 rounded-[32px] text-center">
