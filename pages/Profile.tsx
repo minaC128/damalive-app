@@ -1,14 +1,15 @@
-
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { UserProfile, ChatSession, MoodRecord, Note, NoteCategory } from '../types';
 import { getAllData, saveProfile, saveNote, deleteNote } from '../services/storageService';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { pregnancyPool, postpartumPool } from '../data/knowledgePool';
 
 const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => void, onOpenChat: (id: string) => void, onSyncStatus: any, onLogout: () => void }> = ({ user, onUpdateUser, onOpenChat, onSyncStatus, onLogout }) => {
   const [dbData, setDbData] = useState<{ moods: MoodRecord[], history: ChatSession[], notes: Note[] }>({ moods: [], history: [], notes: [] });
   const [editing, setEditing] = useState(false);
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [showAllNotes, setShowAllNotes] = useState(false);
+  const [expandedSavedIdx, setExpandedSavedIdx] = useState<number | null>(null);
   const [calendarDate, setCalendarDate] = useState(new Date());
   const [form, setForm] = useState(user);
   const [noteForm, setNoteForm] = useState<{ title: string, content: string, category: NoteCategory, targetDate: string }>({
@@ -110,21 +111,16 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
     const year = calendarDate.getFullYear();
     const month = calendarDate.getMonth();
 
-    // 獲取當月第一天是星期幾 (0-6, 0 是星期日)
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
 
     const calendarItems = [];
 
-    // 填充第一天之前的空白
     for (let i = 0; i < firstDay; i++) {
       calendarItems.push({ isPadding: true, key: `pad-${i}` });
     }
 
-    // 填充日期
     for (let i = 1; i <= daysInMonth; i++) {
-      const date = new Date(year, month, i);
-      // 改用在地日期字串，避免 ISOString 時區偏移問題
       const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
       const record = dbData.moods.find(m => m.date === dateStr);
       calendarItems.push({
@@ -142,6 +138,15 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
   const displayedNotes = useMemo(() => {
     return showAllNotes ? dbData.notes : dbData.notes.slice(0, 3);
   }, [dbData.notes, showAllNotes]);
+
+  const savedItems = useMemo(() => {
+    if (!user.savedKnowledgeIds) return [];
+    const all = [
+      ...pregnancyPool.nutrition, ...pregnancyPool.exercise, ...pregnancyPool.wellness,
+      ...postpartumPool.nutrition, ...postpartumPool.exercise, ...postpartumPool.wellness
+    ];
+    return all.filter(item => user.savedKnowledgeIds?.includes(item.id));
+  }, [user.savedKnowledgeIds]);
 
   return (
     <div className="p-6 animate-in fade-in duration-500 pb-32">
@@ -171,7 +176,6 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
           </span>
         </div>
 
-        {/* 顯示設定 - 移到卡片內確保可見 */}
         <div className="mt-8 pt-6 border-t border-dama-sakura/10 w-full">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
@@ -183,7 +187,7 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
                 <button
                   key={size}
                   onClick={(e) => {
-                    e.stopPropagation(); // 防止觸發編輯
+                    e.stopPropagation();
                     const updatedUser = { ...user, fontSize: size };
                     onUpdateUser(updatedUser);
                     saveProfile(user.uid, updatedUser, onSyncStatus);
@@ -201,11 +205,10 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
         </div>
       </div>
 
-
       <section className="mb-10">
         <div className="flex justify-between items-center mb-5 px-1">
           <h3 className="font-bold text-dama-brown flex items-center gap-2">
-            <span className="material-symbols-outlined text-dama-sakura text-lg">edit_calendar</span>
+            <span className="material-symbols-outlined text_dama-sakura text-lg">edit_calendar</span>
             媽咪計畫本
           </h3>
           <button
@@ -224,7 +227,6 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
             <>
               {displayedNotes.map(note => (
                 <div key={note.id} className={`bg-white p-3 rounded-[32px] shadow-sm border border-dama-sakura/5 flex gap-3 items-center group relative transition-all hover:bg-dama-bg/50 ${note.completed ? 'opacity-60' : ''}`}>
-                  {/* 打勾框：調整為帶圓角的正方形樣式 */}
                   <button
                     onClick={() => handleToggleNote(note)}
                     className={`w-10 h-10 rounded-2xl border-2 flex items-center justify-center shrink-0 transition-all ${note.completed ? 'bg-dama-matcha border-dama-matcha text-white' : 'border-dama-sakura/20 text-transparent'
@@ -232,8 +234,6 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
                   >
                     <span className="material-symbols-outlined text-xl font-bold">check</span>
                   </button>
-
-                  {/* 分類圖標：調整樣式以符合設計圖 */}
                   <div className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-inner ${note.category === 'meeting' ? 'bg-blue-50 text-blue-400' :
                     note.category === 'task' ? 'bg-dama-matcha/10 text-dama-matcha' : 'bg-orange-50 text-orange-400'
                     }`}>
@@ -241,8 +241,6 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
                       {note.category === 'meeting' ? 'calendar_month' : note.category === 'task' ? 'task_alt' : 'sticky_note_2'}
                     </span>
                   </div>
-
-                  {/* 文字與進度裝飾 */}
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-baseline mb-0.5">
                       <h4 className={`font-bold text-dama-brown text-sm truncate ${note.completed ? 'line-through' : ''}`}>
@@ -257,8 +255,6 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
                       <div className={`h-full transition-all duration-500 ${note.completed ? 'bg-dama-matcha' : (note.category === 'meeting' ? 'bg-blue-200' : note.category === 'task' ? 'bg-dama-matcha/40' : 'bg-orange-200')}`} style={{ width: note.completed ? '100%' : '30%' }}></div>
                     </div>
                   </div>
-
-                  {/* 刪除按鈕：常駐顯示，位於右側方塊內 */}
                   <div className="flex items-center justify-center border-l border-dama-sakura/5 pl-2 h-10">
                     <button
                       onClick={() => handleDeleteNote(note.id)}
@@ -269,7 +265,6 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
                   </div>
                 </div>
               ))}
-
               {dbData.notes.length > 3 && (
                 <button
                   onClick={() => setShowAllNotes(!showAllNotes)}
@@ -303,7 +298,7 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
         </div>
       </section>
 
-      <section className="mb-8">
+      <section className="mb-10">
         <div className="flex justify-between items-center mb-5 px-1">
           <h3 className="font-bold text-dama-brown flex items-center gap-2">
             <span className="material-symbols-outlined text-dama-sakura text-lg">calendar_month</span>
@@ -352,6 +347,80 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
             ))}
           </div>
         </div>
+      </section>
+
+      {/* 收藏知識卡 */}
+      <section className="mb-10">
+        <h3 className="font-bold text-dama-brown flex items-center gap-2 mb-5 px-1">
+          <span className="material-symbols-outlined text-dama-sakura text-lg">favorite</span>
+          收藏的小卡
+        </h3>
+        {savedItems.length === 0 ? (
+          <div className="bg-white/40 border border-dashed border-dama-sakura/30 p-8 rounded-[32px] text-center">
+            <p className="text-xs text-dama-brown/40 font-bold italic">還沒有收藏任何小卡嗎？<br />在知識庫點擊愛心即可收藏！</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {savedItems.map((item, idx) => {
+              const handleToggleSave = async (e: React.MouseEvent) => {
+                e.stopPropagation();
+                const nextSaved = (user.savedKnowledgeIds || []).filter(id => id !== item.id);
+                const updatedUser = { ...user, savedKnowledgeIds: nextSaved };
+                await saveProfile(user.uid, updatedUser, onSyncStatus);
+                onUpdateUser(updatedUser);
+              };
+
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => setExpandedSavedIdx(expandedSavedIdx === idx ? null : idx)}
+                  className="bg-white rounded-[32px] shadow-sm border border-dama-sakura/5 overflow-hidden cursor-pointer transition-all active:scale-[0.98]"
+                >
+                  <div className={`p-5 ${item.color} relative overflow-hidden transition-all duration-500 ${expandedSavedIdx === idx ? 'pb-6' : ''}`}>
+                    <div className="absolute -top-2 -right-2 opacity-5 scale-125 rotate-12">
+                      <span className="material-symbols-outlined text-7xl">{item.icon}</span>
+                    </div>
+                    <div className="flex items-start justify-between mb-2 relative z-10">
+                      <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
+                        <span className="material-symbols-outlined text-dama-brown text-sm">{item.icon}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={handleToggleSave}
+                          className="w-7 h-7 rounded-full bg-white text-dama-sakura flex items-center justify-center shadow-sm active:scale-90 transition-transform"
+                        >
+                          <span className="material-symbols-outlined text-active text-base" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
+                        </button>
+                        <span className="text-[7px] bg-white/80 px-2 py-0.5 rounded-full font-bold text-dama-brown/60 uppercase tracking-tighter">
+                          {item.source}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="relative z-10">
+                      <h4 className="text-sm font-bold text-dama-brown">{item.title}</h4>
+                      <p className="text-[8px] font-bold text-dama-brown/40 uppercase tracking-widest leading-none mt-1">{item.subtitle}</p>
+                    </div>
+                  </div>
+
+                  <div className={`transition-all duration-500 overflow-hidden ${expandedSavedIdx === idx ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <div className="p-5 border-t border-dama-sakura/5 bg-white">
+                      <div className="text-xs text-dama-brown/80 leading-relaxed whitespace-pre-wrap font-medium bg-dama-bg/30 p-4 rounded-2xl mb-4">
+                        {item.fullContent}
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {item.tips.map((tip: string, i: number) => (
+                          <span key={i} className="px-2 py-1 bg-dama-sakura/5 rounded-full text-[9px] font-bold text-dama-brown border border-dama-sakura/5">
+                            {tip}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       {editing && (
@@ -538,8 +607,6 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
           </div>
         </div>
       )}
-
-      {/* 登出按鈕 */}
 
       <div className="mt-8 pb-8 flex justify-center">
         <button

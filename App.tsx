@@ -111,7 +111,7 @@ const App: React.FC = () => {
           onSyncStatus={() => { }}
         />
       );
-      case 'knowledge': return <KnowledgeBase user={user} />;
+      case 'knowledge': return <KnowledgeBase user={user} onSyncStatus={onSyncStatusChange} />;
       case 'profile': return <Profile user={user} onUpdateUser={setUser} onOpenChat={handleOpenChat} onSyncStatus={onSyncStatusChange} onLogout={handleLogout} />;
       default: return <Home user={user} onSyncStatus={onSyncStatusChange} />;
     }

@@ -25,6 +25,7 @@ export interface UserProfile {
   isPostpartum: boolean;
   email?: string;
   fontSize?: 'small' | 'medium' | 'large';
+  savedKnowledgeIds?: string[];
 }
 
 export interface ChatSession {
