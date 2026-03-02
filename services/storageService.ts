@@ -21,6 +21,7 @@ export const getAllData = async (uid: string) => {
       babyName: profileRes.data.baby_name,
       isPostpartum: profileRes.data.is_postpartum,
       email: profileRes.data.email,
+      fontSize: profileRes.data.font_size,
     } as UserProfile
     : null;
 
@@ -63,6 +64,7 @@ export const saveProfile = async (uid: string, profile: UserProfile, onSync?: an
     baby_name: profile.babyName || null,
     is_postpartum: profile.isPostpartum,
     email: profile.email || null,
+    font_size: profile.fontSize || 'medium',
     updated_at: new Date().toISOString(),
   });
 

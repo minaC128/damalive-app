@@ -170,7 +170,37 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
             {user.isPostpartum ? '產後護理階段' : '孕期階段'}
           </span>
         </div>
+
+        {/* 顯示設定 - 移到卡片內確保可見 */}
+        <div className="mt-8 pt-6 border-t border-dama-sakura/10 w-full">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-dama-sakura text-lg">format_size</span>
+              <span className="text-xs font-bold text-dama-brown">字體大小</span>
+            </div>
+            <div className="flex bg-dama-bg p-1 rounded-2xl">
+              {(['small', 'medium', 'large'] as const).map((size) => (
+                <button
+                  key={size}
+                  onClick={(e) => {
+                    e.stopPropagation(); // 防止觸發編輯
+                    const updatedUser = { ...user, fontSize: size };
+                    onUpdateUser(updatedUser);
+                    saveProfile(user.uid, updatedUser, onSyncStatus);
+                  }}
+                  className={`px-4 py-1.5 rounded-xl text-[10px] font-bold transition-all ${(user.fontSize || 'medium') === size
+                      ? 'bg-white text-dama-sakura shadow-sm'
+                      : 'text-dama-brown/30'
+                    }`}
+                >
+                  {size === 'small' ? '小' : size === 'medium' ? '中' : '大'}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
+
 
       <section className="mb-10">
         <div className="flex justify-between items-center mb-5 px-1">
@@ -510,6 +540,7 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
       )}
 
       {/* 登出按鈕 */}
+
       <div className="mt-8 pb-8 flex justify-center">
         <button
           onClick={onLogout}

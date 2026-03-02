@@ -24,6 +24,7 @@ export interface UserProfile {
   babyName?: string;
   isPostpartum: boolean;
   email?: string;
+  fontSize?: 'small' | 'medium' | 'large';
 }
 
 export interface ChatSession {

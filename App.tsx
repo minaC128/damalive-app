@@ -40,6 +40,7 @@ const App: React.FC = () => {
             avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${session.user.email}`,
             isPostpartum: false,
             email: session.user.email,
+            fontSize: 'medium',
           };
           setUser(defaultProfile);
         }
@@ -58,6 +59,13 @@ const App: React.FC = () => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // 監聽字體大小設定並套用到 全局
+  useEffect(() => {
+    const size = user?.fontSize || 'medium';
+    document.documentElement.classList.remove('font-size-small', 'font-size-medium', 'font-size-large');
+    document.documentElement.classList.add(`font-size-${size}`);
+  }, [user?.fontSize]);
 
   const handleOpenChat = (id: string) => {
     setActiveChatId(id);
