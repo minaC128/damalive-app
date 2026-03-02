@@ -2,9 +2,13 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { UserProfile, MoodRecord } from '../types';
 import { saveMood, getAllData, getDailyKnowledge } from '../services/storageService';
-
+import { translations } from '../data/translations';
 
 const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSyncStatus }) => {
+  const lang = user.preferredLanguage || 'zh';
+  const t = translations[lang].home;
+  const tc = translations[lang].common;
+
   const [moodAdded, setMoodAdded] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
   const [generatedImg, setGeneratedImg] = useState<string | null>(null);
@@ -50,7 +54,6 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
         }
       }
 
-      // 產後請求月份建議，孕期請求每週技巧
       const type = user.isPostpartum ? 'month' : 'week';
       const knowledge = await getDailyKnowledge(user.isPostpartum, daysDiff, type);
       if (knowledge && knowledge.length > 0) {
@@ -109,7 +112,6 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
           setTimeout(() => generateDailyIllustration(retries - 1), 2000);
           return;
         }
-        // Fallback to a nice colored placeholder if AI fails
         const fallbackUrl = `https://api.dicebear.com/7.x/not-avataaars/svg?seed=${fruitStage}&backgroundColor=f2cece,f5d8c6`;
         setGeneratedImg(fallbackUrl);
         setIsGenerating(false);
@@ -120,15 +122,23 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
   }, [fruitStage]);
 
   const moods = [
-    { icon: '😄', label: '愉快', key: 'happy' as const },
-    { icon: '😌', label: '平靜', key: 'calm' as const },
-    { icon: '🥱', label: '疲憊', key: 'tired' as const },
-    { icon: '😔', label: '沮喪', key: 'sad' as const },
+    { icon: '😄', label: t.moodHappy, key: 'happy' as const },
+    { icon: '😌', label: t.moodCalm, key: 'calm' as const },
+    { icon: '🥱', label: t.moodTired, key: 'tired' as const },
+    { icon: '😔', label: t.moodSad, key: 'sad' as const },
   ];
 
   const handleMood = async (key: 'happy' | 'calm' | 'tired' | 'sad') => {
     setMoodAdded(true);
     await saveMood(user.uid, key, onSyncStatus);
+  };
+
+  const getSubheader = () => {
+    if (user.isPostpartum && user.birthDate) {
+      const days = Math.ceil((new Date().getTime() - new Date(user.birthDate).getTime()) / (1000 * 60 * 60 * 24));
+      return t.babyDays.replace('{days}', String(days));
+    }
+    return t.pregWeeks.replace('{weeks}', String(currentWeek));
   };
 
   return (
@@ -138,13 +148,13 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
           <a href="https://1125anton.my.canva.site/damalive" target="_blank" rel="noopener noreferrer" className="block hover:opacity-80 transition-opacity">
             <h1 className="text-3xl font-display font-bold text-dama-sakura tracking-tight">DAMALIVE</h1>
           </a>
-          <p className="text-[10px] text-dama-brown/60 tracking-widest mt-1 uppercase font-bold">早安，{user.name} • {user.isPostpartum && user.birthDate ? `寶寶 ${Math.ceil((new Date().getTime() - new Date(user.birthDate).getTime()) / (1000 * 60 * 60 * 24))} 天大` : `懷孕第 ${currentWeek} 週`}</p>
+          <p className="text-[10px] text-dama-brown/60 tracking-widest mt-1 uppercase font-bold">{t.greeting}，{user.name} • {getSubheader()}</p>
         </div>
         <img src={user.avatar} className="w-12 h-12 rounded-full border-2 border-dama-sakura shadow-sm object-cover" alt="avatar" />
       </header>
 
       <section className="bg-white/60 p-6 rounded-[32px] border-2 border-dashed border-dama-sakura mb-10 shadow-sm">
-        <h3 className="font-bold text-dama-brown mb-4">今日心情 Check-in {moodAdded && '✨'}</h3>
+        <h3 className="font-bold text-dama-brown mb-4">{t.moodCheck} {moodAdded && '✨'}</h3>
         <div className="flex justify-between">
           {moods.map(m => (
             <button key={m.key} onClick={() => handleMood(m.key)} className="flex flex-col items-center gap-2 group active:scale-90 transition-all">
@@ -155,15 +165,12 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
         </div>
       </section>
 
-      {/* 每日 AI 插畫 (保留翻轉效果，背面改為顯示 DailyKnowledgeCard 的簡介或其他) */}
       <section className="flex flex-col items-center mb-10">
         <div
           className="perspective-1000 w-full aspect-[4/3] max-w-[320px] cursor-pointer group"
           onClick={() => setIsFlipped(!isFlipped)}
         >
           <div className={`relative w-full h-full transition-all duration-700 preserve-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
-
-            {/* Front Side: AI Image */}
             <div className="absolute inset-0 backface-hidden bg-white rounded-[40px] shadow-xl border-4 border-dama-sakura/10 overflow-hidden flex flex-col items-center justify-center p-2">
               <div className="w-full h-full relative ring-4 ring-dama-sakura/5 rounded-[32px] overflow-hidden">
                 {isGenerating && !generatedImg ? (
@@ -179,12 +186,11 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
                   />
                 )}
                 <div className="absolute bottom-4 left-4 right-4 bg-white/80 backdrop-blur-sm py-2 px-4 rounded-full text-center shadow-sm">
-                  <p className="text-[10px] font-bold text-dama-sakura tracking-wider">今日</p>
+                  <p className="text-[10px] font-bold text-dama-sakura tracking-wider">{t.today}</p>
                 </div>
               </div>
             </div>
 
-            {/* Back Side: Dynamic Growth Insight */}
             <div className="absolute inset-0 backface-hidden rotate-y-180 bg-white rounded-[40px] shadow-xl border-4 border-dama-sakura/10 p-7 flex flex-col items-center justify-center text-center overflow-y-auto no-scrollbar">
               <div className="w-10 h-10 bg-dama-sakura/10 rounded-full flex items-center justify-center mb-3 shrink-0">
                 <span className="material-symbols-outlined text-dama-sakura text-sm">auto_awesome</span>
@@ -212,17 +218,15 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
 
               <div className="mt-4 pt-4 border-t border-dama-sakura/10 w-full shrink-0">
                 <p className="text-[9px] font-bold text-dama-sakura uppercase tracking-widest">
-                  {user.isPostpartum ? "發展關鍵與照護指南" : "每週成長週記"}
+                  {user.isPostpartum ? t.growthInsightTitle : t.growthPregTitle}
                 </p>
               </div>
             </div>
-
           </div>
         </div>
       </section>
 
-
-      <p className="mt-8 text-center text-[10px] text-dama-brown/30 font-bold italic tracking-wide">「 與寶寶一同成長的每一刻 」</p>
+      <p className="mt-8 text-center text-[10px] text-dama-brown/30 font-bold italic tracking-wide">{t.slogan}</p>
     </div>
   );
 };

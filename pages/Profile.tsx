@@ -1,10 +1,17 @@
+
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { UserProfile, ChatSession, MoodRecord, Note, NoteCategory } from '../types';
 import { getAllData, saveProfile, saveNote, deleteNote } from '../services/storageService';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { pregnancyPool, postpartumPool } from '../data/knowledgePool';
+import { translations, Language } from '../data/translations';
 
 const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => void, onOpenChat: (id: string) => void, onSyncStatus: any, onLogout: () => void }> = ({ user, onUpdateUser, onOpenChat, onSyncStatus, onLogout }) => {
+  const lang = user.preferredLanguage || 'zh';
+  const t = translations[lang].profile;
+  const tc = translations[lang].common;
+  const tp = translations[lang].planner;
+
   const [dbData, setDbData] = useState<{ moods: MoodRecord[], history: ChatSession[], notes: Note[] }>({ moods: [], history: [], notes: [] });
   const [editing, setEditing] = useState(false);
   const [showNoteModal, setShowNoteModal] = useState(false);
@@ -54,12 +61,18 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
     setEditing(false);
   };
 
+  const handleLanguageChange = async (newLang: Language) => {
+    const updatedUser = { ...user, preferredLanguage: newLang };
+    onUpdateUser(updatedUser);
+    await saveProfile(user.uid, updatedUser, onSyncStatus);
+  };
+
   const handleAddNote = async () => {
     if (!noteForm.title.trim()) return;
     const newNote: Note = {
       id: Date.now().toString(),
       ...noteForm,
-      date: new Date().toLocaleDateString('zh-TW'),
+      date: new Date().toLocaleDateString(lang === 'zh' ? 'zh-TW' : lang === 'ja' ? 'ja-JP' : 'en-US'),
       timestamp: Date.now(),
       completed: false
     };
@@ -71,7 +84,7 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
   };
 
   const handleDeleteNote = async (id: string) => {
-    if (confirm('確定要刪除這條紀錄嗎？')) {
+    if (confirm(translations[lang].common.delete + '?')) {
       await deleteNote(user.uid, id, onSyncStatus);
       const data = await getAllData(user.uid);
       setDbData(prev => ({ ...prev, notes: data.notes }));
@@ -103,27 +116,23 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
       const dateStr = d.toISOString().split('T')[0];
       const record = dbData.moods.find(m => m.date === dateStr);
       chartData.push({
-        name: d.toLocaleDateString('zh-TW', { weekday: 'short' }),
+        name: d.toLocaleDateString(lang === 'zh' ? 'zh-TW' : 'en-US', { weekday: 'short' }),
         value: record ? moodValueMap[record.mood] : null,
         displayMood: record ? moodEmojis[record.mood] : ''
       });
     }
     return chartData;
-  }, [dbData.moods]);
+  }, [dbData.moods, lang]);
 
   const monthCalendarData = useMemo(() => {
     const year = calendarDate.getFullYear();
     const month = calendarDate.getMonth();
-
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
-
     const calendarItems = [];
-
     for (let i = 0; i < firstDay; i++) {
       calendarItems.push({ isPadding: true, key: `pad-${i}` });
     }
-
     for (let i = 1; i <= daysInMonth; i++) {
       const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
       const record = dbData.moods.find(m => m.date === dateStr);
@@ -135,9 +144,8 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
         key: `day-${i}`
       });
     }
-
-    return { calendarItems, monthName: calendarDate.toLocaleDateString('zh-TW', { month: 'long', year: 'numeric' }) };
-  }, [dbData.moods, calendarDate]);
+    return { calendarItems, monthName: calendarDate.toLocaleDateString(lang === 'zh' ? 'zh-TW' : 'en-US', { month: 'long', year: 'numeric' }) };
+  }, [dbData.moods, calendarDate, lang]);
 
   const plannerCalendarData = useMemo(() => {
     const year = plannerDate.getFullYear();
@@ -145,11 +153,9 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const calendarItems = [];
-
     for (let i = 0; i < firstDay; i++) {
       calendarItems.push({ isPadding: true, key: `pad-${i}` });
     }
-
     for (let i = 1; i <= daysInMonth; i++) {
       const dateStr = `${year}-${String(month + 1).padStart(2, "0")}-${String(i).padStart(2, "0")}`;
       const hasNote = dbData.notes.some(n => n.targetDate === dateStr);
@@ -161,9 +167,8 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
         key: `day-${i}`
       });
     }
-
-    return { calendarItems, monthName: plannerDate.toLocaleDateString('zh-TW', { month: 'long', year: 'numeric' }) };
-  }, [dbData.notes, plannerDate]);
+    return { calendarItems, monthName: plannerDate.toLocaleDateString(lang === 'zh' ? 'zh-TW' : 'en-US', { month: 'long', year: 'numeric' }) };
+  }, [dbData.notes, plannerDate, lang]);
 
   const displayedNotes = useMemo(() => {
     let filtered = dbData.notes;
@@ -206,15 +211,15 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
           </div>
           <h2 className="text-2xl font-bold text-dama-brown">{user.name}</h2>
           <span className={`mt-2 px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${user.isPostpartum ? 'bg-dama-matcha/20 text-dama-matcha' : 'bg-dama-sakura/20 text-dama-sakura'}`}>
-            {user.isPostpartum ? '產後護理階段' : '孕期階段'}
+            {user.isPostpartum ? tc.postpartum : tc.pregnant}
           </span>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-dama-sakura/10 w-full">
+        <div className="mt-8 pt-6 border-t border-dama-sakura/10 w-full space-y-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <span className="material-symbols-outlined text-dama-sakura text-lg">format_size</span>
-              <span className="text-xs font-bold text-dama-brown">字體大小</span>
+              <span className="text-xs font-bold text-dama-brown">{tc.fontSize}</span>
             </div>
             <div className="flex bg-dama-bg p-1 rounded-2xl">
               {(['small', 'medium', 'large'] as const).map((size) => (
@@ -231,7 +236,25 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
                     : 'text-dama-brown/30'
                     }`}
                 >
-                  {size === 'small' ? '小' : size === 'medium' ? '中' : '大'}
+                  {size === 'small' ? tc.small : size === 'medium' ? tc.medium : tc.large}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex justify-between items-center bg-dama-sakura/5 -mx-8 px-8 py-4 border-y border-dama-sakura/5">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-dama-sakura text-lg">translate</span>
+              <span className="text-xs font-bold text-dama-brown">{tc.language}</span>
+            </div>
+            <div className="flex bg-dama-bg p-1 rounded-2xl">
+              {(['zh', 'en', 'ja'] as Language[]).map((l) => (
+                <button
+                  key={l}
+                  onClick={() => handleLanguageChange(l)}
+                  className={`px-4 py-1.5 rounded-xl text-[10px] font-bold transition-all ${lang === l ? 'bg-white text-dama-sakura shadow-sm' : 'text-dama-brown/30'}`}
+                >
+                  {l === 'zh' ? '中文' : l === 'en' ? 'EN' : 'JP'}
                 </button>
               ))}
             </div>
@@ -243,7 +266,7 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
         <div className="flex justify-between items-center mb-5 px-1">
           <h3 className="font-bold text-dama-brown flex items-center gap-2">
             <span className="material-symbols-outlined text-dama-sakura text-lg">edit_calendar</span>
-            媽咪計畫本
+            {tp.title}
           </h3>
           <div className="flex items-center gap-2">
             <button
@@ -287,7 +310,7 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
               </button>
             </div>
             <div className="grid grid-cols-7 gap-1">
-              {['日', '一', '二', '三', '四', '五', '六'].map(d => (
+              {(lang === 'zh' ? ['日', '一', '二', '三', '四', '五', '六'] : ['S', 'M', 'T', 'W', 'T', 'F', 'S']).map(d => (
                 <div key={d} className="text-center text-[10px] font-bold text-dama-brown/30 pb-2">{d}</div>
               ))}
               {plannerCalendarData.calendarItems.map(item => (
@@ -301,17 +324,12 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
                 </div>
               ))}
             </div>
-            {selectedDate && (
-              <div className="mt-4 pt-4 border-t border-dama-sakura/5 text-center">
-                <span className="text-[9px] font-bold text-dama-sakura/60 uppercase tracking-widest">{selectedDate} 的計畫</span>
-              </div>
-            )}
           </div>
         )}
         <div className="space-y-4">
           {dbData.notes.length === 0 ? (
             <div className="bg-white/40 border border-dashed border-dama-sakura/30 p-8 rounded-[32px] text-center">
-              <p className="text-xs text-dama-brown/40 font-bold italic">還沒有任何紀錄嗎？<br />記錄下一次的產檢或是寶寶的任務吧！</p>
+              <p className="text-xs text-dama-brown/40 font-bold italic whitespace-pre-wrap">{tp.noNotes}</p>
             </div>
           ) : (
             <>
@@ -341,8 +359,8 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
                           {note.title}
                         </h4>
                         <div className="flex flex-col items-end whitespace-nowrap ml-2">
-                          {note.targetDate && <span className="text-[9px] text-dama-sakura font-bold">預計：{note.targetDate}</span>}
-                          <span className="text-[7px] text-dama-brown/20 font-bold">{note.date} 建立</span>
+                          {note.targetDate && <span className="text-[9px] text-dama-sakura font-bold">{tp.expected}{note.targetDate}</span>}
+                          <span className="text-[7px] text-dama-brown/20 font-bold">{note.date} {tp.created}</span>
                         </div>
                       </div>
                       <div className="w-full h-1 bg-dama-bg rounded-full overflow-hidden mt-1 opacity-60">
@@ -365,7 +383,7 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
                   <div className={`transition-all duration-500 overflow-hidden ${expandedNoteId === note.id ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
                     <div className="px-5 pb-5 pt-2 border-t border-dama-sakura/5 mx-3 mb-1">
                       <div className="bg-dama-bg/30 p-4 rounded-2xl text-xs text-dama-brown/80 leading-relaxed font-medium whitespace-pre-wrap">
-                        {note.content || '無詳細內容描述'}
+                        {note.content || tp.emptyContent}
                       </div>
                     </div>
                   </div>
@@ -376,7 +394,7 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
                   onClick={() => setShowAllNotes(!showAllNotes)}
                   className="w-full py-2 text-[10px] font-bold text-dama-brown/30 hover:text-dama-sakura transition-colors flex items-center justify-center gap-1"
                 >
-                  {showAllNotes ? '收納計畫' : `還有 ${dbData.notes.length - 3} 項計畫...`}
+                  {showAllNotes ? tp.collapse : tp.viewAll.replace('{count}', String(dbData.notes.length - 3))}
                   <span className={`material-symbols-outlined text-xs transition-transform ${showAllNotes ? 'rotate-180' : ''}`}>expand_more</span>
                 </button>
               )}
@@ -386,84 +404,13 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
       </section>
 
       <section className="mb-10">
-        <div className="flex justify-between items-center mb-5 px-1">
-          <h3 className="font-bold text-dama-brown flex items-center gap-2">
-            <span className="material-symbols-outlined text-dama-sakura text-lg">trending_up</span>
-            情緒趨勢
-          </h3>
-        </div>
-        <div className="bg-white p-6 rounded-[32px] shadow-sm border border-dama-sakura/5 h-48">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={weeklyTrendData}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F2CECE50" />
-              <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#5c4d4d80', fontWeight: 'bold' }} dy={10} />
-              <YAxis hide domain={[0, 5]} />
-              <Line type="monotone" dataKey="value" stroke="#FFB7C5" strokeWidth={4} dot={{ r: 6, fill: '#FFB7C5', stroke: '#fff' }} connectNulls />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </section>
-
-      <section className="mb-10">
-        <div className="flex justify-between items-center mb-5 px-1">
-          <h3 className="font-bold text-dama-brown flex items-center gap-2">
-            <span className="material-symbols-outlined text-dama-sakura text-lg">calendar_month</span>
-            情緒月份紀錄
-          </h3>
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => {
-                const newDate = new Date(calendarDate);
-                newDate.setMonth(newDate.getMonth() - 1);
-                setCalendarDate(newDate);
-              }}
-              className="w-8 h-8 rounded-full bg-dama-bg text-dama-brown/40 flex items-center justify-center hover:bg-dama-sakura/10 hover:text-dama-sakura transition-all"
-            >
-              <span className="material-symbols-outlined text-sm">chevron_left</span>
-            </button>
-            <span className="text-[10px] font-bold text-dama-brown/30 uppercase tracking-widest">{monthCalendarData.monthName}</span>
-            <button
-              onClick={() => {
-                const newDate = new Date(calendarDate);
-                newDate.setMonth(newDate.getMonth() + 1);
-                setCalendarDate(newDate);
-              }}
-              className="w-8 h-8 rounded-full bg-dama-bg text-dama-brown/40 flex items-center justify-center hover:bg-dama-sakura/10 hover:text-dama-sakura transition-all"
-            >
-              <span className="material-symbols-outlined text-sm">chevron_right</span>
-            </button>
-          </div>
-        </div>
-        <div className="bg-white p-6 rounded-[40px] shadow-sm border border-dama-sakura/5">
-          <div className="grid grid-cols-7 gap-3">
-            {['日', '一', '二', '三', '四', '五', '六'].map(d => (
-              <div key={d} className="text-center text-[10px] font-bold text-dama-brown/30 pb-2">{d}</div>
-            ))}
-            {monthCalendarData.calendarItems.map(item => (
-              <div key={item.key} className="flex flex-col items-center gap-1">
-                {!item.isPadding && (
-                  <>
-                    <span className="text-[8px] font-bold text-dama-brown/20">{item.day}</span>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm shadow-sm transition-all ${item.mood ? 'bg-dama-bg' : 'bg-dama-bg/30'}`}>
-                      {item.mood ? moodEmojis[item.mood] : ''}
-                    </div>
-                  </>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 收藏知識卡 */}
-      <section className="mb-10">
         <h3 className="font-bold text-dama-brown flex items-center gap-2 mb-5 px-1">
           <span className="material-symbols-outlined text-dama-sakura text-lg">favorite</span>
-          收藏的小卡
+          {t.savedKnowledge}
         </h3>
         {savedItems.length === 0 ? (
           <div className="bg-white/40 border border-dashed border-dama-sakura/30 p-8 rounded-[32px] text-center">
-            <p className="text-xs text-dama-brown/40 font-bold italic">還沒有收藏任何小卡嗎？<br />在知識庫點擊愛心即可收藏！</p>
+            <p className="text-xs text-dama-brown/40 font-bold italic whitespace-pre-wrap">{t.noSaved}</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -490,9 +437,6 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
                       <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
                         <span className="material-symbols-outlined text-dama-brown text-sm">{item.icon}</span>
                       </div>
-                      <span className="text-[7px] bg-white/80 px-2 py-0.5 rounded-full font-bold text-dama-brown/60 uppercase tracking-tighter">
-                        {item.source}
-                      </span>
                     </div>
                     <div className="relative z-10 pr-10">
                       <h4 className="text-sm font-bold text-dama-brown">{item.title}</h4>
@@ -531,7 +475,7 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
       {editing && (
         <div className="fixed inset-0 bg-dama-brown/40 backdrop-blur-md z-[120] flex items-center justify-center p-6 animate-in fade-in">
           <div className="bg-white w-full max-w-sm rounded-[40px] p-8 shadow-2xl relative animate-in zoom-in-95 overflow-y-auto max-h-[90vh] no-scrollbar">
-            <h2 className="text-xl font-bold text-dama-brown mb-6 text-center">編輯個人檔案</h2>
+            <h2 className="text-xl font-bold text-dama-brown mb-6 text-center">{t.editProfile}</h2>
             <div className="flex flex-col items-center gap-4 mb-6">
               <div className="relative group">
                 <div className="w-24 h-24 rounded-full border-2 border-dama-sakura p-1 bg-white">
@@ -548,44 +492,36 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
             </div>
             <div className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">姓名 / 暱稱</label>
+                <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">{t.nameLabel}</label>
                 <input
                   value={form.name}
                   onChange={e => setForm({ ...form, name: e.target.value })}
-                  placeholder="輸入您的姓名"
+                  placeholder={translations[lang].common.loading}
                   className="w-full bg-dama-bg border-none rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-dama-sakura"
                 />
               </div>
               {!form.isPostpartum ? (
                 <>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">最後一次經期日期 (LMP)</label>
+                    <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">{t.lmpLabel}</label>
                     <input
                       type="date"
                       value={form.lmpDate}
                       onChange={e => {
                         const newVal = e.target.value;
-                        setForm({
-                          ...form,
-                          lmpDate: newVal,
-                          dueDate: calculateDueDate(newVal)
-                        });
+                        setForm({ ...form, lmpDate: newVal, dueDate: calculateDueDate(newVal) });
                       }}
                       className="w-full bg-dama-bg border-none rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-dama-sakura"
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">預定產期 (DUE DATE)</label>
+                    <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">{t.dueLabel}</label>
                     <input
                       type="date"
                       value={form.dueDate}
                       onChange={e => {
                         const newVal = e.target.value;
-                        setForm({
-                          ...form,
-                          dueDate: newVal,
-                          lmpDate: calculateLMP(newVal)
-                        });
+                        setForm({ ...form, dueDate: newVal, lmpDate: calculateLMP(newVal) });
                       }}
                       className="w-full bg-dama-bg border-none rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-dama-sakura"
                     />
@@ -595,7 +531,7 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
                     className="w-full py-3 bg-dama-matcha/10 text-dama-matcha rounded-2xl font-bold text-xs flex items-center justify-center gap-2 border border-dama-matcha/20 active:scale-95 transition-all"
                   >
                     <span className="material-symbols-outlined text-sm">child_care</span>
-                    切換至產後階段
+                    {t.toPostpartum}
                   </button>
                 </>
               ) : (
@@ -629,17 +565,11 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
               )}
             </div>
             <div className="mt-8 flex flex-col gap-2">
-              <button
-                onClick={handleSaveProfile}
-                className="w-full bg-dama-sakura text-white py-4 rounded-full font-bold shadow-lg shadow-dama-sakura/20 active:scale-95 transition-all text-sm"
-              >
-                更新資料
+              <button onClick={handleSaveProfile} className="w-full bg-dama-sakura text-white py-4 rounded-full font-bold shadow-lg shadow-dama-sakura/20 active:scale-95 transition-all text-sm">
+                {tc.update}
               </button>
-              <button
-                onClick={() => setEditing(false)}
-                className="w-full py-3 font-bold text-dama-brown/30 text-xs hover:text-dama-brown transition-colors"
-              >
-                取消
+              <button onClick={() => setEditing(false)} className="w-full py-3 font-bold text-dama-brown/30 text-xs hover:text-dama-brown transition-colors">
+                {tc.cancel}
               </button>
             </div>
           </div>
@@ -649,34 +579,33 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
       {showNoteModal && (
         <div className="fixed inset-0 bg-dama-brown/40 backdrop-blur-md z-[120] flex items-center justify-center p-6 animate-in fade-in">
           <div className="bg-white w-full max-w-sm rounded-[40px] p-8 shadow-2xl relative animate-in zoom-in-95">
-            <h2 className="text-xl font-bold text-dama-brown mb-6">新增計畫紀錄</h2>
+            <h2 className="text-xl font-bold text-dama-brown mb-6">{tp.addTitle}</h2>
             <div className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">標題</label>
+                <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">{tp.inputTitle}</label>
                 <input
                   value={noteForm.title}
                   onChange={e => setNoteForm({ ...noteForm, title: e.target.value })}
                   className="w-full bg-dama-bg border-none rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-dama-sakura"
-                  placeholder="如：產檢紀錄、寶寶預防針"
+                  placeholder={tp.inputTitlePlaceholder}
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">分類</label>
+                <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">{tp.category}</label>
                 <div className="flex gap-2">
                   {(['note', 'task', 'meeting'] as NoteCategory[]).map(cat => (
                     <button
                       key={cat}
                       onClick={() => setNoteForm({ ...noteForm, category: cat })}
-                      className={`flex-1 py-2 rounded-xl text-[10px] font-bold transition-all border ${noteForm.category === cat ? 'bg-dama-sakura border-dama-sakura text-white' : 'bg-white border-dama-sakura/20 text-dama-brown/40'
-                        }`}
+                      className={`flex-1 py-2 rounded-xl text-[10px] font-bold transition-all border ${noteForm.category === cat ? 'bg-dama-sakura border-dama-sakura text-white' : 'bg-white border-dama-sakura/20 text-dama-brown/40'}`}
                     >
-                      {cat === 'note' ? '筆記' : cat === 'task' ? '任務' : '安排'}
+                      {cat === 'note' ? tp.catNote : cat === 'task' ? tp.catTask : tp.catMeeting}
                     </button>
                   ))}
                 </div>
               </div>
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">計畫日期</label>
+                <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">{tp.targetDate}</label>
                 <input
                   type="date"
                   value={noteForm.targetDate}
@@ -685,28 +614,22 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
                 />
               </div>
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">內容</label>
+                <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">{tp.content}</label>
                 <textarea
                   rows={4}
                   value={noteForm.content}
                   onChange={e => setNoteForm({ ...noteForm, content: e.target.value })}
                   className="w-full bg-dama-bg border-none rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-dama-sakura no-scrollbar"
-                  placeholder="寫下詳細內容..."
+                  placeholder={tp.contentPlaceholder}
                 />
               </div>
             </div>
             <div className="mt-8 flex flex-col gap-2">
-              <button
-                onClick={handleAddNote}
-                className="w-full bg-dama-sakura text-white py-4 rounded-full font-bold shadow-lg shadow-dama-sakura/20 active:scale-95 transition-all text-sm"
-              >
-                儲存紀錄
+              <button onClick={handleAddNote} className="w-full bg-dama-sakura text-white py-4 rounded-full font-bold shadow-lg shadow-dama-sakura/20 active:scale-95 transition-all text-sm">
+                {tp.saveNote}
               </button>
-              <button
-                onClick={() => setShowNoteModal(false)}
-                className="w-full py-3 font-bold text-dama-brown/30 text-xs"
-              >
-                取消
+              <button onClick={() => setShowNoteModal(false)} className="w-full py-3 font-bold text-dama-brown/30 text-xs">
+                {tc.cancel}
               </button>
             </div>
           </div>
@@ -714,12 +637,9 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
       )}
 
       <div className="mt-8 pb-8 flex justify-center">
-        <button
-          onClick={onLogout}
-          className="flex items-center gap-2 px-8 py-3 rounded-full border-2 border-red-200 text-red-400 font-bold text-sm hover:bg-red-50 active:scale-95 transition-all"
-        >
+        <button onClick={onLogout} className="flex items-center gap-2 px-8 py-3 rounded-full border-2 border-red-200 text-red-400 font-bold text-sm hover:bg-red-50 active:scale-95 transition-all">
           <span className="material-symbols-outlined text-lg">logout</span>
-          登出帳號
+          {tc.logout}
         </button>
       </div>
     </div>

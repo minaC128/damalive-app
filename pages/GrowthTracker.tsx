@@ -1,10 +1,14 @@
 
 import React, { useMemo, useState, useEffect } from 'react';
 import { UserProfile } from '../types';
+import { translations } from '../data/translations';
 
 const GrowthTracker: React.FC<{ user: UserProfile }> = ({ user }) => {
   const [generatedImg, setGeneratedImg] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const lang = user.preferredLanguage || 'zh';
+  const t = translations[lang].home;
+  const tc = translations[lang].common;
 
   // 計算目前狀態數據與建議
   const data = useMemo(() => {
@@ -42,12 +46,14 @@ const GrowthTracker: React.FC<{ user: UserProfile }> = ({ user }) => {
         };
       }
 
+      const title = months >= 11 ? '茁壯的小樹' : (months >= 6 ? '充滿活力的向日葵' : '一株小嫩芽');
+
       baseData = {
         fruitName: months >= 11 ? 'small tree' : (months >= 6 ? 'sunflower' : 'sprout'),
-        title: months >= 11 ? '寶寶準備好變成茁壯的小樹' : (months >= 6 ? '寶寶現在像充滿活力的向日葵' : '寶寶現在像一株小嫩芽'),
+        title: title,
         desc: months >= 11 ? '寶寶開始嘗試站立或邁步，對世界充滿好奇心！' : (months >= 6 ? '寶寶開始嘗試副食品了！會翻身也會發出可愛的咿呀聲喔。' : '寶寶正在適應這個新世界，睡眠時間很長。'),
         icon: months >= 11 ? 'forest' : (months >= 6 ? 'local_florist' : 'spa'),
-        label: `${months} / 12 個月`,
+        label: t.babyDays.replace('{days}', String(diffDays)),
         progress: (months / 12) * 100,
         weight: months >= 11 ? '約 9 - 11 kg' : (months >= 6 ? '約 7.5 - 8.5 kg' : '約 3.5 - 4.5 kg'),
         height: months >= 11 ? '約 72 - 76 cm' : (months >= 6 ? '約 65 - 70 cm' : '約 50 - 55 cm'),
@@ -82,7 +88,6 @@ const GrowthTracker: React.FC<{ user: UserProfile }> = ({ user }) => {
 
       const stage = stageConfig(week);
 
-      // 根據具體週數細分建議
       let momAdvice = { physical: "", nutrition: "", notice: "", mental: "" };
       if (week <= 4) {
         momAdvice = {
@@ -124,7 +129,7 @@ const GrowthTracker: React.FC<{ user: UserProfile }> = ({ user }) => {
           physical: "子宮高度接近肚臍，皮膚可能因擴張感到搔癢，可以開始塗抹妊娠油或乳液。",
           nutrition: "注意糖分攝取，準備迎接妊娠糖尿病篩檢（喝糖水挑戰）。",
           notice: "容易出現小腿水腫，晚上睡覺時可以墊個枕頭抬高腿部。",
-          mental: "感受寶寶規律的作息，妳會發現他也有自己的睡覺與活動時間喔。"
+          mental: "感受寶寶規規律的作息，妳會發現他也有自己的睡覺與活動時間喔。"
         };
       } else if (week <= 28) {
         momAdvice = {
@@ -144,7 +149,7 @@ const GrowthTracker: React.FC<{ user: UserProfile }> = ({ user }) => {
         momAdvice = {
           physical: "假性陣痛（肚子發硬）變頻繁。寶寶入盆後會覺得呼吸稍微順暢，但頻尿更嚴重。",
           nutrition: "保持體力，但別過度大吃大喝，以免寶寶過大增加生產難度。",
-          notice: "練習拉梅茲呼吸法。注意是否有破水、规则陣痛或見紅等產兆。",
+          notice: "練習拉梅茲呼吸法。注意是否有破水、規則陣痛或見紅等產兆。",
           mental: "相信自己的身體與醫護團隊，妳與寶寶已經一起度過了最艱難的時刻。",
         };
       } else {
@@ -159,14 +164,14 @@ const GrowthTracker: React.FC<{ user: UserProfile }> = ({ user }) => {
       baseData = {
         ...stage,
         fruitName: stage.name,
-        label: `${week} / 40 週`,
+        label: t.pregWeeks.replace('{weeks}', String(week)),
         progress: (week / 40) * 100,
         mode: 'pregnancy',
         momAdvice
       };
     }
     return baseData;
-  }, [user]);
+  }, [user, t]);
 
   // 使用 Nano Banana 生成圖片
   useEffect(() => {
@@ -207,22 +212,22 @@ const GrowthTracker: React.FC<{ user: UserProfile }> = ({ user }) => {
   return (
     <div className="px-6 py-6 min-h-screen bg-dama-bg">
       <div className="flex items-center justify-center mb-8">
-        <h1 className="text-xl font-bold text-dama-brown uppercase tracking-tight">成長追蹤</h1>
+        <h1 className="text-xl font-bold text-dama-brown uppercase tracking-tight">{translations[lang].nav.journey}</h1>
       </div>
 
       <div className="flex bg-white/50 backdrop-blur-sm rounded-full p-1.5 mb-8 shadow-inner border border-dama-sakura/10">
         <div className={`flex-1 py-3 rounded-full text-xs font-bold text-center transition-all ${data.mode === 'pregnancy' ? 'bg-dama-sakura text-white shadow-md' : 'text-dama-brown/40'}`}>
-          孕期探索
+          {tc.pregnant}
         </div>
         <div className={`flex-1 py-3 rounded-full text-xs font-bold text-center transition-all ${data.mode === 'postpartum' ? 'bg-dama-matcha text-white shadow-md' : 'text-dama-brown/40'}`}>
-          產後陪伴
+          {tc.postpartum}
         </div>
       </div>
 
       <div className="bg-white rounded-[40px] border-4 border-double border-dama-sakura/30 shadow-xl p-8 flex flex-col items-center relative overflow-hidden mb-10">
         <div className="text-center mb-6 relative z-10">
           <p className="text-dama-sakura font-bold text-sm tracking-[0.2em] mb-1">
-            {data.mode === 'pregnancy' ? '孕期旅程' : '寶寶成長'}
+            {data.mode === 'pregnancy' ? translations[lang].nav.journey : '寶寶成長'}
           </p>
           <h2 className="text-2xl font-bold text-dama-brown">{data.title}</h2>
         </div>

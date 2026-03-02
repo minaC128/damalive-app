@@ -1,201 +1,173 @@
 
-import React, { useState, useMemo } from 'react';
-import { UserProfile } from '../types';
-import { saveProfile } from '../services/storageService';
+import React, { useState, useMemo, useEffect } from 'react';
+import { UserProfile, KnowledgeItem } from '../types';
 import { pregnancyPool, postpartumPool } from '../data/knowledgePool';
-
-type Category = 'nutrition' | 'exercise' | 'wellness';
+import { saveProfile } from '../services/storageService';
+import { translations } from '../data/translations';
 
 const KnowledgeBase: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => void, onSyncStatus: any }> = ({ user, onUpdateUser, onSyncStatus }) => {
-  const [activeCategory, setActiveCategory] = useState<Category>('wellness');
-  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
+  const [activeTab, setActiveTab] = useState<'nutrition' | 'exercise' | 'wellness'>('nutrition');
+  const [expandedItem, setExpandedItem] = useState<string | null>(null);
+  const [shuffledItems, setShuffledItems] = useState<KnowledgeItem[]>([]);
 
-  // 每日隨機種子演算法
-  const getDailySubset = (pool: any[]) => {
+  const lang = user.preferredLanguage || 'zh';
+  const t = translations[lang].knowledge;
+  const tc = translations[lang].common;
+
+  // 使用日期作為 seed 的隨機排列函數
+  const shuffleWithSeed = (array: KnowledgeItem[], seed: number) => {
+    const arr = [...array];
+    let m = arr.length, t, i;
+    while (m) {
+      i = Math.floor(Math.abs(Math.sin(seed++)) * m--);
+      t = arr[m];
+      arr[m] = arr[i];
+      arr[i] = t;
+    }
+    return arr;
+  };
+
+  useEffect(() => {
     const today = new Date();
     const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
-    const shuffled = [...pool];
-    let m = shuffled.length, t, i;
-    let s = seed;
-    while (m) {
-      s = (s * 9301 + 49297) % 233280;
-      i = Math.floor((s / 233280) * m--);
-      t = shuffled[m];
-      shuffled[m] = shuffled[i];
-      shuffled[i] = t;
-    }
-    return shuffled.slice(0, 3);
-  };
+    const pool = user.isPostpartum ? postpartumPool[activeTab] : pregnancyPool[activeTab];
+    setShuffledItems(shuffleWithSeed(pool, seed));
+  }, [user.isPostpartum, activeTab]);
 
-  const data = useMemo(() => {
-    const pool = user.isPostpartum ? postpartumPool : pregnancyPool;
-    return {
-      nutrition: getDailySubset(pool.nutrition),
-      exercise: getDailySubset(pool.exercise),
-      wellness: getDailySubset(pool.wellness)
-    };
-  }, [user.isPostpartum]);
-
-  const toggleSave = async (e: React.MouseEvent, id: string) => {
+  const handleToggleSave = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    const currentSaved = user.savedKnowledgeIds || [];
-    const isSaved = currentSaved.includes(id);
+    const isSaved = (user.savedKnowledgeIds || []).includes(id);
     const nextSaved = isSaved
-      ? currentSaved.filter(iid => iid !== id)
-      : [...currentSaved, id];
+      ? (user.savedKnowledgeIds || []).filter(sid => sid !== id)
+      : [...(user.savedKnowledgeIds || []), id];
 
     const updatedUser = { ...user, savedKnowledgeIds: nextSaved };
-    await saveProfile(user.uid, updatedUser, onSyncStatus);
     onUpdateUser(updatedUser);
+    await saveProfile(user.uid, updatedUser, onSyncStatus);
   };
 
-  const getFooterButtonInfo = () => {
-    if (activeCategory === 'nutrition') {
-      return {
-        label: user.isPostpartum ? '查看育兒好物' : '查看健康食譜',
-        url: user.isPostpartum ? 'https://www.mamiessentials.com.tw' : 'https://cookpad.com/tw/%E6%90%9C%E5%B0%8B/%E5%AD%95%E5%A9%A6'
-      };
-    }
-    if (activeCategory === 'exercise') {
-      return {
-        label: user.isPostpartum ? '產後修復運動' : '孕期瑜珈教學',
-        url: user.isPostpartum ? 'https://www.youtube.com/results?search_query=%E7%94%A2%E5%BE%8C%E9%81%8B%E5%8B%95' : 'https://www.youtube.com/results?search_query=%E5%AD%95%E5%A9%A6%E7%91%9C%E7%8F%88'
-      };
-    }
-    return {
-      label: '更多育兒指南',
-      url: 'https://1125anton.my.canva.site/damalive'
-    };
-  };
-
-  const footerBtn = getFooterButtonInfo();
+  const tabs = [
+    { id: 'nutrition' as const, label: t.tagNutrition, icon: 'restaurant_menu' },
+    { id: 'exercise' as const, label: t.tagExercise, icon: 'fitness_center' },
+    { id: 'wellness' as const, label: t.tagWellness, icon: 'eco' },
+  ];
 
   return (
-    <div className="px-3 md:px-6 py-6 min-h-screen bg-dama-bg pb-32">
-      <header className="flex flex-col items-center mb-8 mt-4">
-        <a href="https://1125anton.my.canva.site/damalive" target="_blank" rel="noopener noreferrer" className="block hover:opacity-80 transition-opacity">
-          <h1 className="text-2xl font-bold text-dama-brown tracking-widest">生育知識庫</h1>
-        </a>
+    <div className="p-6 pb-32 animate-in fade-in duration-700">
+      <header className="mb-8 flex justify-between items-center px-2">
+        <div>
+          <h2 className="text-2xl font-bold text-dama-brown flex items-center gap-2">
+            <span className="material-symbols-outlined text-dama-sakura text-2xl">menu_book</span>
+            {t.title}
+          </h2>
+          <p className="text-[10px] font-bold text-dama-sakura/60 uppercase tracking-widest mt-1">
+            {user.isPostpartum ? '產後成長與護理指南' : '孕期健康與發展百科'}
+          </p>
+        </div>
       </header>
 
-      <div className="flex p-1 bg-white/50 backdrop-blur-sm rounded-full mb-10 shadow-inner border border-dama-sakura/10">
-        <button
-          onClick={() => { setActiveCategory('nutrition'); setExpandedIdx(null); }}
-          className={`flex-1 py-3 rounded-full text-[10px] font-bold transition-all flex items-center justify-center gap-1 ${activeCategory === 'nutrition' ? 'bg-dama-sakura text-white shadow-md' : 'text-dama-brown/40'}`}
-        >
-          <span className="material-symbols-outlined text-xs">
-            {user.isPostpartum ? 'baby_changing_station' : 'restaurant'}
-          </span>
-          {user.isPostpartum ? '寶寶照顧' : '營養補充'}
-        </button>
-        <button
-          onClick={() => { setActiveCategory('exercise'); setExpandedIdx(null); }}
-          className={`flex-1 py-3 rounded-full text-[10px] font-bold transition-all flex items-center justify-center gap-1 ${activeCategory === 'exercise' ? 'bg-dama-matcha text-white shadow-md' : 'text-dama-brown/40'}`}
-        >
-          <span className="material-symbols-outlined text-xs">
-            {user.isPostpartum ? 'child_care' : 'fitness_center'}
-          </span>
-          {user.isPostpartum ? '育兒技巧' : '運動指南'}
-        </button>
-        <button
-          onClick={() => { setActiveCategory('wellness'); setExpandedIdx(null); }}
-          className={`flex-1 py-3 rounded-full text-[10px] font-bold transition-all flex items-center justify-center gap-1 ${activeCategory === 'wellness' ? 'bg-dama-sakura text-white shadow-md' : 'text-dama-brown/40'}`}
-        >
-          <span className="material-symbols-outlined text-xs">favorite</span>
-          身心調適
-        </button>
+      <div className="flex gap-2 mb-8 bg-white/50 backdrop-blur-sm p-1.5 rounded-3xl shadow-inner border border-dama-sakura/5">
+        {tabs.map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => { setActiveTab(tab.id); setExpandedItem(null); }}
+            className={`flex-1 py-3 rounded-2xl flex flex-col items-center gap-1 transition-all ${activeTab === tab.id ? 'bg-dama-sakura text-white shadow-md scale-[1.02]' : 'text-dama-brown/40 hover:bg-white/50'}`}
+          >
+            <span className="material-symbols-outlined text-sm">{tab.icon}</span>
+            <span className="text-[10px] font-bold tracking-wider">{tab.label}</span>
+          </button>
+        ))}
       </div>
 
-      <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-        {data[activeCategory].map((item: any, idx: number) => {
-          const isFaved = user.savedKnowledgeIds?.includes(item.id);
+      <div className="space-y-6">
+        {shuffledItems.map((item, idx) => {
+          const isExpanded = expandedItem === item.id;
+          const isSaved = (user.savedKnowledgeIds || []).includes(item.id);
+
           return (
             <div
-              key={idx}
-              onClick={() => setExpandedIdx(expandedIdx === idx ? null : idx)}
-              className="bg-white rounded-[32px] shadow-lg border border-dama-sakura/5 overflow-hidden cursor-pointer transition-all active:scale-[0.98] group"
+              key={item.id}
+              onClick={() => setExpandedItem(isExpanded ? null : item.id)}
+              className="bg-white rounded-[40px] shadow-sm border border-dama-sakura/5 overflow-hidden transition-all duration-500 cursor-pointer active:scale-[0.98] group"
+              style={{ animationDelay: `${idx * 150}ms` }}
             >
-              <div className={`p-6 ${item.color} relative overflow-hidden transition-all duration-500 ${expandedIdx === idx ? 'pb-8' : ''}`}>
-                <div className="absolute -top-4 -right-4 opacity-5 scale-150 rotate-12 transition-transform group-hover:rotate-45">
-                  <span className="material-symbols-outlined text-9xl">{item.icon}</span>
+              <div className={`p-6 ${item.color} relative overflow-hidden transition-all duration-500 ${isExpanded ? 'pb-8' : ''}`}>
+                <div className="absolute -top-4 -right-4 opacity-5 scale-150 rotate-12 group-hover:rotate-45 transition-transform duration-700">
+                  <span className="material-symbols-outlined text-[100px]">{item.icon}</span>
                 </div>
 
                 <div className="flex items-start justify-between mb-4 relative z-10">
-                  <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
-                    <span className="material-symbols-outlined text-dama-brown text-sm">{item.icon}</span>
+                  <div className="w-10 h-10 bg-white rounded-2xl flex items-center justify-center shadow-sm">
+                    <span className="material-symbols-outlined text-dama-brown text-lg">{item.icon}</span>
                   </div>
-                  <div className="flex flex-col items-end gap-1">
-                    <span className="text-[7px] bg-white/80 px-2 py-0.5 rounded-full font-bold text-dama-brown/60 uppercase tracking-tighter">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[8px] bg-white/80 px-3 py-1 rounded-full font-bold text-dama-brown/60 uppercase tracking-widest">
                       {item.source}
                     </span>
-                    <span className="material-symbols-outlined text-dama-brown/20 text-xs">
-                      {expandedIdx === idx ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}
-                    </span>
+                    <button
+                      onClick={(e) => handleToggleSave(e, item.id)}
+                      className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${isSaved ? 'bg-dama-sakura text-white scale-110' : 'bg-white/90 text-dama-sakura hover:scale-110'}`}
+                    >
+                      <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: isSaved ? "'FILL' 1" : "'FILL' 0" }}>
+                        favorite
+                      </span>
+                    </button>
                   </div>
                 </div>
 
                 <div className="relative z-10 pr-12">
-                  <h3 className="text-lg font-bold text-dama-brown">{item.title}</h3>
-                  <p className="text-[9px] font-bold text-dama-brown/40 uppercase tracking-widest mt-1">{item.subtitle}</p>
+                  <h3 className="text-xl font-bold text-dama-brown pr-4 break-words leading-tight">{item.title}</h3>
+                  <p className="text-[9px] font-bold text-dama-brown/40 uppercase tracking-[0.2em] mt-2 mb-3 leading-none">{item.subtitle}</p>
+                  <p className="text-xs text-dama-brown/80 leading-relaxed font-medium line-clamp-2 pr-4">{item.content}</p>
+                </div>
 
-                  <button
-                    onClick={(e) => toggleSave(e, item.id)}
-                    className={`absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 active:scale-150 ${isFaved
-                      ? 'bg-dama-sakura text-white shadow-md'
-                      : 'bg-white/60 text-dama-sakura hover:bg-white'}`}
-                  >
-                    <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: isFaved ? "'FILL' 1" : "'FILL' 0" }}>
-                      favorite
-                    </span>
-                  </button>
+                <div className={`absolute right-6 bottom-6 transition-transform duration-500 ${isExpanded ? 'rotate-180' : ''}`}>
+                  <span className="material-symbols-outlined text-dama-brown/20">expand_more</span>
                 </div>
               </div>
 
-              <div className={`transition-all duration-500 overflow-hidden ${expandedIdx === idx ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                <div className="p-6 border-t border-dama-sakura/5 bg-white">
-                  <div className="text-sm text-dama-brown/80 leading-relaxed whitespace-pre-wrap font-medium bg-dama-bg/30 p-4 rounded-2xl mb-6">
-                    {item.fullContent}
+              <div className={`transition-all duration-500 ease-in-out bg-white ${isExpanded ? 'max-h-[1500px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+                <div className="p-8 border-t border-dama-sakura/5">
+                  <div className="bg-dama-bg/40 p-6 rounded-[32px] mb-6 shadow-inner">
+                    <h4 className="text-[10px] font-bold text-dama-sakura uppercase tracking-widest mb-3 flex items-center gap-2">
+                      <span className="material-symbols-outlined text-sm">auto_stories</span>
+                      {t.fullStory}
+                    </h4>
+                    <p className="text-sm text-dama-brown/80 leading-[1.8] whitespace-pre-wrap font-medium">
+                      {item.fullContent}
+                    </p>
                   </div>
 
-                  <div className="bg-white p-5 rounded-3xl border-2 border-dashed border-dama-sakura/10">
-                    <p className="text-[10px] font-bold text-dama-brown/40 mb-3 flex items-center gap-2">
-                      <span className="material-symbols-outlined text-xs">edit_note</span>
-                      重點筆記
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {item.tips.map((tip: string, i: number) => (
-                        <span key={i} className="px-3 py-1.5 bg-dama-sakura/5 rounded-full text-[10px] font-bold text-dama-brown shadow-sm border border-dama-sakura/5">
-                          {tip}
-                        </span>
+                  <div className="space-y-4">
+                    <h4 className="text-[10px] font-bold text-dama-sakura uppercase tracking-widest px-1">實用的建議</h4>
+                    <div className="flex flex-col gap-2">
+                      {item.tips.map((tip, i) => (
+                        <div key={i} className="flex items-start gap-3 bg-white p-4 rounded-2xl border border-dama-sakura/5 shadow-sm hover:shadow-md transition-shadow">
+                          <div className="w-6 h-6 rounded-full bg-dama-sakura/10 flex items-center justify-center shrink-0 mt-0.5">
+                            <span className="text-[10px] font-bold text-dama-sakura">{i + 1}</span>
+                          </div>
+                          <p className="text-xs text-dama-brown/80 font-medium leading-relaxed">{tip}</p>
+                        </div>
                       ))}
                     </div>
                   </div>
+
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setExpandedItem(null); }}
+                    className="w-full mt-8 py-4 bg-dama-bg rounded-2xl text-[10px] font-bold text-dama-brown/30 hover:text-dama-sakura transition-colors flex items-center justify-center gap-2"
+                  >
+                    {tc.collapse}
+                    <span className="material-symbols-outlined text-xs">keyboard_arrow_up</span>
+                  </button>
                 </div>
               </div>
-
-              {!expandedIdx && expandedIdx !== idx && (
-                <div className="px-6 pb-6 pt-2">
-                  <p className="text-[11px] text-dama-brown/60 line-clamp-2">
-                    {item.desc}
-                  </p>
-                </div>
-              )}
             </div>
           );
         })}
       </div>
-
-      <div className="mt-12 text-center pb-10">
-        <p className="text-[10px] text-dama-brown/30 font-bold mb-4">
-          「 每天一點新知識，陪妳溫柔啟航 」
-        </p>
-        <button
-          onClick={() => window.open(footerBtn.url, '_blank')}
-          className="bg-white border-2 border-dama-sakura text-dama-sakura px-8 py-3 rounded-full font-bold text-xs shadow-lg active:scale-95 transition-all hover:bg-dama-sakura hover:text-white"
-        >
-          {footerBtn.label}
-        </button>
-      </div>
+      <p className="text-center mt-12 mb-8 text-[10px] font-bold text-dama-brown/20 italic tracking-widest">
+        「 專屬於妳的智慧百科，陪伴成長的每一天 」
+      </p>
     </div>
   );
 };

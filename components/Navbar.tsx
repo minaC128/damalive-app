@@ -1,19 +1,22 @@
 
 import React from 'react';
-import { Page } from '../types';
+import { Page, UserProfile } from '../types';
+import { translations, Language } from '../data/translations';
 
 interface NavbarProps {
   currentPage: Page;
   onNavigate: (page: Page) => void;
+  language?: Language;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
+const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate, language = 'zh' }) => {
+  const t = translations[language].nav;
   const navItems = [
-    { id: 'home', label: '首頁', icon: 'home' },
-    { id: 'growth', label: '旅程', icon: 'auto_graph' },
+    { id: 'home', label: t.home, icon: 'home' },
+    { id: 'growth', label: t.journey, icon: 'auto_graph' },
     { id: 'ai', label: '小達', icon: 'pets', special: true },
-    { id: 'knowledge', label: '知識', icon: 'menu_book' },
-    { id: 'profile', label: '我的', icon: 'person' },
+    { id: 'knowledge', label: t.knowledge, icon: 'menu_book' },
+    { id: 'profile', label: t.profile, icon: 'person' },
   ];
 
   return (
@@ -22,9 +25,8 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate }) => {
         <button
           key={item.id}
           onClick={() => onNavigate(item.id as Page)}
-          className={`flex flex-col items-center gap-1 w-1/5 transition-all ${
-            item.special ? '-mt-10' : ''
-          } ${currentPage === item.id ? 'text-dama-sakura' : 'text-dama-brown/40'}`}
+          className={`flex flex-col items-center gap-1 w-1/5 transition-all ${item.special ? '-mt-10' : ''
+            } ${currentPage === item.id ? 'text-dama-sakura' : 'text-dama-brown/40'}`}
         >
           {item.special ? (
             <div className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg border-4 border-white text-white active:scale-90 transition-transform ${currentPage === 'ai' ? 'bg-dama-matcha' : 'bg-dama-sakura'}`}>

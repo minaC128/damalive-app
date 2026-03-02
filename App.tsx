@@ -38,9 +38,11 @@ const App: React.FC = () => {
             uid: session.user.id,
             name: session.user.email?.split('@')[0] || 'User',
             avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${session.user.email}`,
+            birthDate: '',
             isPostpartum: false,
             email: session.user.email,
             fontSize: 'medium',
+            preferredLanguage: 'zh',
           };
           setUser(defaultProfile);
         }
@@ -99,6 +101,7 @@ const App: React.FC = () => {
   if (!user) return <LoginOverlay onLogin={setUser} />;
 
   const renderPage = () => {
+    const lang = user.preferredLanguage || 'zh';
     switch (currentPage) {
       case 'home': return <Home user={user} onSyncStatus={onSyncStatusChange} />;
       case 'growth': return <GrowthTracker user={user} />;
@@ -131,7 +134,7 @@ const App: React.FC = () => {
       <main className="flex-1 pb-24 overflow-y-auto no-scrollbar">
         {renderPage()}
       </main>
-      <Navbar currentPage={currentPage} onNavigate={(p) => { setCurrentPage(p); }} />
+      <Navbar currentPage={currentPage} onNavigate={(p) => { setCurrentPage(p); }} language={user.preferredLanguage || 'zh'} />
     </div>
   );
 };

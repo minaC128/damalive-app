@@ -25,6 +25,7 @@ export interface UserProfile {
   isPostpartum: boolean;
   email?: string;
   fontSize?: 'small' | 'medium' | 'large';
+  preferredLanguage?: 'zh' | 'en' | 'ja';
   savedKnowledgeIds?: string[];
 }
 
