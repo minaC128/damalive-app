@@ -124,29 +124,30 @@ const KnowledgeBase: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile
                   <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm">
                     <span className="material-symbols-outlined text-dama-brown text-sm">{item.icon}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={(e) => toggleSave(e, item.id)}
-                      className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${isFaved ? 'bg-dama-sakura text-white' : 'bg-white/60 text-dama-sakura hover:bg-white'}`}
-                    >
-                      <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: isFaved ? "'FILL' 1" : "''" }}>
-                        favorite
-                      </span>
-                    </button>
-                    <div className="flex flex-col items-end gap-1">
-                      <span className="text-[7px] bg-white/80 px-2 py-0.5 rounded-full font-bold text-dama-brown/60 uppercase tracking-tighter">
-                        {item.source}
-                      </span>
-                      <span className="material-symbols-outlined text-dama-brown/20 text-xs">
-                        {expandedIdx === idx ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}
-                      </span>
-                    </div>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className="text-[7px] bg-white/80 px-2 py-0.5 rounded-full font-bold text-dama-brown/60 uppercase tracking-tighter">
+                      {item.source}
+                    </span>
+                    <span className="material-symbols-outlined text-dama-brown/20 text-xs">
+                      {expandedIdx === idx ? 'keyboard_arrow_up' : 'keyboard_arrow_down'}
+                    </span>
                   </div>
                 </div>
 
-                <div className="relative z-10">
+                <div className="relative z-10 pr-12">
                   <h3 className="text-lg font-bold text-dama-brown">{item.title}</h3>
                   <p className="text-[9px] font-bold text-dama-brown/40 uppercase tracking-widest mt-1">{item.subtitle}</p>
+
+                  <button
+                    onClick={(e) => toggleSave(e, item.id)}
+                    className={`absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 active:scale-150 ${isFaved
+                      ? 'bg-dama-sakura text-white shadow-md'
+                      : 'bg-white/40 text-dama-sakura hover:bg-white/60'}`}
+                  >
+                    <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: isFaved ? "'FILL' 1" : "''" }}>
+                      favorite
+                    </span>
+                  </button>
                 </div>
               </div>
 

@@ -384,21 +384,20 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
                       <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
                         <span className="material-symbols-outlined text-dama-brown text-sm">{item.icon}</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={handleToggleSave}
-                          className="w-7 h-7 rounded-full bg-white text-dama-sakura flex items-center justify-center shadow-sm active:scale-90 transition-transform"
-                        >
-                          <span className="material-symbols-outlined text-active text-base" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
-                        </button>
-                        <span className="text-[7px] bg-white/80 px-2 py-0.5 rounded-full font-bold text-dama-brown/60 uppercase tracking-tighter">
-                          {item.source}
-                        </span>
-                      </div>
+                      <span className="text-[7px] bg-white/80 px-2 py-0.5 rounded-full font-bold text-dama-brown/60 uppercase tracking-tighter">
+                        {item.source}
+                      </span>
                     </div>
-                    <div className="relative z-10">
+                    <div className="relative z-10 pr-10">
                       <h4 className="text-sm font-bold text-dama-brown">{item.title}</h4>
                       <p className="text-[8px] font-bold text-dama-brown/40 uppercase tracking-widest leading-none mt-1">{item.subtitle}</p>
+
+                      <button
+                        onClick={handleToggleSave}
+                        className="absolute right-0 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white text-dama-sakura flex items-center justify-center shadow-md active:scale-150 transition-all duration-300"
+                      >
+                        <span className="material-symbols-outlined text-active text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>favorite</span>
+                      </button>
                     </div>
                   </div>
 
