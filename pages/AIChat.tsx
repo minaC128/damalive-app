@@ -217,7 +217,7 @@ const AIChat: React.FC<{
 
         {session.messages.map(m => (
           <div key={m.id} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2 duration-300`}>
-            <div className={`max-w-[90%] px-5 py-3.5 rounded-2xl shadow-sm text-[13px] leading-relaxed ${m.role === 'user'
+            <div className={`max-w-[90%] px-5 py-3.5 rounded-2xl shadow-sm text-base leading-relaxed ${m.role === 'user'
               ? 'bg-[#f5d8c6] text-dama-brown rounded-tr-sm'
               : m.isEmergency
                 ? 'bg-red-50 border-2 border-red-200 text-red-800 rounded-tl-sm'
