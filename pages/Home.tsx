@@ -179,7 +179,7 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
                   />
                 )}
                 <div className="absolute bottom-4 left-4 right-4 bg-white/80 backdrop-blur-sm py-2 px-4 rounded-full text-center shadow-sm">
-                  <p className="text-[10px] font-bold text-dama-sakura tracking-wider">今日 {fruitStage} 插畫</p>
+                  <p className="text-[10px] font-bold text-dama-sakura tracking-wider">今日</p>
                 </div>
               </div>
             </div>
