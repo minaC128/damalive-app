@@ -142,9 +142,9 @@ const KnowledgeBase: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile
                     onClick={(e) => toggleSave(e, item.id)}
                     className={`absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 active:scale-150 ${isFaved
                       ? 'bg-dama-sakura text-white shadow-md'
-                      : 'bg-white/40 text-dama-sakura hover:bg-white/60'}`}
+                      : 'bg-white/60 text-dama-sakura hover:bg-white'}`}
                   >
-                    <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: isFaved ? "'FILL' 1" : "''" }}>
+                    <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: isFaved ? "'FILL' 1" : "'FILL' 0" }}>
                       favorite
                     </span>
                   </button>
