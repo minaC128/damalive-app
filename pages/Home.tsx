@@ -74,46 +74,36 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
   }, [currentWeek, user.isPostpartum]);
 
   useEffect(() => {
-    const generateDailyIllustration = async (retries = 2) => {
+    const generateDailyIllustration = async (retries = 0) => {
       setIsGenerating(true);
-      try {
-        let ageText = '';
-        if (user.isPostpartum) {
-          const days = user.birthDate
-            ? Math.ceil((new Date().getTime() - new Date(user.birthDate).getTime()) / (1000 * 60 * 60 * 24))
-            : 1;
-          ageText = `a newborn baby about ${days} days old`;
-        } else {
-          ageText = `a fetus at ${currentWeek} weeks of pregnancy, which is roughly the size of a ${fruitStage}`;
-        }
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 9000); // 9秒超時，留一點時間給網路
 
-        const d = new Date();
-        const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-        const prompt = `(Date: ${todayStr}) A super cute, childlike, and joyful nursery - style illustration of ${ageText}. The baby has a big, happy, adorable smile and sparkling eyes. Style: hand-drawn crayon and soft watercolor, playful children's book illustration, vibrant but gentle pastel colors, whimsical, warm and cozy, white background.`;
+      try {
+        let ageText = user.isPostpartum ? 'newborn baby' : `fetus at ${currentWeek} weeks`;
+        const prompt = `Minimalist nursery illustration of ${ageText}. Soft watercolor, pastel colors, white background, cute children's book style.`;
 
         const response = await fetch('/api/generate-image', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ prompt }),
+          signal: controller.signal
         });
+
+        clearTimeout(timeoutId);
 
         if (response.ok) {
           const data = await response.json();
           if (data.data) {
-            // 使用經測試可產生圖像的模型
             setGeneratedImg(`data:${data.mimeType || 'image/png'};base64,${data.data}`);
             setIsGenerating(false);
             return;
           }
         }
-        throw new Error('Image generation failed');
+        throw new Error('Timeout or Error');
       } catch (error: any) {
-        console.error("Home card image generation failed:", error);
-        if (retries > 0) {
-          setTimeout(() => generateDailyIllustration(retries - 1), 2000);
-          return;
-        }
-        const fallbackUrl = `https://api.dicebear.com/7.x/not-avataaars/svg?seed=${fruitStage}&backgroundColor=f2cece,f5d8c6`;
+        console.warn("Using fallback illustration...");
+        const fallbackUrl = `https://api.dicebear.com/7.x/shapes/svg?seed=${fruitStage}&backgroundColor=f2cece,f5d8c6`;
         setGeneratedImg(fallbackUrl);
         setIsGenerating(false);
       }
@@ -144,14 +134,17 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
 
   return (
     <div className="px-6 py-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-32">
-      <header className="flex justify-between items-center mb-8">
-        <div>
-          <a href="https://1125anton.my.canva.site/damalive" target="_blank" rel="noopener noreferrer" className="block hover:opacity-80 transition-opacity">
-            <h1 className="text-3xl font-display font-bold text-dama-sakura tracking-tight">DAMALIVE</h1>
-          </a>
-          <p className="text-[10px] text-dama-brown/60 tracking-widest mt-1 uppercase font-bold">{t.greeting}，{user.name} • {getSubheader()}</p>
+      <header className="flex justify-between items-center mb-8 px-2">
+        <div className="flex flex-col">
+          <div className="flex items-center gap-2">
+            <h1 className="text-3xl font-black text-dama-sakura tracking-tighter">DAMALIVE</h1>
+            <div className="px-2 py-0.5 bg-dama-sakura/10 rounded-full">
+              <span className="text-[8px] font-bold text-dama-sakura uppercase tracking-widest">Beta</span>
+            </div>
+          </div>
+          <p className="text-[10px] text-dama-brown/60 tracking-widest mt-1 uppercase font-bold">{t.greeting} • {user.name} • {getSubheader()}</p>
         </div>
-        <img src={user.avatar} className="w-12 h-12 rounded-full border-2 border-dama-sakura shadow-sm object-cover" alt="avatar" />
+        <img src={user.avatar} className="w-11 h-11 rounded-full border-2 border-dama-sakura/30 shadow-sm object-cover" alt="avatar" />
       </header>
 
       <section className="bg-white/60 p-6 rounded-[32px] border-2 border-dashed border-dama-sakura mb-10 shadow-sm">
