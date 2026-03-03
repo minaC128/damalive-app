@@ -77,7 +77,7 @@ const KnowledgeBase: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile
           <button
             key={tab.id}
             onClick={() => { setActiveTab(tab.id); setExpandedItem(null); }}
-            className={`flex-1 py-3 rounded-2xl flex flex-col items-center gap-1 transition-all ${activeTab === tab.id ? 'bg-dama-sakura text-white shadow-md scale-[1.02]' : 'text-dama-brown/40 hover:bg-white/50'}`}
+            className={`flex-1 py-3 px-3 rounded-2xl flex items-center justify-center gap-2 transition-all ${activeTab === tab.id ? 'bg-dama-sakura text-white shadow-md scale-[1.02]' : 'text-dama-brown/40 hover:bg-white/50'}`}
           >
             <span className="material-symbols-outlined text-sm">{tab.icon}</span>
             <span className="text-[10px] font-bold tracking-wider">{tab.label}</span>
