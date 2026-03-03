@@ -111,6 +111,7 @@ export const deleteChatSession = async (uid: string, chatId: string, onSync?: an
   onSync?.('synced');
 };
 
+// Fetch all chat history for a specific user uid
 export const getChatHistory = async (uid: string) => {
   const { data } = await supabase.from('chat_sessions').select('*').eq('user_id', uid).order('updated_at', { ascending: false });
   const history: Record<string, ChatMessage[]> = {};

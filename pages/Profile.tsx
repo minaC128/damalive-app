@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { UserProfile, ChatSession, MoodRecord, Note, NoteCategory } from '../types';
-import { getAllData, saveProfile, saveNote, deleteNote } from '../services/storageService';
+import { getAllData, saveProfile, saveNote, deleteNote } from '../services/dbService';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { pregnancyPool, postpartumPool } from '../data/knowledgePool';
 import { translations, Language } from '../data/translations';

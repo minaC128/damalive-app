@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { UserProfile } from '../types';
 import { supabase } from '../services/supabaseClient';
-import { saveProfile } from '../services/storageService';
+import { saveProfile } from '../services/dbService';
 import { translations, Language } from '../data/translations';
 
 interface LoginOverlayProps {

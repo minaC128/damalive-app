@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { UserProfile, KnowledgeItem } from '../types';
-import { getDailyKnowledge } from '../services/storageService';
+import { getDailyKnowledge } from '../services/dbService';
 
 interface DailyKnowledgeCardProps {
     user: UserProfile;

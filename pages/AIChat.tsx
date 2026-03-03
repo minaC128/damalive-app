@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { UserProfile, ChatMessage } from '../types';
-import { getChatHistory, saveChatMessage, deleteChatSession } from '../services/storageService';
+import { getChatHistory, saveChatMessage, deleteChatSession } from '../services/dbService';
 import { translations } from '../data/translations';
 
 const AIChat: React.FC<{

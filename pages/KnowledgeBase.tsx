@@ -1,8 +1,7 @@
-
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserProfile, KnowledgeItem } from '../types';
 import { pregnancyPool, postpartumPool } from '../data/knowledgePool';
-import { saveProfile } from '../services/storageService';
+import { saveProfile } from '../services/dbService';
 import { translations } from '../data/translations';
 
 const KnowledgeBase: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => void, onSyncStatus: any }> = ({ user, onUpdateUser, onSyncStatus }) => {
@@ -31,7 +30,14 @@ const KnowledgeBase: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile
     const today = new Date();
     const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
     const pool = user.isPostpartum ? postpartumPool[activeTab] : pregnancyPool[activeTab];
-    setShuffledItems(shuffleWithSeed(pool, seed));
+
+    // 將 desc 映射到 content 以符合 KnowledgeItem 介面
+    const mappedPool = pool.map(item => ({
+      ...item,
+      content: (item as any).desc || ''
+    }));
+
+    setShuffledItems(shuffleWithSeed(mappedPool as any, seed));
   }, [user.isPostpartum, activeTab]);
 
   const handleToggleSave = async (e: React.MouseEvent, id: string) => {

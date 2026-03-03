@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import { UserProfile, MoodRecord } from '../types';
-import { saveMood, getAllData, getDailyKnowledge } from '../services/storageService';
+import { saveMood, getAllData, getDailyKnowledge } from '../services/dbService';
 import { translations } from '../data/translations';
 
 const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSyncStatus }) => {

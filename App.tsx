@@ -9,7 +9,7 @@ import Profile from './pages/Profile';
 import Navbar from './components/Navbar';
 import LoginOverlay from './components/LoginOverlay';
 import { Page, UserProfile } from './types';
-import { getAllData } from './services/storageService';
+import { getAllData } from './services/dbService';
 import { supabase } from './services/supabaseClient';
 
 const App: React.FC = () => {
