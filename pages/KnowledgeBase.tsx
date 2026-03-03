@@ -60,24 +60,19 @@ const KnowledgeBase: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile
 
   return (
     <div className="p-6 pb-32 animate-in fade-in duration-700">
-      <header className="mb-8 flex justify-between items-center px-2">
-        <div>
-          <h2 className="text-2xl font-bold text-dama-brown flex items-center gap-2">
-            <span className="material-symbols-outlined text-dama-sakura text-2xl">menu_book</span>
-            {t.title}
-          </h2>
-          <p className="text-[10px] font-bold text-dama-sakura/60 uppercase tracking-widest mt-1">
-            {user.isPostpartum ? '產後成長與護理指南' : '孕期健康與發展百科'}
-          </p>
-        </div>
+      <header className="mb-8 text-center">
+        <h2 className="text-3xl font-display font-bold text-dama-brown tracking-tight">
+          {t.title}
+        </h2>
+        <div className="h-1 w-12 bg-dama-sakura/20 mx-auto mt-2 rounded-full"></div>
       </header>
 
-      <div className="flex gap-2 mb-8 bg-white/50 backdrop-blur-sm p-1.5 rounded-3xl shadow-inner border border-dama-sakura/5">
+      <div className="flex gap-2 mb-10 bg-white/50 backdrop-blur-sm p-1.5 rounded-full shadow-inner border border-dama-sakura/5">
         {tabs.map(tab => (
           <button
             key={tab.id}
             onClick={() => { setActiveTab(tab.id); setExpandedItem(null); }}
-            className={`flex-1 py-3 rounded-2xl flex flex-col items-center gap-1 transition-all ${activeTab === tab.id ? 'bg-dama-sakura text-white shadow-md scale-[1.02]' : 'text-dama-brown/40 hover:bg-white/50'}`}
+            className={`flex-1 py-3 px-4 rounded-full flex items-center justify-center gap-2 transition-all duration-300 ${activeTab === tab.id ? 'bg-dama-sakura text-white shadow-lg' : 'text-dama-brown/40 hover:bg-white/50'}`}
           >
             <span className="material-symbols-outlined text-sm">{tab.icon}</span>
             <span className="text-[10px] font-bold tracking-wider">{tab.label}</span>
@@ -85,7 +80,7 @@ const KnowledgeBase: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile
         ))}
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-8">
         {shuffledItems.map((item, idx) => {
           const isExpanded = expandedItem === item.id;
           const isSaved = (user.savedKnowledgeIds || []).includes(item.id);
@@ -94,86 +89,109 @@ const KnowledgeBase: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile
             <div
               key={item.id}
               onClick={() => setExpandedItem(isExpanded ? null : item.id)}
-              className="bg-white rounded-[40px] shadow-sm border border-dama-sakura/5 overflow-hidden transition-all duration-500 cursor-pointer active:scale-[0.98] group"
+              className="bg-white rounded-[40px] shadow-sm border border-dama-sakura/5 overflow-hidden transition-all duration-500 cursor-pointer active:scale-[0.98] group relative"
               style={{ animationDelay: `${idx * 150}ms` }}
             >
-              <div className={`p-6 ${item.color} relative overflow-hidden transition-all duration-500 ${isExpanded ? 'pb-8' : ''}`}>
-                <div className="absolute -top-4 -right-4 opacity-5 scale-150 rotate-12 group-hover:rotate-45 transition-transform duration-700">
-                  <span className="material-symbols-outlined text-[100px]">{item.icon}</span>
+              {/* Top Colored Section */}
+              <div className={`${item.color} p-8 relative overflow-hidden transition-all duration-500 min-h-[180px] flex flex-col justify-between`}>
+                {/* Background Large Icon */}
+                <div className="absolute -bottom-4 -right-4 opacity-[0.03] scale-[2] rotate-12 transition-transform duration-1000 group-hover:rotate-45 group-hover:scale-[2.2]">
+                  <span className="material-symbols-outlined text-[120px]">{item.icon}</span>
                 </div>
 
-                <div className="flex items-start justify-between mb-4 relative z-10">
+                <div className="flex items-start justify-between relative z-10 mb-6">
+                  {/* Category Label (Top Right) */}
+                  <div className="absolute top-0 right-0">
+                    <span className="text-[9px] bg-white/60 px-3 py-1 rounded-full font-bold text-dama-brown/40 uppercase tracking-widest">
+                      {item.source}
+                    </span>
+                  </div>
+
+                  {/* Icon Badge (Top Left) */}
                   <div className="w-10 h-10 bg-white rounded-2xl flex items-center justify-center shadow-sm">
                     <span className="material-symbols-outlined text-dama-brown text-lg">{item.icon}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[8px] bg-white/80 px-3 py-1 rounded-full font-bold text-dama-brown/60 uppercase tracking-widest">
-                      {item.source}
-                    </span>
+                </div>
+
+                <div className="relative z-10">
+                  <h3 className="text-xl font-bold text-dama-brown leading-tight pr-12">{item.title}</h3>
+                  <p className="text-[10px] font-bold text-dama-brown/30 uppercase tracking-[0.2em] mt-2 leading-none">{item.subtitle}</p>
+                </div>
+
+                {/* Floating Heart Button */}
+                <button
+                  onClick={(e) => handleToggleSave(e, item.id)}
+                  className={`absolute right-8 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${isSaved ? 'bg-dama-sakura text-white scale-110' : 'bg-white/90 text-dama-sakura hover:scale-110'}`}
+                >
+                  <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: isSaved ? "'FILL' 1" : "'FILL' 0" }}>
+                    favorite
+                  </span>
+                </button>
+              </div>
+
+              {/* Bottom White Section */}
+              <div className="bg-white p-8 relative z-10">
+                <p className="text-sm text-dama-brown/60 leading-relaxed font-medium">
+                  {item.content}
+                </p>
+
+                <div className={`mt-6 transition-all duration-500 ease-in-out ${isExpanded ? 'max-h-[1500px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
+                  <div className="pt-6 border-t border-dama-sakura/5">
+                    <div className="bg-dama-bg/40 p-6 rounded-[32px] mb-6 shadow-inner">
+                      <h4 className="text-[10px] font-bold text-dama-sakura uppercase tracking-widest mb-3 flex items-center gap-2">
+                        <span className="material-symbols-outlined text-sm">auto_stories</span>
+                        {t.fullStory}
+                      </h4>
+                      <p className="text-sm text-dama-brown/80 leading-[1.8] whitespace-pre-wrap font-medium">
+                        {item.fullContent}
+                      </p>
+                    </div>
+
+                    <div className="space-y-4">
+                      <h4 className="text-[10px] font-bold text-dama-sakura uppercase tracking-widest px-1">實用的建議</h4>
+                      <div className="flex flex-col gap-2">
+                        {item.tips.map((tip, i) => (
+                          <div key={i} className="flex items-start gap-3 bg-white p-4 rounded-2xl border border-dama-sakura/5 shadow-sm">
+                            <div className="w-6 h-6 rounded-full bg-dama-sakura/10 flex items-center justify-center shrink-0 mt-0.5">
+                              <span className="text-[10px] font-bold text-dama-sakura">{i + 1}</span>
+                            </div>
+                            <p className="text-xs text-dama-brown/80 font-medium leading-relaxed">{tip}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
                     <button
-                      onClick={(e) => handleToggleSave(e, item.id)}
-                      className={`w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${isSaved ? 'bg-dama-sakura text-white scale-110' : 'bg-white/90 text-dama-sakura hover:scale-110'}`}
+                      onClick={(e) => { e.stopPropagation(); setExpandedItem(null); }}
+                      className="w-full mt-8 py-4 bg-dama-bg rounded-2xl text-[10px] font-bold text-dama-brown/30 hover:text-dama-sakura transition-colors flex items-center justify-center gap-2"
                     >
-                      <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: isSaved ? "'FILL' 1" : "'FILL' 0" }}>
-                        favorite
-                      </span>
+                      {tc.collapse}
+                      <span className="material-symbols-outlined text-xs">keyboard_arrow_up</span>
                     </button>
                   </div>
                 </div>
 
-                <div className="relative z-10 pr-12">
-                  <h3 className="text-xl font-bold text-dama-brown pr-4 break-words leading-tight">{item.title}</h3>
-                  <p className="text-[9px] font-bold text-dama-brown/40 uppercase tracking-[0.2em] mt-2 mb-3 leading-none">{item.subtitle}</p>
-                  <p className="text-xs text-dama-brown/80 leading-relaxed font-medium line-clamp-2 pr-4">{item.content}</p>
-                </div>
-
-                <div className={`absolute right-6 bottom-6 transition-transform duration-500 ${isExpanded ? 'rotate-180' : ''}`}>
-                  <span className="material-symbols-outlined text-dama-brown/20">expand_more</span>
-                </div>
-              </div>
-
-              <div className={`transition-all duration-500 ease-in-out bg-white ${isExpanded ? 'max-h-[1500px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
-                <div className="p-8 border-t border-dama-sakura/5">
-                  <div className="bg-dama-bg/40 p-6 rounded-[32px] mb-6 shadow-inner">
-                    <h4 className="text-[10px] font-bold text-dama-sakura uppercase tracking-widest mb-3 flex items-center gap-2">
-                      <span className="material-symbols-outlined text-sm">auto_stories</span>
-                      {t.fullStory}
-                    </h4>
-                    <p className="text-sm text-dama-brown/80 leading-[1.8] whitespace-pre-wrap font-medium">
-                      {item.fullContent}
-                    </p>
+                {/* Expand Indicator */}
+                {!isExpanded && (
+                  <div className="mt-4 flex justify-center">
+                    <span className="material-symbols-outlined text-dama-brown/20 text-xs animate-bounce">expand_more</span>
                   </div>
-
-                  <div className="space-y-4">
-                    <h4 className="text-[10px] font-bold text-dama-sakura uppercase tracking-widest px-1">實用的建議</h4>
-                    <div className="flex flex-col gap-2">
-                      {item.tips.map((tip, i) => (
-                        <div key={i} className="flex items-start gap-3 bg-white p-4 rounded-2xl border border-dama-sakura/5 shadow-sm hover:shadow-md transition-shadow">
-                          <div className="w-6 h-6 rounded-full bg-dama-sakura/10 flex items-center justify-center shrink-0 mt-0.5">
-                            <span className="text-[10px] font-bold text-dama-sakura">{i + 1}</span>
-                          </div>
-                          <p className="text-xs text-dama-brown/80 font-medium leading-relaxed">{tip}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setExpandedItem(null); }}
-                    className="w-full mt-8 py-4 bg-dama-bg rounded-2xl text-[10px] font-bold text-dama-brown/30 hover:text-dama-sakura transition-colors flex items-center justify-center gap-2"
-                  >
-                    {tc.collapse}
-                    <span className="material-symbols-outlined text-xs">keyboard_arrow_up</span>
-                  </button>
-                </div>
+                )}
               </div>
             </div>
           );
         })}
       </div>
-      <p className="text-center mt-12 mb-8 text-[10px] font-bold text-dama-brown/20 italic tracking-widest">
-        「 專屬於妳的智慧百科，陪伴成長的每一天 」
-      </p>
+
+      <div className="flex flex-col items-center mt-16 mb-8 gap-6">
+        <p className="text-[11px] font-bold text-dama-brown/20 italic tracking-widest whitespace-pre-wrap text-center">
+          {t.slogan}
+        </p>
+
+        <button className="px-8 py-4 bg-white rounded-full border border-dama-sakura/30 text-dama-sakura font-bold text-sm shadow-sm hover:shadow-md transition-all active:scale-95">
+          更多育兒指南
+        </button>
+      </div>
     </div>
   );
 };
