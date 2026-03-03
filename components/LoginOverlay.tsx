@@ -199,6 +199,9 @@ const LoginOverlay: React.FC<LoginOverlayProps> = ({ onLogin }) => {
                 minLength={6}
               />
             </div>
+            <div className="mb-6 bg-red-50 border border-red-100 p-4 rounded-2xl text-red-500 text-xs font-bold text-center leading-relaxed">
+              Supabase 尚未設定！請確認環境變數是否包含 VITE_SUPABASE_URL。目前的 URL 是: "{import.meta.env.VITE_SUPABASE_URL || '空的'}"
+            </div>
             <button
               type="submit"
               disabled={loading}
