@@ -123,13 +123,17 @@ const KnowledgeBase: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile
 
                 <div className="relative z-10 pr-12">
                   <h3 className="text-xl font-bold text-dama-brown pr-4 break-words leading-tight">{item.title}</h3>
-                  <p className="text-[9px] font-bold text-dama-brown/40 uppercase tracking-[0.2em] mt-2 mb-3 leading-none">{item.subtitle}</p>
-                  <p className="text-xs text-dama-brown/80 leading-relaxed font-medium line-clamp-2 pr-4">{item.content}</p>
+                  <p className="text-[9px] font-bold text-dama-brown/40 uppercase tracking-[0.2em] mt-2 mb-1 leading-none">{item.subtitle}</p>
                 </div>
 
                 <div className={`absolute right-6 bottom-6 transition-transform duration-500 ${isExpanded ? 'rotate-180' : ''}`}>
                   <span className="material-symbols-outlined text-dama-brown/20">expand_more</span>
                 </div>
+              </div>
+
+              {/* Bottom White Area for Content */}
+              <div className="bg-white px-6 py-4 border-t border-dama-sakura/5">
+                <p className="text-xs text-dama-brown/60 leading-relaxed font-medium">{item.content}</p>
               </div>
 
               <div className={`transition-all duration-500 ease-in-out bg-white ${isExpanded ? 'max-h-[1500px] opacity-100' : 'max-h-0 opacity-0 overflow-hidden'}`}>
