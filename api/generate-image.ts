@@ -12,9 +12,8 @@ export default async function handler(req: any, res: any) {
     try {
         const { prompt } = req.body;
         const apiKey = process.env.GEMINI_API_KEY!;
-
-        const genAI = new GoogleGenerativeAI(apiKey);
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash-image' });
+        const genAI = new GoogleGenerativeAI(apiKey); // 使用經測試可產生圖像的模型
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-exp' });
 
         const result = await model.generateContent([prompt]);
 

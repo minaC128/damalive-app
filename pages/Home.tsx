@@ -100,6 +100,7 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
         if (response.ok) {
           const data = await response.json();
           if (data.data) {
+            // 使用經測試可產生圖像的模型
             setGeneratedImg(`data:${data.mimeType || 'image/png'};base64,${data.data}`);
             setIsGenerating(false);
             return;
@@ -183,6 +184,9 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
                     src={generatedImg || 'https://api.dicebear.com/7.x/shapes/svg?seed=loading'}
                     className="w-full h-full object-cover rounded-[32px] animate-in fade-in duration-1000"
                     alt="Daily Illustration"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/not-avataaars/svg?seed=${fruitStage}&backgroundColor=f2cece,f5d8c6`;
+                    }}
                   />
                 )}
                 <div className="absolute bottom-4 left-4 right-4 bg-white/80 backdrop-blur-sm py-2 px-4 rounded-full text-center shadow-sm">
