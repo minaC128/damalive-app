@@ -85,22 +85,28 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
         const clientApiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
         if (clientApiKey) {
-          console.log("Using client-side generation for speed...");
-          const clientResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${clientApiKey}`, {
+          console.log("Attempting direct AI generation...");
+          const clientResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${clientApiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              contents: [{ parts: [{ text: prompt }] }]
+              contents: [{
+                parts: [{ text: prompt + " Output image only." }]
+              }]
             })
           });
 
           if (clientResponse.ok) {
             const result = await clientResponse.json();
-            const part = result.candidates?.[0]?.content?.parts?.[0];
-            if (part?.inlineData) {
-              setGeneratedImg(`data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`);
-              setIsGenerating(false);
-              return;
+            const candidates = result.candidates || [];
+            const parts = candidates[0]?.content?.parts || [];
+
+            for (const part of parts) {
+              if (part.inlineData) {
+                setGeneratedImg(`data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`);
+                setIsGenerating(false);
+                return;
+              }
             }
           }
         }
