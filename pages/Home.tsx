@@ -78,6 +78,18 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
       setIsGenerating(true);
 
       try {
+        // 新增：針對產後 1-4 個月使用特定的插圖
+        if (user.isPostpartum && user.birthDate) {
+          const days = Math.ceil((new Date().getTime() - new Date(user.birthDate).getTime()) / (1000 * 60 * 60 * 24));
+          const month = Math.floor(days / 30) + 1;
+
+          if (month >= 1 && month <= 4) {
+            setGeneratedImg(`/images/baby_${month}m.png`);
+            setIsGenerating(false);
+            return;
+          }
+        }
+
         let ageText = user.isPostpartum ? 'newborn baby' : `fetus at ${currentWeek} weeks`;
         const prompt = `Minimalist nursery illustration of ${ageText}. Soft watercolor, pastel colors, white background, cute children's book style.`;
 
