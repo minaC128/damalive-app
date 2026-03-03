@@ -76,21 +76,41 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
   useEffect(() => {
     const generateDailyIllustration = async (retries = 0) => {
       setIsGenerating(true);
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 9000); // 9秒超時，留一點時間給網路
 
       try {
         let ageText = user.isPostpartum ? 'newborn baby' : `fetus at ${currentWeek} weeks`;
         const prompt = `Minimalist nursery illustration of ${ageText}. Soft watercolor, pastel colors, white background, cute children's book style.`;
 
+        // 優先嘗試客戶端直接生成 (繞過 Netlify 10秒限制)
+        const clientApiKey = import.meta.env.VITE_GEMINI_API_KEY;
+
+        if (clientApiKey) {
+          console.log("Using client-side generation for speed...");
+          const clientResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${clientApiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }]
+            })
+          });
+
+          if (clientResponse.ok) {
+            const result = await clientResponse.json();
+            const part = result.candidates?.[0]?.content?.parts?.[0];
+            if (part?.inlineData) {
+              setGeneratedImg(`data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`);
+              setIsGenerating(false);
+              return;
+            }
+          }
+        }
+
+        // 如果客戶端失敗或沒設定，才用原本的後台代理 (有超時風險)
         const response = await fetch('/api/generate-image', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ prompt }),
-          signal: controller.signal
         });
-
-        clearTimeout(timeoutId);
 
         if (response.ok) {
           const data = await response.json();
@@ -100,9 +120,9 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
             return;
           }
         }
-        throw new Error('Timeout or Error');
+        throw new Error('Image creation failed');
       } catch (error: any) {
-        console.warn("Using fallback illustration...");
+        console.warn("Using fallback illustration:", error);
         const fallbackUrl = `https://api.dicebear.com/7.x/shapes/svg?seed=${fruitStage}&backgroundColor=f2cece,f5d8c6`;
         setGeneratedImg(fallbackUrl);
         setIsGenerating(false);
