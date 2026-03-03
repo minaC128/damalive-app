@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+// Cache bust: 2026-03-03 10:33
 import { UserProfile, KnowledgeItem } from '../types';
 import { pregnancyPool, postpartumPool } from '../data/knowledgePool';
 import { saveProfile } from '../services/dbService';
