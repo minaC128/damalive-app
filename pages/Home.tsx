@@ -85,28 +85,30 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
         const clientApiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
         if (clientApiKey) {
-          console.log("Attempting direct AI generation...");
-          const clientResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${clientApiKey}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              contents: [{
-                parts: [{ text: prompt }]
-              }]
-            })
-          });
+          console.log("Attempting direct AI generation (Multi-Model Fallback)...");
+          const models = ['gemini-2.0-flash', 'gemini-1.5-flash', 'gemini-2.0-flash-exp'];
 
-          if (clientResponse.ok) {
-            const result = await clientResponse.json();
-            const candidates = result.candidates || [];
-            const parts = candidates[0]?.content?.parts || [];
+          for (const modelName of models) {
+            try {
+              const clientResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${clientApiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  contents: [{ parts: [{ text: prompt + " Output image only." }] }]
+                })
+              });
 
-            for (const part of parts) {
-              if (part.inlineData) {
-                setGeneratedImg(`data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`);
-                setIsGenerating(false);
-                return;
+              if (clientResponse.ok) {
+                const result = await clientResponse.json();
+                const part = result.candidates?.[0]?.content?.parts?.find((p: any) => p.inlineData);
+                if (part?.inlineData) {
+                  setGeneratedImg(`data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`);
+                  setIsGenerating(false);
+                  return;
+                }
               }
+            } catch (e) {
+              console.warn(`${modelName} failed, trying next...`);
             }
           }
         }
@@ -129,7 +131,8 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
         throw new Error('Image creation failed');
       } catch (error: any) {
         console.warn("Using fallback illustration:", error);
-        const fallbackUrl = `https://api.dicebear.com/7.x/shapes/svg?seed=${fruitStage}&backgroundColor=f2cece,f5d8c6`;
+        // 換成更可愛的寶寶備用圖
+        const fallbackUrl = `https://api.dicebear.com/7.x/adventurer/svg?seed=${fruitStage}&backgroundColor=f2cece&scale=120`;
         setGeneratedImg(fallbackUrl);
         setIsGenerating(false);
       }
