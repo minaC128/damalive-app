@@ -86,12 +86,12 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
 
         if (clientApiKey) {
           console.log("Attempting direct AI generation...");
-          const clientResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${clientApiKey}`, {
+          const clientResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=${clientApiKey}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               contents: [{
-                parts: [{ text: prompt + " Output image only." }]
+                parts: [{ text: prompt }]
               }]
             })
           });
