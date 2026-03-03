@@ -62,26 +62,25 @@ const KnowledgeBase: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile
   return (
     <div className="p-6 pb-32 animate-in fade-in duration-700">
       <header className="mb-8 text-center">
-        <h2 className="text-3xl font-display font-bold text-dama-brown tracking-tight">
+        <h2 className="text-3xl font-bold text-dama-brown tracking-tight">
           {t.title}
         </h2>
-        <div className="h-1 w-12 bg-dama-sakura/20 mx-auto mt-2 rounded-full"></div>
       </header>
 
-      <div className="flex gap-2 mb-6 bg-white/50 backdrop-blur-sm p-1.5 rounded-full shadow-inner border border-dama-sakura/5">
+      <div className="flex gap-2 mb-10 bg-white p-1.5 rounded-full shadow-sm border border-dama-sakura/5">
         {tabs.map(tab => (
           <button
             key={tab.id}
             onClick={() => { setActiveTab(tab.id); setExpandedItem(null); }}
-            className={`flex-1 py-2.5 px-4 rounded-full flex items-center justify-center gap-2 transition-all duration-300 ${activeTab === tab.id ? 'bg-dama-sakura text-white shadow-lg' : 'text-dama-brown/40 hover:bg-white/50'}`}
+            className={`flex-1 py-3 px-2 rounded-full flex items-center justify-center gap-1.5 transition-all duration-300 ${activeTab === tab.id ? 'bg-dama-sakura text-white shadow-md' : 'text-dama-brown/30 hover:bg-dama-bg/50'}`}
           >
-            <span className="material-symbols-outlined text-xs">{tab.icon}</span>
-            <span className="text-[10px] font-bold tracking-wider">{tab.label}</span>
+            <span className="material-symbols-outlined text-sm">{tab.id === 'nutrition' ? 'child_care' : tab.id === 'exercise' ? 'face' : 'favorite'}</span>
+            <span className="text-[10px] font-bold tracking-tight">{tab.label}</span>
           </button>
         ))}
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-6">
         {shuffledItems.map((item, idx) => {
           const isExpanded = expandedItem === item.id;
           const isSaved = (user.savedKnowledgeIds || []).includes(item.id);
@@ -90,49 +89,47 @@ const KnowledgeBase: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile
             <div
               key={item.id}
               onClick={() => setExpandedItem(isExpanded ? null : item.id)}
-              className="bg-white rounded-[32px] shadow-sm border border-dama-sakura/5 overflow-hidden transition-all duration-500 cursor-pointer active:scale-[0.98] group relative"
+              className="bg-white rounded-[40px] shadow-sm border border-dama-sakura/5 overflow-hidden transition-all duration-500 cursor-pointer active:scale-[0.98] group relative"
               style={{ animationDelay: `${idx * 150}ms` }}
             >
               {/* Top Colored Section */}
-              <div className={`${item.color} p-6 relative overflow-hidden transition-all duration-500 min-h-[120px] flex flex-col justify-between`}>
-                {/* Background Large Icon */}
-                <div className="absolute -bottom-4 -right-4 opacity-[0.03] scale-[1.5] rotate-12 transition-transform duration-1000 group-hover:rotate-45">
-                  <span className="material-symbols-outlined text-[100px]">{item.icon}</span>
+              <div className={`${item.color} p-8 relative overflow-hidden transition-all duration-500 min-h-[160px] flex flex-col justify-center`}>
+                {/* Background Large Icon Watermark */}
+                <div className="absolute -bottom-6 -right-6 opacity-[0.04] scale-[2.2] rotate-12 transition-transform duration-1000 group-hover:rotate-45">
+                  <span className="material-symbols-outlined text-[120px]">{item.icon}</span>
                 </div>
 
-                <div className="flex items-start justify-between relative z-10 mb-4">
-                  {/* Category Label (Top Right) */}
-                  <div className="absolute top-0 right-0">
-                    <span className="text-[8px] bg-white/60 px-2 py-0.5 rounded-full font-bold text-dama-brown/40 uppercase tracking-widest">
-                      {item.source}
-                    </span>
+                <div className="absolute top-6 left-6 flex items-start justify-between w-[calc(100%-48px)] z-10">
+                  {/* Icon Badge */}
+                  <div className="w-10 h-10 bg-white rounded-2xl flex items-center justify-center shadow-sm">
+                    <span className="material-symbols-outlined text-dama-brown text-lg">{item.icon}</span>
                   </div>
 
-                  {/* Icon Badge (Top Left) */}
-                  <div className="w-8 h-8 bg-white rounded-xl flex items-center justify-center shadow-sm">
-                    <span className="material-symbols-outlined text-dama-brown text-base">{item.icon}</span>
-                  </div>
+                  {/* Category Label */}
+                  <span className="text-[9px] bg-white/60 px-3 py-1 rounded-full font-bold text-dama-brown/40 uppercase tracking-widest mt-1">
+                    {item.source}
+                  </span>
                 </div>
 
-                <div className="relative z-10">
-                  <h3 className="text-lg font-bold text-dama-brown leading-tight pr-10">{item.title}</h3>
-                  <p className="text-[9px] font-bold text-dama-brown/30 uppercase tracking-[0.2em] mt-1 leading-none">{item.subtitle}</p>
+                <div className="relative z-10 mt-10">
+                  <h3 className="text-2xl font-bold text-dama-brown leading-tight pr-12">{item.title}</h3>
+                  <p className="text-[11px] font-bold text-dama-brown/30 uppercase tracking-[0.1em] mt-1 mb-1">{item.subtitle}</p>
                 </div>
 
-                {/* Floating Heart Button */}
+                {/* Heart Button Positioned according to screenshot */}
                 <button
                   onClick={(e) => handleToggleSave(e, item.id)}
-                  className={`absolute right-6 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${isSaved ? 'bg-dama-sakura text-white' : 'bg-white/90 text-dama-sakura'}`}
+                  className={`absolute right-8 bottom-10 w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${isSaved ? 'bg-dama-sakura text-white scale-110' : 'bg-white text-dama-sakura hover:scale-110'}`}
                 >
-                  <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: isSaved ? "'FILL' 1" : "'FILL' 0" }}>
+                  <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: isSaved ? "'FILL' 1" : "'FILL' 0" }}>
                     favorite
                   </span>
                 </button>
               </div>
 
               {/* Bottom White Section */}
-              <div className="bg-white p-5 relative z-10">
-                <p className="text-xs text-dama-brown/60 leading-relaxed font-medium">
+              <div className="bg-white p-7 relative z-10 border-t border-dama-sakura/5">
+                <p className="text-sm text-dama-brown/60 leading-relaxed font-medium">
                   {item.content}
                 </p>
 
@@ -175,7 +172,7 @@ const KnowledgeBase: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile
                 {/* Expand Indicator */}
                 {!isExpanded && (
                   <div className="mt-4 flex justify-center">
-                    <span className="material-symbols-outlined text-dama-brown/20 text-xs animate-bounce">expand_more</span>
+                    <span className="material-symbols-outlined text-dama-brown/10 text-xl transition-transform group-hover:translate-y-1">expand_more</span>
                   </div>
                 )}
               </div>
@@ -184,12 +181,12 @@ const KnowledgeBase: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile
         })}
       </div>
 
-      <div className="flex flex-col items-center mt-16 mb-8 gap-6">
+      <div className="flex flex-col items-center mt-12 mb-8 gap-5">
         <p className="text-[11px] font-bold text-dama-brown/20 italic tracking-widest whitespace-pre-wrap text-center">
-          {t.slogan}
+          「 每天一點新知識，陪妳溫柔啟航 」
         </p>
 
-        <button className="px-8 py-4 bg-white rounded-full border border-dama-sakura/30 text-dama-sakura font-bold text-sm shadow-sm hover:shadow-md transition-all active:scale-95">
+        <button className="px-10 py-4 bg-white rounded-full border-2 border-dama-sakura/30 text-dama-sakura font-bold text-sm shadow-sm hover:shadow-md transition-all active:scale-95">
           更多育兒指南
         </button>
       </div>
