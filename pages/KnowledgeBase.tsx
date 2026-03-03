@@ -68,20 +68,20 @@ const KnowledgeBase: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile
         <div className="h-1 w-12 bg-dama-sakura/20 mx-auto mt-2 rounded-full"></div>
       </header>
 
-      <div className="flex gap-2 mb-10 bg-white/50 backdrop-blur-sm p-1.5 rounded-full shadow-inner border border-dama-sakura/5">
+      <div className="flex gap-2 mb-6 bg-white/50 backdrop-blur-sm p-1.5 rounded-full shadow-inner border border-dama-sakura/5">
         {tabs.map(tab => (
           <button
             key={tab.id}
             onClick={() => { setActiveTab(tab.id); setExpandedItem(null); }}
-            className={`flex-1 py-3 px-4 rounded-full flex items-center justify-center gap-2 transition-all duration-300 ${activeTab === tab.id ? 'bg-dama-sakura text-white shadow-lg' : 'text-dama-brown/40 hover:bg-white/50'}`}
+            className={`flex-1 py-2.5 px-4 rounded-full flex items-center justify-center gap-2 transition-all duration-300 ${activeTab === tab.id ? 'bg-dama-sakura text-white shadow-lg' : 'text-dama-brown/40 hover:bg-white/50'}`}
           >
-            <span className="material-symbols-outlined text-sm">{tab.icon}</span>
+            <span className="material-symbols-outlined text-xs">{tab.icon}</span>
             <span className="text-[10px] font-bold tracking-wider">{tab.label}</span>
           </button>
         ))}
       </div>
 
-      <div className="space-y-8">
+      <div className="space-y-4">
         {shuffledItems.map((item, idx) => {
           const isExpanded = expandedItem === item.id;
           const isSaved = (user.savedKnowledgeIds || []).includes(item.id);
@@ -90,49 +90,49 @@ const KnowledgeBase: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile
             <div
               key={item.id}
               onClick={() => setExpandedItem(isExpanded ? null : item.id)}
-              className="bg-white rounded-[40px] shadow-sm border border-dama-sakura/5 overflow-hidden transition-all duration-500 cursor-pointer active:scale-[0.98] group relative"
+              className="bg-white rounded-[32px] shadow-sm border border-dama-sakura/5 overflow-hidden transition-all duration-500 cursor-pointer active:scale-[0.98] group relative"
               style={{ animationDelay: `${idx * 150}ms` }}
             >
               {/* Top Colored Section */}
-              <div className={`${item.color} p-8 relative overflow-hidden transition-all duration-500 min-h-[180px] flex flex-col justify-between`}>
+              <div className={`${item.color} p-6 relative overflow-hidden transition-all duration-500 min-h-[120px] flex flex-col justify-between`}>
                 {/* Background Large Icon */}
-                <div className="absolute -bottom-4 -right-4 opacity-[0.03] scale-[2] rotate-12 transition-transform duration-1000 group-hover:rotate-45 group-hover:scale-[2.2]">
-                  <span className="material-symbols-outlined text-[120px]">{item.icon}</span>
+                <div className="absolute -bottom-4 -right-4 opacity-[0.03] scale-[1.5] rotate-12 transition-transform duration-1000 group-hover:rotate-45">
+                  <span className="material-symbols-outlined text-[100px]">{item.icon}</span>
                 </div>
 
-                <div className="flex items-start justify-between relative z-10 mb-6">
+                <div className="flex items-start justify-between relative z-10 mb-4">
                   {/* Category Label (Top Right) */}
                   <div className="absolute top-0 right-0">
-                    <span className="text-[9px] bg-white/60 px-3 py-1 rounded-full font-bold text-dama-brown/40 uppercase tracking-widest">
+                    <span className="text-[8px] bg-white/60 px-2 py-0.5 rounded-full font-bold text-dama-brown/40 uppercase tracking-widest">
                       {item.source}
                     </span>
                   </div>
 
                   {/* Icon Badge (Top Left) */}
-                  <div className="w-10 h-10 bg-white rounded-2xl flex items-center justify-center shadow-sm">
-                    <span className="material-symbols-outlined text-dama-brown text-lg">{item.icon}</span>
+                  <div className="w-8 h-8 bg-white rounded-xl flex items-center justify-center shadow-sm">
+                    <span className="material-symbols-outlined text-dama-brown text-base">{item.icon}</span>
                   </div>
                 </div>
 
                 <div className="relative z-10">
-                  <h3 className="text-xl font-bold text-dama-brown leading-tight pr-12">{item.title}</h3>
-                  <p className="text-[10px] font-bold text-dama-brown/30 uppercase tracking-[0.2em] mt-2 leading-none">{item.subtitle}</p>
+                  <h3 className="text-lg font-bold text-dama-brown leading-tight pr-10">{item.title}</h3>
+                  <p className="text-[9px] font-bold text-dama-brown/30 uppercase tracking-[0.2em] mt-1 leading-none">{item.subtitle}</p>
                 </div>
 
                 {/* Floating Heart Button */}
                 <button
                   onClick={(e) => handleToggleSave(e, item.id)}
-                  className={`absolute right-8 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${isSaved ? 'bg-dama-sakura text-white scale-110' : 'bg-white/90 text-dama-sakura hover:scale-110'}`}
+                  className={`absolute right-6 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 shadow-md ${isSaved ? 'bg-dama-sakura text-white' : 'bg-white/90 text-dama-sakura'}`}
                 >
-                  <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: isSaved ? "'FILL' 1" : "'FILL' 0" }}>
+                  <span className="material-symbols-outlined text-lg" style={{ fontVariationSettings: isSaved ? "'FILL' 1" : "'FILL' 0" }}>
                     favorite
                   </span>
                 </button>
               </div>
 
               {/* Bottom White Section */}
-              <div className="bg-white p-8 relative z-10">
-                <p className="text-sm text-dama-brown/60 leading-relaxed font-medium">
+              <div className="bg-white p-5 relative z-10">
+                <p className="text-xs text-dama-brown/60 leading-relaxed font-medium">
                   {item.content}
                 </p>
 
