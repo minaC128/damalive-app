@@ -262,102 +262,7 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
         </div>
       </div>
 
-      {/* 情緒趨勢 */}
-      <section className="mb-10">
-        <h3 className="font-bold text-dama-brown flex items-center gap-2 mb-5 px-1">
-          <span className="material-symbols-outlined text-dama-sakura text-lg">trending_up</span>
-          {t.moodTrend}
-        </h3>
-        <div className="bg-white rounded-[40px] p-6 shadow-sm border border-dama-sakura/5 h-64">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={weeklyTrendData}>
-              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EED6D6" />
-              <XAxis
-                dataKey="name"
-                axisLine={false}
-                tickLine={false}
-                tick={{ fill: '#8B6E60', fontSize: 10, fontWeight: 'bold' }}
-                dy={10}
-              />
-              <YAxis hide domain={[0, 5]} />
-              <Tooltip
-                content={({ active, payload }) => {
-                  if (active && payload && payload.length) {
-                    return (
-                      <div className="bg-white/90 backdrop-blur-sm p-2 rounded-2xl shadow-sm border border-dama-sakura/20 text-[10px] font-bold text-dama-brown">
-                        {payload[0].payload.displayMood}
-                      </div>
-                    );
-                  }
-                  return null;
-                }}
-              />
-              <Line
-                type="monotone"
-                dataKey="value"
-                stroke="#F2CECE"
-                strokeWidth={4}
-                dot={{ r: 6, fill: '#F2CECE', strokeWidth: 2, stroke: '#fff' }}
-                activeDot={{ r: 8, fill: '#F2CECE', strokeWidth: 2, stroke: '#fff' }}
-                connectNulls
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </section>
-
-      {/* 情緒月份紀錄 */}
-      <section className="mb-10">
-        <div className="flex justify-between items-center mb-5 px-1">
-          <h3 className="font-bold text-dama-brown flex items-center gap-2">
-            <span className="material-symbols-outlined text-dama-sakura text-lg">calendar_today</span>
-            {t.moodMonthly}
-          </h3>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => {
-                const d = new Date(calendarDate);
-                d.setMonth(d.getMonth() - 1);
-                setCalendarDate(d);
-              }}
-              className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-dama-brown/30 hover:text-dama-sakura transition-colors border border-dama-sakura/10"
-            >
-              <span className="material-symbols-outlined text-sm">chevron_left</span>
-            </button>
-            <span className="text-[10px] font-bold text-dama-brown/40 uppercase tracking-widest">{monthCalendarData.monthName}</span>
-            <button
-              onClick={() => {
-                const d = new Date(calendarDate);
-                d.setMonth(d.getMonth() + 1);
-                setCalendarDate(d);
-              }}
-              className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-dama-brown/30 hover:text-dama-sakura transition-colors border border-dama-sakura/10"
-            >
-              <span className="material-symbols-outlined text-sm">chevron_right</span>
-            </button>
-          </div>
-        </div>
-        <div className="bg-white rounded-[40px] p-6 shadow-sm border border-dama-sakura/5">
-          <div className="grid grid-cols-7 gap-1">
-            {(lang === 'zh' ? ['日', '一', '二', '三', '四', '五', '六'] : ['S', 'M', 'T', 'W', 'T', 'F', 'S']).map(d => (
-              <div key={d} className="text-center text-[10px] font-bold text-dama-brown/30 pb-3">{d}</div>
-            ))}
-            {monthCalendarData.calendarItems.map(item => (
-              <div key={item.key} className={`flex flex-col items-center py-2 relative ${item.isPadding ? 'opacity-0' : ''}`}>
-                <span className="text-[9px] font-bold text-dama-brown/20 mb-1">{item.day}</span>
-                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-dama-bg/30">
-                  {item.mood && (
-                    <span className="text-xl animate-in zoom-in duration-300">
-                      {moodEmojis[item.mood]}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
+      {/* 媽咪計畫本 */}
       <section className="mb-10">
         <div className="flex justify-between items-center mb-5 px-1">
           <h3 className="font-bold text-dama-brown flex items-center gap-2">
@@ -496,6 +401,102 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
               )}
             </>
           )}
+        </div>
+      </section>
+
+      {/* 情緒趨勢 */}
+      <section className="mb-10">
+        <h3 className="font-bold text-dama-brown flex items-center gap-2 mb-5 px-1">
+          <span className="material-symbols-outlined text-dama-sakura text-lg">trending_up</span>
+          {t.moodTrend}
+        </h3>
+        <div className="bg-white rounded-[40px] p-6 shadow-sm border border-dama-sakura/5 h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={weeklyTrendData}>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EED6D6" />
+              <XAxis
+                dataKey="name"
+                axisLine={false}
+                tickLine={false}
+                tick={{ fill: '#8B6E60', fontSize: 10, fontWeight: 'bold' }}
+                dy={10}
+              />
+              <YAxis hide domain={[0, 5]} />
+              <Tooltip
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    return (
+                      <div className="bg-white/90 backdrop-blur-sm p-2 rounded-2xl shadow-sm border border-dama-sakura/20 text-[10px] font-bold text-dama-brown">
+                        {payload[0].payload.displayMood}
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
+              <Line
+                type="monotone"
+                dataKey="value"
+                stroke="#F2CECE"
+                strokeWidth={4}
+                dot={{ r: 6, fill: '#F2CECE', strokeWidth: 2, stroke: '#fff' }}
+                activeDot={{ r: 8, fill: '#F2CECE', strokeWidth: 2, stroke: '#fff' }}
+                connectNulls
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </section>
+
+      {/* 情緒月份紀錄 */}
+      <section className="mb-10">
+        <div className="flex justify-between items-center mb-5 px-1">
+          <h3 className="font-bold text-dama-brown flex items-center gap-2">
+            <span className="material-symbols-outlined text-dama-sakura text-lg">calendar_today</span>
+            {t.moodMonthly}
+          </h3>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => {
+                const d = new Date(calendarDate);
+                d.setMonth(d.getMonth() - 1);
+                setCalendarDate(d);
+              }}
+              className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-dama-brown/30 hover:text-dama-sakura transition-colors border border-dama-sakura/10"
+            >
+              <span className="material-symbols-outlined text-sm">chevron_left</span>
+            </button>
+            <span className="text-[10px] font-bold text-dama-brown/40 uppercase tracking-widest">{monthCalendarData.monthName}</span>
+            <button
+              onClick={() => {
+                const d = new Date(calendarDate);
+                d.setMonth(d.getMonth() + 1);
+                setCalendarDate(d);
+              }}
+              className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-dama-brown/30 hover:text-dama-sakura transition-colors border border-dama-sakura/10"
+            >
+              <span className="material-symbols-outlined text-sm">chevron_right</span>
+            </button>
+          </div>
+        </div>
+        <div className="bg-white rounded-[40px] p-6 shadow-sm border border-dama-sakura/5">
+          <div className="grid grid-cols-7 gap-1">
+            {(lang === 'zh' ? ['日', '一', '二', '三', '四', '五', '六'] : ['S', 'M', 'T', 'W', 'T', 'F', 'S']).map(d => (
+              <div key={d} className="text-center text-[10px] font-bold text-dama-brown/30 pb-3">{d}</div>
+            ))}
+            {monthCalendarData.calendarItems.map(item => (
+              <div key={item.key} className={`flex flex-col items-center py-2 relative ${item.isPadding ? 'opacity-0' : ''}`}>
+                <span className="text-[9px] font-bold text-dama-brown/20 mb-1">{item.day}</span>
+                <div className="w-10 h-10 rounded-full flex items-center justify-center bg-dama-bg/30">
+                  {item.mood && (
+                    <span className="text-xl animate-in zoom-in duration-300">
+                      {moodEmojis[item.mood]}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
