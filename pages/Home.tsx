@@ -78,12 +78,12 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
       setIsGenerating(true);
 
       try {
-        // 新增：針對產後 1-4 個月使用特定的插圖
+        // 新增：針對產後 1-12 個月使用特定的插圖
         if (user.isPostpartum && user.birthDate) {
           const days = Math.ceil((new Date().getTime() - new Date(user.birthDate).getTime()) / (1000 * 60 * 60 * 24));
           const month = Math.floor(days / 30) + 1;
 
-          if (month >= 1 && month <= 4) {
+          if (month >= 1 && month <= 12) {
             setGeneratedImg(`/images/baby_${month}m.png`);
             setIsGenerating(false);
             return;
@@ -207,7 +207,7 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
         >
           <div className={`relative w-full h-full transition-all duration-700 preserve-3d ${isFlipped ? 'rotate-y-180' : ''}`}>
             <div className="absolute inset-0 backface-hidden bg-white rounded-[40px] shadow-xl border-4 border-dama-sakura/10 overflow-hidden flex flex-col items-center justify-center p-2">
-              <div className="w-full h-full relative ring-4 ring-dama-sakura/5 rounded-[32px] overflow-hidden">
+              <div className="w-full h-full relative ring-4 ring-dama-sakura/5 rounded-[32px] overflow-hidden bg-white">
                 {isGenerating && !generatedImg ? (
                   <div className="w-full h-full bg-dama-sakura/5 rounded-[32px] flex flex-col items-center justify-center gap-3">
                     <span className="material-symbols-outlined text-4xl text-dama-sakura animate-spin">auto_awesome</span>
@@ -216,10 +216,10 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
                 ) : (
                   <img
                     src={generatedImg || 'https://api.dicebear.com/7.x/shapes/svg?seed=loading'}
-                    className="w-full h-full object-cover rounded-[32px] animate-in fade-in duration-1000"
-                    alt="Daily Illustration"
+                    className="w-full h-full object-contain p-4 rounded-[32px] animate-in fade-in duration-1000"
+                    alt="Illustration"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/not-avataaars/svg?seed=${fruitStage}&backgroundColor=f2cece,f5d8c6`;
+                      (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/adventurer/svg?seed=${fruitStage}&backgroundColor=f2cece&scale=120`;
                     }}
                   />
                 )}
