@@ -86,7 +86,9 @@ export const translations = {
             toPostpartum: '切換至產後階段',
             savedKnowledge: '收藏的知識小卡',
             noSaved: '還沒有收藏任何小卡嗎？\n在知識庫點擊愛心即可收藏！',
-            noSavedDesc: '收藏的小卡會顯示在這裡，方便隨時查閱。'
+            noSavedDesc: '收藏的小卡會顯示在這裡，方便隨時查閱。',
+            moodTrend: '情緒趨勢',
+            moodMonthly: '情緒月份紀錄'
         }
     },
     en: {
@@ -173,7 +175,9 @@ export const translations = {
             toPostpartum: 'Switch to Postpartum',
             savedKnowledge: 'Saved Cards',
             noSaved: 'No saved cards yet?',
-            noSavedDesc: 'Your favorite knowledge cards will appear here.'
+            noSavedDesc: 'Your favorite knowledge cards will appear here.',
+            moodTrend: 'Mood Trend',
+            moodMonthly: 'Monthly Mood Record'
         }
     },
     ja: {
@@ -260,7 +264,9 @@ export const translations = {
             toPostpartum: '産後モードへ切り替え',
             savedKnowledge: 'お気に入り',
             noSaved: 'お気に入りはまだありません。',
-            noSavedDesc: 'お気に入りのカードがここに表示されます。'
+            noSavedDesc: 'お気に入りのカードがここに表示されます。',
+            moodTrend: '気分の傾向',
+            moodMonthly: '今月の気分ログ'
         }
     }
 };
