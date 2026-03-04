@@ -181,12 +181,23 @@ const GrowthTracker: React.FC<{ user: UserProfile }> = ({ user }) => {
     return baseData;
   }, [user, t]);
 
-  // 使用 Nano Banana 生成圖片
+  // 使用自定義靜態圖片或 AI 生成
   useEffect(() => {
     const generateImage = async (retries = 2) => {
-      // 如果有靜態圖片，直接使用
-      if (data.staticImg) {
-        setGeneratedImg(data.staticImg);
+      // 靜態里程碑圖片地圖
+      const milestoneImages: { [key: string]: string } = {
+        'watermelon': '/images/watermelon.png',
+        'eggplant': '/images/eggplant.png',
+        'banana': '/images/banana.png',
+        'lemon': '/images/lemon.png',
+        'strawberry': '/images/strawberry.png',
+        'poppy seed': '/images/poppy_seed.png'
+      };
+
+      const staticPath = data.staticImg || milestoneImages[data.fruitName];
+
+      if (staticPath) {
+        setGeneratedImg(staticPath);
         setIsGenerating(false);
         return;
       }
