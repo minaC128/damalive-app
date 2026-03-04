@@ -24,8 +24,8 @@
 
 ```env
 GEMINI_API_KEY=你的_GEMINI_API_KEY
-SUPABASE_URL=https://wegesegfmgiqvxveomxc.supabase.co
-SUPABASE_ANON_KEY=sb_publishable_ZbQUnb43lhKDUWdmjp_yow_bt3Hhom3
+SUPABASE_URL=你的_SUPABASE_URL
+SUPABASE_ANON_KEY=你的_SUPABASE_ANON_KEY
 ```
 
 > **提示**：直接點擊「導入 .env」並貼上以上整塊內容是最快的方法，Vercel 會自動幫你拆解好 Key 和 Value。
