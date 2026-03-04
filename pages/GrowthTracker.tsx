@@ -48,6 +48,13 @@ const GrowthTracker: React.FC<{ user: UserProfile }> = ({ user }) => {
 
       const title = months >= 11 ? '茁壯的小樹' : (months >= 6 ? '充滿活力的向日葵' : '一株小嫩芽');
 
+      let growthImg = null;
+      if (months < 2) growthImg = '/images/growth_1_2.png';
+      else if (months < 4) growthImg = '/images/growth_3_4.png';
+      else if (months < 6) growthImg = '/images/growth_5_6.png';
+      else if (months < 8) growthImg = '/images/growth_7_8.png';
+      else growthImg = '/images/growth_9plus.png';
+
       baseData = {
         fruitName: months >= 11 ? 'small tree' : (months >= 6 ? 'sunflower' : 'sprout'),
         title: title,
@@ -59,7 +66,8 @@ const GrowthTracker: React.FC<{ user: UserProfile }> = ({ user }) => {
         height: months >= 11 ? '約 72 - 76 cm' : (months >= 6 ? '約 65 - 70 cm' : '約 50 - 55 cm'),
         imgEmoji: months >= 11 ? '🌳' : (months >= 6 ? '🌻' : '🌱'),
         mode: 'postpartum',
-        momAdvice: postpartumAdvice
+        momAdvice: postpartumAdvice,
+        staticImg: growthImg
       };
     } else {
       // 懷孕階段
@@ -176,6 +184,13 @@ const GrowthTracker: React.FC<{ user: UserProfile }> = ({ user }) => {
   // 使用 Nano Banana 生成圖片
   useEffect(() => {
     const generateImage = async (retries = 2) => {
+      // 如果有靜態圖片，直接使用
+      if (data.staticImg) {
+        setGeneratedImg(data.staticImg);
+        setIsGenerating(false);
+        return;
+      }
+
       setIsGenerating(true);
       try {
         const prompt = `A playful and childlike children's book illustration of a cute ${data.fruitName} with a happy, smiling face and tiny hands/feet. Style: soft colored pencils, kawaii nursery art, vibrant pastel tones, hand-drawn with heart, whimsical and friendly, fills the frame, high quality.`;
@@ -241,7 +256,7 @@ const GrowthTracker: React.FC<{ user: UserProfile }> = ({ user }) => {
           ) : (
             <img
               alt={data.fruitName}
-              className="w-full h-full object-cover animate-in fade-in zoom-in-90 duration-1000 scale-105"
+              className="w-full h-full object-contain p-4 animate-in fade-in zoom-in-90 duration-1000"
               src={generatedImg || 'https://api.dicebear.com/7.x/shapes/svg?seed=loading_growth'}
             />
           )}
