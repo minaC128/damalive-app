@@ -28,22 +28,24 @@ const KnowledgeBase: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile
 
   useEffect(() => {
     const today = new Date();
-    const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+    // 使用日期 + 月份 + 年份 生成更穩定的 seed
+    const seed = today.getFullYear() * 1000 + (today.getMonth() + 1) * 50 + today.getDate();
 
-    // 根據語言選擇對應的知識池
     const langKey = user.preferredLanguage || 'zh';
     const langPool = user.isPostpartum ? postpartumPool : pregnancyPool;
     const currentLangPool = langPool[langKey] || langPool['zh'];
     const pool = currentLangPool[activeTab] || [];
 
-    // 將 desc 映射到 content 以符合 KnowledgeItem 介面
-    const mappedPool = pool.map(item => ({
+    const mappedPool = pool.map((item: any) => ({
       ...item,
-      content: (item as any).desc || ''
+      content: item.desc || ''
     }));
 
-    setShuffledItems(shuffleWithSeed(mappedPool as any, seed));
-  }, [user.isPostpartum, activeTab]);
+    const shuffled = shuffleWithSeed(mappedPool as any, seed);
+    // 確保一個類別至少出現 2 個（如果池子裡夠多的話）
+    // 目前邏輯是顯示全部已打亂的內容，如果想要限制數量可以 slice
+    setShuffledItems(shuffled);
+  }, [user.isPostpartum, activeTab, user.preferredLanguage]);
 
   const handleToggleSave = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();

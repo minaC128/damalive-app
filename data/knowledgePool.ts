@@ -8,7 +8,7 @@ export const pregnancyPool: any = {
                 subtitle: '神經管守護者',
                 desc: '下圖查看更多詳細內容。',
                 fullContent: '🧠 葉酸｜幫助寶寶腦部和脊髓發育\n\n* 為什麼重要？\n懷孕初期是寶寶腦部與神經發育的關鍵時期，葉酸不夠，會增加先天性神經發育問題的風險。\n\n* 什麼時候最重要？\n👉 懷孕前～懷孕 12 週特別重要\n\n* 怎麼補充？\n- 深綠色蔬菜（菠菜、紅莧菜、韭菜、空心菜、紅鳳菜）\n- 豆類、豆製品（燕麥、紅藜、紅豆、綠豆、鷹嘴豆、碗豆仁）\n- 動物（豬肝、雞肝、鯖魚、牡蠣、淡菜）\n- 也可依醫師建議補充葉酸',
-                tips: ['菠菜、蘆筍', '動物肝臟', '柑橘'],
+                tips: ['菠菜、蘆筍', '動物肝臟', '懷孕初期必備'],
                 source: '孕期營養',
                 icon: 'eco',
                 color: 'bg-dama-sakura/10'
@@ -20,7 +20,7 @@ export const pregnancyPool: any = {
                 desc: '後期及分娩時失血量大，需加強補充。',
                 fullContent: '🩸 鐵｜預防貧血與早產\n\n* 為什麼重要？\n懷孕時，媽媽的血量會增加，若鐵不夠，容易貧血，也可能影響寶寶成長，增加早產風險。\n\n* 怎麼補充？\n- 紅肉（牛肉、豬肉）\n- 深綠色蔬菜\n- 豆干、豆腐等豆類\n- 到懷孕後期，鐵的需求會增加，可依醫師建議補充',
                 tips: ['紅肉、黑木耳', '葡萄乾', '紅莧菜'],
-                source: '孕期營養',
+                source: '孕期掃盲',
                 icon: 'bloodtype',
                 color: 'bg-red-50'
             }
@@ -36,6 +36,17 @@ export const pregnancyPool: any = {
                 source: '運動指南',
                 icon: 'directions_walk',
                 color: 'bg-dama-matcha/10'
+            },
+            {
+                id: 'preg_yoga',
+                title: '孕婦瑜珈',
+                subtitle: '身心平衡',
+                desc: '緩解腰痠背痛，練習呼吸律動。',
+                fullContent: '🧘‍♀️ 孕婦瑜珈｜溫柔的伸展\n\n* 好處：\n- 強化骨盆肌肉，幫助順產\n- 改善血液循環，減少抽筋\n- 練習深呼吸，緩解產前焦慮\n- 矯正體態，減少腰椎負擔',
+                tips: ['專業老師指導', '避免壓迫腹部', '量力而為'],
+                source: '運動指南',
+                icon: 'self_improvement',
+                color: 'bg-indigo-50'
             }
         ],
         wellness: [
@@ -49,6 +60,17 @@ export const pregnancyPool: any = {
                 source: '心靈錦囊',
                 icon: 'favorite',
                 color: 'bg-rose-50'
+            },
+            {
+                id: 'preg_skin',
+                title: '孕期肌膚護理',
+                subtitle: '預防妊娠紋',
+                desc: '從三個月開始加強滋潤。',
+                fullContent: '✨ 肌膚護理｜媽咪也要美美的\n\n* 關鍵點：\n- 選擇無香味、低刺激的保養品\n- 在肚子、大腿、臀部塗抹妊娠紋霜或油\n- 保持室內濕度適中\n- 多喝水，從內而外補水',
+                tips: ['洗澡後立即塗抹', '成分簡單最重要', '搭配溫柔按摩'],
+                source: '生活美學',
+                icon: 'face_retouching_natural',
+                color: 'bg-orange-50'
             }
         ]
     },
@@ -59,7 +81,7 @@ export const pregnancyPool: any = {
                 title: 'Folate',
                 subtitle: 'Guardian of Neural Tubes',
                 desc: 'Click for more details.',
-                fullContent: '🧠 Folate | Supporting Baby\'s Brain and Spinal Cord Development\n\n* Why is it important?\nEarly pregnancy is a critical period for brain and nerve development. Deficiency can increase risks of neural tube defects.\n\n* When is it most critical?\n👉 Before pregnancy to 12 weeks of pregnancy.\n\n* How to supplement?\n- Dark green leafy vegetables\n- Beans and legumes\n- Specific meats (liver, mackerel, oysters)\n- Supplement as advised by a doctor.',
+                fullContent: '🧠 Folate | Supporting Baby\'s Brain and Spinal Cord Development\n\n* Why is it important?\nEarly pregnancy is a critical period for brain and nerve development.',
                 tips: ['Spinach, Asparagus', 'Beef Liver', 'Citrus'],
                 source: 'Nutrition',
                 icon: 'eco',
@@ -68,10 +90,10 @@ export const pregnancyPool: any = {
             {
                 id: 'preg_iron',
                 title: 'Iron',
-                subtitle: 'Oxygen Delivery Team',
-                desc: 'Crucial for blood volume and postpartum recovery.',
-                fullContent: '🩸 Iron | Preventing Anemia and Preterm Birth\n\n* Why is it important?\nBlood volume increases during pregnancy. Insufficient iron leads to anemia and affects fetal growth.\n\n* How to supplement?\n- Red meat (Beef, Pork)\n- Dark green vegetables\n- Tofu and soy products\n- Requirements increase in later stages; consult your doctor.',
-                tips: ['Red Meat', 'Raisins', 'Spinach'],
+                subtitle: 'Oxygen Delivery',
+                desc: 'Crucial for blood volume.',
+                fullContent: '🩸 Iron helps prevent anemia and promotes healthy growth.',
+                tips: ['Red meat', 'Lentils', 'Spinach'],
                 source: 'Nutrition',
                 icon: 'bloodtype',
                 color: 'bg-red-50'
@@ -81,11 +103,11 @@ export const pregnancyPool: any = {
             {
                 id: 'preg_walk',
                 title: 'Walking',
-                subtitle: 'Safe Cardio',
-                desc: 'Simple and effective daily exercise.',
-                fullContent: '🚶‍♀️ Walking\nThe simplest and safest way to stay active! Great for cardiovascular health.\n\nBenefits:\n- Improves heart health & circulation\n- Reduces fatigue and swelling\n- Weight management\n- Lowers back pain\n- Better sleep quality',
-                tips: ['Comfortable Shoes', 'Avoid Extreme Weather', 'Stay Hydrated'],
-                source: 'Exercise',
+                subtitle: 'Safe Exercise',
+                desc: 'Keep moving gently.',
+                fullContent: 'Walking is the best way to maintain health during pregnancy.',
+                tips: ['Good shoes', 'Hydrate', 'Pace yourself'],
+                source: 'Fitness',
                 icon: 'directions_walk',
                 color: 'bg-dama-matcha/10'
             }
@@ -95,10 +117,10 @@ export const pregnancyPool: any = {
                 id: 'preg_mental',
                 title: 'Mental Wellness',
                 subtitle: 'Stay Positive',
-                desc: 'Emotional fluctuations are normal. Click for relaxation tips.',
-                fullContent: 'Ways to keep a good mood:\n\n1. Pursue hobbies\n2. Maintain active social life\n3. Set small goals and rewards\n4. Keep a journal\n5. Plan for the future',
-                tips: ['Deep Breathing', 'Journaling', 'Soft Music'],
-                source: 'Wellness',
+                desc: 'Normal to feel moody.',
+                fullContent: 'Take time for yourself.',
+                tips: ['Rest', 'Breathe', 'Connect'],
+                source: 'Self-care',
                 icon: 'favorite',
                 color: 'bg-rose-50'
             }
@@ -108,53 +130,18 @@ export const pregnancyPool: any = {
         nutrition: [
             {
                 id: 'preg_folate',
-                title: '葉酸 (Folate)',
-                subtitle: '神経管の守護者',
-                desc: '詳細については下をクリックしてください。',
-                fullContent: '🧠 葉酸｜赤ちゃんの脳と脊髄の発育をサポート\n\n* なぜ重要なの？\n妊娠初期は赤ちゃんの脳や神経が発達する重要な時期です。不足すると神経管閉鎖障害のリスクが高まります。\n\n* いつが一番重要なの？\n👉 妊娠前から妊娠12週目までが特に重要です。\n\n* どうやって補給する？\n- 濃い緑の野菜（ほうれん草、アスパラガスなど）\n- 豆類、豆製品\n- レバー、サバ、牡蠣など\n- 医師の指導に従いサプリメントの利用も検討してください。',
-                tips: ['ほうれん草、アスパラ', 'レバー', '柑橘類'],
-                source: '栄養管理',
+                title: '葉酸',
+                subtitle: '赤ちゃんの健康のために',
+                desc: '詳細は下をクリック。',
+                fullContent: '葉酸は赤ちゃんの神経管の発達に不可欠です。',
+                tips: ['ほうれん草', 'ブロッコリー'],
+                source: '栄養',
                 icon: 'eco',
                 color: 'bg-dama-sakura/10'
-            },
-            {
-                id: 'preg_iron',
-                title: '鉄分 (Iron)',
-                subtitle: '酸素供給チーム',
-                desc: '血液量増加と産後の回復に不可欠です。',
-                fullContent: '🩸 鉄分｜貧血と早産の予防\n\n* なぜ重要なの？\n妊娠中は血液量が増えます。鉄分が不足すると貧血になりやすく、赤ちゃんの成長にも影響します。\n\n* どうやって補給する？\n- 赤身の肉（牛肉、豚肉）\n- 濃い緑の野菜\n- 豆腐などの豆製品\n- 妊娠後期には需要が増えるため、医師に相談してください。',
-                tips: ['赤身肉', '干しぶどう', 'ほうれん草'],
-                source: '栄養管理',
-                icon: 'bloodtype',
-                color: 'bg-red-50'
             }
         ],
-        exercise: [
-            {
-                id: 'preg_walk',
-                title: 'ウォーキング',
-                subtitle: '安全な有酸素運動',
-                desc: '最もシンプルで効果的な日常運動。',
-                fullContent: '🚶‍♀️ ウォーキング\n最も簡単で安全、いつでも始められます！心肺機能の維持に役立ちます。\n\nメリット：\n- 心肺機能と血行の改善\n- 疲労やむくみの軽減\n- 体重管理\n- 腰痛の緩和\n- 睡眠の質の向上',
-                tips: ['快適な靴', '過酷な天候を避ける', '水分補給'],
-                source: '運動ガイド',
-                icon: 'directions_walk',
-                color: 'bg-dama-matcha/10'
-            }
-        ],
-        wellness: [
-            {
-                id: 'preg_mental',
-                title: 'メンタルウェルネス',
-                subtitle: 'ポジティブな気持ち',
-                desc: '情緒不安定は普通のことです。リラックスのヒントはこちら。',
-                fullContent: '気分を良く保つ方法：\n\n1. 趣味を楽しむ\n2. 社会的な交流を維持する\n3. 小さな目標を立てて自分を褒める\n4. 日記を書く\n5. 将来の楽しみを計画する',
-                tips: ['深呼吸', 'ジャーナリング', '穏やかな音楽'],
-                source: '心のケア',
-                icon: 'favorite',
-                color: 'bg-rose-50'
-            }
-        ]
+        exercise: [],
+        wellness: []
     }
 };
 
@@ -162,15 +149,26 @@ export const postpartumPool: any = {
     zh: {
         nutrition: [
             {
-                id: 'post_sleep',
-                title: '安全睡眠環境',
-                subtitle: '仰睡最安全',
-                desc: '點擊查看新生兒睡眠關鍵事項。',
-                fullContent: '新生兒注意事項：\n\n1. 仰睡最安全\n2. 夜間留意寶寶\n3. 避免同床\n4. 床墊與環境要平整\n5. 避免過熱',
-                tips: ['仰睡避猝死', '室溫24度', '防護堵口鼻'],
-                source: '照顧手冊',
-                icon: 'shield_moon',
-                color: 'bg-blue-50'
+                id: 'post_iron',
+                title: '產後補鐵',
+                subtitle: '恢復紅韻氣色',
+                desc: '分娩失血後，補充鐵質能幫助體力恢復。',
+                fullContent: '🩸 產後補鐵｜告別疲憊感\n\n* 為什麼重要？\n生產過程會流失大量血液，缺鐵容易感到頭暈、疲倦。如果是母乳媽咪，寶寶也會透過奶水吸收鐵質喔。\n\n* 推薦食物：\n- 紅肉（牛、豬、羊）\n- 豬肝、腰子（傳統月子餐常客）\n- 紅莧菜、黑木耳\n- 櫻桃、紅龍果',
+                tips: ['搭配維生素 C 吸收更好', '避免與茶/咖啡同食', '少量多餐補足'],
+                source: '產後營養',
+                icon: 'vital_signs',
+                color: 'bg-red-50'
+            },
+            {
+                id: 'post_fiber',
+                title: '纖維質與水分',
+                subtitle: '順暢小秘訣',
+                desc: '預防產後常見的便秘困擾。',
+                fullContent: '🥬 纖維質｜讓腸道動起來\n\n* 為什麼重要？\n產後活動量減少加上傷口顧慮，便秘是許多媽咪的痛。充足的纖維與水分是最好的解決法。\n\n* 實踐清單：\n- 每天至少 3 份蔬菜、2 份水果\n- 五穀飯取代白飯\n- 每天飲水 2000cc 以上\n- 嘗試規律作息',
+                tips: ['地瓜、奇異果', '溫開水輔助', '腹部輕柔按摩'],
+                source: '產後營養',
+                icon: 'egg_alt',
+                color: 'bg-orange-50'
             }
         ],
         exercise: [
@@ -179,11 +177,22 @@ export const postpartumPool: any = {
                 title: '洗澡與護理',
                 subtitle: '橄欖球抱法',
                 desc: '安全洗滌法與頸部支撐技巧。',
-                fullContent: '洗澡技巧：\n\n* 橄欖球側抱法支撐頸部\n* 先洗臉再洗頭\n* 最後清洗身體與皺褶處',
+                fullContent: '洗澡技巧：\n* 橄欖球側抱法支撐頸部\n* 先洗臉再洗頭\n* 最後清洗身體與皺褶處',
                 tips: ['支托後頸', '先洗臉再洗頭', '保持乾燥'],
                 source: '育兒技巧',
                 icon: 'soap',
                 color: 'bg-cyan-50'
+            },
+            {
+                id: 'post_massage',
+                title: '嬰兒按摩',
+                subtitle: '親密接觸',
+                desc: '透過觸碰建立安全感並緩解腹脹。',
+                fullContent: '👶 嬰兒按摩｜愛的連結\n\n- 腹部順時針按摩可幫助排氣\n- 輕撫四肢促進神經發育\n- 最好在洗澡後、睡覺前進行',
+                tips: ['避開飯後一小時', '注意寶寶反應', '眼神交流不可少'],
+                source: '育兒技巧',
+                icon: 'volunteer_activism',
+                color: 'bg-teal-50'
             }
         ],
         wellness: [
@@ -192,94 +201,40 @@ export const postpartumPool: any = {
                 title: '心靈導航',
                 subtitle: '產後心理調適',
                 desc: '接受不完美，並學會說出情緒。',
-                fullContent: '產後建議：\n\n1. 接受不完美\n2. 把情緒說出來\n3. 調整期待',
+                fullContent: '產後心理健康：\n1. 接受不完美是常態\n2. 大方傾訴不適感\n3. 適當放下育兒任務給隊友',
                 tips: ['情感宣洩', '降低期待', '自我察覺'],
                 source: '身心調適',
                 icon: 'favorite',
                 color: 'bg-rose-50'
+            },
+            {
+                id: 'post_couple',
+                title: '伴侶合作',
+                subtitle: '你是我的神隊友',
+                desc: '分工育兒，讓照顧品質更穩定。',
+                fullContent: '🤝 團隊作戰｜不只是一人的事\n\n- 固定一小段夫妻專屬對話時刻\n- 肯定對方的付出，減少責備\n- 爸爸負責洗澡，建立父子連結',
+                tips: ['每天讚美三句', '共同制定計畫', '分擔夜間照顧'],
+                source: '家庭關係',
+                icon: 'groups',
+                color: 'bg-blue-50'
             }
         ]
     },
     en: {
         nutrition: [
             {
-                id: 'post_sleep',
-                title: 'Safe Sleep',
-                subtitle: 'Back to Sleep',
-                desc: 'Key points for newborn sleep safety.',
-                fullContent: 'Newborn Sleep Safety:\n\n1. Always sleep on back\n2. Monitor baby at night\n3. Avoid bed-sharing\n4. Flat, firm mattress\n5. Avoid overheating',
-                tips: ['SIDS Prevention', 'Room Temp 24°C', 'No Loose Bedding'],
-                source: 'Childcare',
-                icon: 'shield_moon',
-                color: 'bg-blue-50'
+                id: 'post_iron',
+                title: 'Postpartum Iron',
+                subtitle: 'Restore Energy',
+                desc: 'Essential for recovery.',
+                fullContent: 'Iron helps replace blood lost during delivery.',
+                tips: ['Beef', 'Spinach'],
+                source: 'Recovery',
+                icon: 'vital_signs',
+                color: 'bg-red-50'
             }
         ],
-        exercise: [
-            {
-                id: 'post_bath',
-                title: 'Bathing & Care',
-                subtitle: 'Football Hold',
-                desc: 'Techniques for neck support and safe bathing.',
-                fullContent: 'Bathing Tips:\n\n* Use football hold for neck support\n* Wash face and head first\n* Clean body folds carefully',
-                tips: ['Support Neck', 'Face/Head First', 'Keep Dry'],
-                source: 'Parenting Skills',
-                icon: 'soap',
-                color: 'bg-cyan-50'
-            }
-        ],
-        wellness: [
-            {
-                id: 'post_mental',
-                title: 'Mental Compass',
-                subtitle: 'Postpartum Adjustment',
-                desc: 'Accept imperfection and express feelings.',
-                fullContent: 'Mental Health Tips:\n\n1. Accept being imperfect\n2. Talk about your feelings\n3. Adjust expectations',
-                tips: ['Express Emotions', 'Lower Expectations', 'Self-Awareness'],
-                source: 'Wellness',
-                icon: 'favorite',
-                color: 'bg-rose-50'
-            }
-        ]
-    },
-    ja: {
-        nutrition: [
-            {
-                id: 'post_sleep',
-                title: '安全な睡眠環境',
-                subtitle: '仰向け寝が一番安全',
-                desc: '新生児の睡眠に関する重要事項。',
-                fullContent: '新生児の睡眠：\n\n1. 仰向け寝が基本\n2. 夜間の見守り\n3. 添い寝を避ける\n4. 平らで硬めの敷布団\n5. 温めすぎない',
-                tips: ['突然死防止', '室温24度', '窒息防止'],
-                source: '育児ガイド',
-                icon: 'shield_moon',
-                color: 'bg-blue-50'
-            }
-        ],
-        exercise: [
-            {
-                id: 'post_bath',
-                title: 'お風呂とケア',
-                subtitle: 'フットボール抱き',
-                desc: '首の支え方と安全な沐浴。',
-                fullContent: '沐浴のコツ：\n\n* 首を支えるフットボール抱き\n* 顔と頭を先に洗う\n* 体のしわの間まで丁寧に',
-                tips: ['首を支える', '顔から洗う', '清潔に保つ'],
-                source: '育児スキル',
-                icon: 'soap',
-                color: 'bg-cyan-50'
-            }
-        ],
-        wellness: [
-            {
-                id: 'post_mental',
-                title: 'メンタルコンパス',
-                subtitle: '産後の心理調整',
-                desc: '不完全さを受け入れ、感情を共有。',
-                fullContent: '産後のアドバイス：\n\n1. 完璧を求めない\n2. 感情を言葉にしよう\n3. 期待値を調整する',
-                tips: ['感情の発散', '期待を下げる', '自己への気づき'],
-                source: 'ウェルネス',
-                icon: 'favorite',
-                color: 'bg-rose-50'
-            }
-        ]
+        exercise: [],
+        wellness: []
     }
 };
