@@ -1,39 +1,46 @@
+import { KnowledgeItem } from '../types';
 
-export const pregnancyPool: any = {
+export const pregnancyPool: { [key: string]: { [category: string]: KnowledgeItem[] } } = {
     zh: {
         nutrition: [
             {
                 id: 'preg_folate',
                 title: '葉酸 (Folate)',
                 subtitle: '神經管守護者',
-                desc: '幫助寶寶腦部和脊髓發育。',
+                content: '幫助寶寶腦部和脊髓發育。',
                 fullContent: '🧠 葉酸｜重要性：\n懷孕初期是寶寶腦部與神經發育的關鍵時期。缺乏葉酸會增加先天性神經發育問題的風險。\n\n* 攝取時機：\n👉 懷孕前 ～ 懷孕 12 週特別重要\n\n* 推薦食物：\n- 深綠色蔬菜（菠菜、紅莧菜、空心菜等）\n- 豆類、豆製品（燕麥、紅豆、綠豆、鷹嘴豆）\n- 動物肝臟（豬肝、雞肝）、鯖魚、牡蠣',
                 tips: ['菠菜、蘆筍', '動物肝臟', '懷孕初期必備'],
                 source: '孕期營養',
                 icon: 'eco',
-                color: 'bg-dama-sakura/10'
+                color: 'bg-dama-sakura/10',
+                minWeek: 1,
+                maxWeek: 16
             },
             {
                 id: 'preg_iodine',
                 title: '碘 (Iodine)',
                 subtitle: '智力發展關鍵',
-                desc: '幫助寶寶生長與智力發展，預防發育遲緩。',
+                content: '幫助寶寶生長與智力發展，預防發育遲緩。',
                 fullContent: '🧂 碘｜重要性：\n碘不足可能影響寶寶的成長與學習能力，嚴重時甚至增加流產風險。\n\n* 怎麼補充？\n- 家中料理使用「加碘鹽」\n- 適量吃海帶、海藻類\n- ⚠️ 提醒：若有甲狀腺疾病，請先詢問醫師',
                 tips: ['加碘鹽', '海帶、海菜', '甲狀腺注意'],
                 source: '孕期營養',
                 icon: 'egg_alt',
-                color: 'bg-blue-50'
+                color: 'bg-blue-50',
+                minWeek: 1,
+                maxWeek: 40
             },
             {
                 id: 'preg_iron',
                 title: '鐵質 (Iron)',
                 subtitle: '供應血氧團隊',
-                desc: '預防貧血與早產，應付後期血量需求。',
+                content: '預防貧血與早產，應付後期血量需求。',
                 fullContent: '🩸 鐵｜重要性：\n懷孕時媽媽的血量會增加，若鐵不足容易貧血，增加早產風險。\n\n* 怎麼補充？\n- 紅肉（牛肉、豬肉）\n- 深綠色蔬菜、豆干、豆腐\n- 到懷孕後期對鐵的需求會增加，可依醫師建議補充額外營養品',
                 tips: ['紅肉、黑木耳', '葡萄乾', '紅莧菜'],
                 source: '孕期營養',
                 icon: 'bloodtype',
-                color: 'bg-red-50'
+                color: 'bg-red-50',
+                minWeek: 20,
+                maxWeek: 40
             }
         ],
         exercise: [
@@ -41,45 +48,53 @@ export const pregnancyPool: any = {
                 id: 'preg_walk',
                 title: '步行散步',
                 subtitle: '安全有氧首選',
-                desc: '運動不是不行，重點是安全、適度。',
+                content: '運動不是不行，重點是安全、適度。',
                 fullContent: '🚶‍♀️ 步行｜簡單且最安全：\n有助心肺健康、增強血液循環，減少疲倦和水腫。\n\n* 運動關鍵：\n- 穿著舒適運動鞋\n- 避開極端氣候\n- 隨時補充水分\n- 建議每天 20–30 分鐘',
                 tips: ['維持心肺功能', '控制體重', '提升睡眠'],
                 source: '運動指南',
                 icon: 'directions_walk',
-                color: 'bg-dama-matcha/10'
+                color: 'bg-dama-matcha/10',
+                minWeek: 1,
+                maxWeek: 40
             },
             {
                 id: 'preg_swim',
                 title: '游泳與水中運動',
                 subtitle: '水的浮力支撐',
-                desc: '舒緩關節與背部壓力。',
+                content: '舒緩關節與背部壓力。',
                 fullContent: '🏊‍♀️ 游泳｜零重力體驗：\n水的浮力能減輕身體重量，使運動更舒服，特別適合背部不適的孕媽咪。',
                 tips: ['水溫適中', '避免滑倒', '有人陪同'],
                 source: '運動指南',
                 icon: 'pool',
-                color: 'bg-cyan-50'
+                color: 'bg-cyan-50',
+                minWeek: 13,
+                maxWeek: 36
             },
             {
                 id: 'preg_yoga',
                 title: '孕婦瑜伽',
                 subtitle: '身心靈平衡',
-                desc: '拉伸肌肉、緩解緊繃、練習深呼吸。',
+                content: '拉伸肌肉、緩解緊繃、練習深呼吸。',
                 fullContent: '🧘‍♀️ 瑜伽｜溫柔伸展：\n幫助拉伸肌肉、改善柔軟度、緩解緊繃感，對於焦慮也有很好的舒緩作用。',
                 tips: ['專業老師指導', '避免過度扭轉', '深呼吸放鬆'],
                 source: '運動指南',
                 icon: 'self_improvement',
-                color: 'bg-indigo-50'
+                color: 'bg-indigo-50',
+                minWeek: 13,
+                maxWeek: 40
             },
             {
                 id: 'preg_strength',
                 title: '輕度力量訓練',
                 subtitle: '強化支撐力',
-                desc: '不是高強度健身，而是穩定核心肌力。',
+                content: '不是高強度健身，而是穩定核心肌力。',
                 fullContent: '🏋️‍♀️ 力量訓練｜關鍵在低負重：\n溫和強化肌肉，穩定核心肌力，幫助支撐日益沉重的身軀。',
                 tips: ['輕重量', '穩定第一', '呼吸順暢'],
                 source: '運動指南',
                 icon: 'fitness_center',
-                color: 'bg-teal-50'
+                color: 'bg-teal-50',
+                minWeek: 13,
+                maxWeek: 32
             }
         ],
         wellness: [
@@ -87,118 +102,138 @@ export const pregnancyPool: any = {
                 id: 'preg_morning_sickness',
                 title: '緩解孕吐方法',
                 subtitle: 'Morning Sickness',
-                desc: '晨間小點心是關鍵。',
+                content: '晨間小點心是關鍵。',
                 fullContent: '🤢 孕吐攻略｜減輕晨吐困擾：\n\n1. 起床前吃蘇打餅乾，避免空腹胃酸直接刺激。\n2. 少量多餐，避免油膩或味道濃烈食物。\n3. 以口含冰塊稀釋水分補給，避免大口喝水、減少嘔吐感。\n4. 若沒胃口不要強迫進食，寶寶會優先攝取母體原本的能量。',
                 tips: ['蘇打餅乾', '含冰塊', '少量多餐'],
                 source: '舒緩攻略',
                 icon: 'home_health',
-                color: 'bg-orange-50'
+                color: 'bg-orange-50',
+                minWeek: 4,
+                maxWeek: 16
             },
             {
                 id: 'preg_relaxation',
                 title: '保持心情愉快',
                 subtitle: '心理健康安適',
-                desc: '寶寶最喜歡心情平和的媽媽。',
+                content: '寶寶最喜歡心情平和的媽媽。',
                 fullContent: '💖 心情好的五個方法：\n\n1. 追求興趣愛好\n2. 保持積極社交活動\n3. 設定小目標和獎勵，提升自信\n4. 寫日記釋放壓力\n5. 規劃未來（如準備寶寶房間）',
                 tips: ['寫日記', '社交聊天', '聽音樂'],
                 source: '心理調適',
                 icon: 'favorite',
-                color: 'bg-rose-50'
+                color: 'bg-rose-50',
+                minWeek: 1,
+                maxWeek: 40
             },
             {
                 id: 'preg_sleep_tips',
                 title: '改善睡眠品質',
                 subtitle: '睡個好覺',
-                desc: '孕婦枕是你最好的夥伴。',
+                content: '孕婦枕是你最好的夥伴。',
                 fullContent: '😴 睡眠對策｜媽咪也要好好休息：\n\n- 維持穩定作息，白天可以小睡補充體力。\n- 利用孕婦枕尋找最舒服的姿勢。\n- 睡覺時可將枕頭墊高一點。',
                 tips: ['孕婦枕', '穩定作息', '白天小睡'],
                 source: '生活指南',
                 icon: 'nightlight',
-                color: 'bg-indigo-50'
+                color: 'bg-indigo-50',
+                minWeek: 1,
+                maxWeek: 40
             },
             {
                 id: 'preg_edema',
                 title: '腿部水腫改善',
                 subtitle: '泡熱水舒緩',
-                desc: '墊高小腿，促進循環。',
+                content: '墊高小腿，促進循環。',
                 fullContent: '🦶 水腫對策｜擊退腫脹感：\n\n- 睡覺時用枕頭墊高小腿。\n- 白天讓腿部泡熱水舒緩。\n- 向醫師詢問適合的消水腫食品。',
                 tips: ['枕頭墊腳', '溫水泡腳', '避久坐久站'],
                 source: '身體護理',
                 icon: 'waves',
-                color: 'bg-blue-50'
+                color: 'bg-blue-50',
+                minWeek: 24,
+                maxWeek: 40
             },
             {
                 id: 'preg_heartburn',
                 title: '胃酸與反胃緩解',
                 subtitle: '消化道照護',
-                desc: '尤其在第九個月最為明顯。',
-                fullContent: '🔥 胃酸與反胃對策：\n\n1. 飯後 3 小時內呈現躺下。\n2. 睡前 3 小時內不要進食。\n3. 避免咖啡、濃茶、巧克力與高脂肪食物。\n4. 抬高床頭 15-20 公分。',
+                content: '尤其在第九個月最為明顯。',
+                fullContent: '🔥 胃酸與反胃對策：\n\n1. 飯後 3 小時內不要躺下。\n2. 睡前 3 小時內不要進食。\n3. 避免咖啡、濃茶、巧克力與高脂肪食物。\n4. 抬高床頭 15-20 公分。',
                 tips: ['抬高床頭', '飯後不立臥', '清淡飲食'],
                 source: '身體護理',
                 icon: 'medical_services',
-                color: 'bg-yellow-50'
+                color: 'bg-yellow-50',
+                minWeek: 28,
+                maxWeek: 40
             },
             {
                 id: 'preg_back_pain',
                 title: '腰背疼痛舒緩',
                 subtitle: '10 大方法解析',
-                desc: '溫熱水沖洗，加上適度伸展。',
+                content: '溫熱水沖洗，加上適度伸展。',
                 fullContent: '😫 腰痛閃避指南｜舒緩肌肉負擔：\n\n- 適時伸展（擴胸、側邊伸展）。\n- 使用孕婦托腹帶，支撐孕肚重量。\n- 維持良好坐姿、站姿，每 30 分鐘活動一次。\n- 溫水（37°C）沖洗腰背。',
                 tips: ['托腹帶', '溫水淋浴', '規律伸展'],
                 source: '身體護理',
                 icon: 'accessibility_new',
-                color: 'bg-green-50'
+                color: 'bg-green-50',
+                minWeek: 20,
+                maxWeek: 40
             },
             {
                 id: 'preg_skincare',
                 title: '肌膚護理方法',
                 subtitle: '預防妊娠紋',
-                desc: '調整保養品，溫和不刺激。',
+                content: '調整保養品，溫和不刺激。',
                 fullContent: '✨ 肌膚護理｜媽咪亮起來：\n\n- 選擇溫和不刺激、專為孕婦設計的產品。\n- 使用潤膚油或霜大面積塗抹腹部、大腿與臀部。',
                 tips: ['溫和成分', '加強潤膚', '及早預防'],
                 source: '生活指南',
                 icon: 'spa',
-                color: 'bg-amber-50'
+                color: 'bg-amber-50',
+                minWeek: 1,
+                maxWeek: 40
             }
         ]
     }
 };
 
-export const postpartumPool: any = {
+export const postpartumPool: { [key: string]: { [category: string]: KnowledgeItem[] } } = {
     zh: {
         nutrition: [
             {
                 id: 'post_safe_sleep',
                 title: '新生兒安全睡眠',
                 subtitle: '仰睡最安全',
-                desc: '預防猝死，床鋪不放雜物。',
+                content: '預防猝死，床鋪不放雜物。',
                 fullContent: '💤 新生兒睡眠五大法則：\n\n1. 仰睡最安全：不趴睡，降低猝死風險。\n2. 避免同床：不同床但可同房，避免壓迫寶寶。\n3. 環境平整：床墊不可太軟，不放枕頭、棉被、填充玩偶（防堵塞）。\n4. 避免過熱：室溫維持 24°C，棉被蓋到胸口即可。\n5. 模擬環境：減少噪音，可使用白噪音。',
                 tips: ['仰睡避猝死', '防過度保暖', '床面清空'],
                 source: '照顧手冊',
                 icon: 'shield_moon',
-                color: 'bg-blue-50'
+                color: 'bg-blue-50',
+                minMonth: 1,
+                maxMonth: 12
             },
             {
                 id: 'post_iron',
                 title: '產後補鐵',
                 subtitle: '恢復紅韻氣色',
-                desc: '修復分娩流失，增強血液循環。',
+                content: '修復分娩流失，增強血液循環。',
                 fullContent: '🩸 鐵質補充：生產過程會流失血液，補充鐵質能幫助體力恢復，預防產後疲倦紅。',
                 tips: ['紅肉、肝臟', '紅莧菜', '深綠蔬菜'],
                 source: '產後營養',
                 icon: 'bloodtype',
-                color: 'bg-red-50'
+                color: 'bg-red-50',
+                minMonth: 1,
+                maxMonth: 3
             },
             {
                 id: 'post_fiber_water',
                 title: '纖維質與水分',
                 subtitle: '腸道順暢祕訣',
-                desc: '解決產後排便困擾。',
+                content: '解決產後排便困擾。',
                 fullContent: '🥬 纖維質｜讓腸道動起來：產後活動減少，加上傷口顧慮，多吃纖維、多喝水是預防便秘的最好方式。',
                 tips: ['黑木耳、地瓜', '溫開水輔助', '奇異果'],
                 source: '產後營養',
                 icon: 'egg_alt',
-                color: 'bg-green-50'
+                color: 'bg-green-50',
+                minMonth: 1,
+                maxMonth: 6
             }
         ],
         exercise: [
@@ -206,89 +241,105 @@ export const postpartumPool: any = {
                 id: 'post_holding',
                 title: '正確抱姿技巧',
                 subtitle: '托住頭部頸部',
-                desc: '保護脆弱的頸部與腦部。',
+                content: '保護脆弱的頸部與腦部。',
                 fullContent: '🤱 抱抱寶寶｜關鍵動作：\n\n1. 支撐頭頸：新生兒頸部肌肉未成熟，抱起時務必托住。\n2. 避免搖晃：不可大力搖晃、拋起或架在肩上，以免造成腦部傷害。',
                 tips: ['托後腦勺', '嚴禁大力搖晃', '溫柔貼近心口'],
                 source: '育兒技巧',
                 icon: 'volunteer_activism',
-                color: 'bg-pink-50'
+                color: 'bg-pink-50',
+                minMonth: 1,
+                maxMonth: 4
             },
             {
                 id: 'post_diaper',
                 title: '換尿布 SOP',
                 subtitle: '保護嬌嫩屁屁',
-                desc: '洗屁屁優於濕紙巾。',
+                content: '洗屁屁優於濕紙巾。',
                 fullContent: '🧷 換尿布五步驟：\n\n1. 洗屁屁：用溫水洗淨最溫柔。\n2. 雙腳舉高：穩定抓住雙腳。\n3. 擺放尿布：乾淨尿布墊在適合位置。\n4. 黏好魔鬼氈。\n5. 最後檢查：確認鬆緊度、整理大腿防漏側邊。',
                 tips: ['二指鬆緊度', '溫水洗屁屁', '防漏邊拉開'],
                 source: '育兒技巧',
                 icon: 'soap',
-                color: 'bg-teal-50'
+                color: 'bg-teal-50',
+                minMonth: 1,
+                maxMonth: 12
             },
             {
                 id: 'post_bathing',
                 title: '洗澡與護理',
                 subtitle: '橄欖球抱法',
-                desc: '安全洗滌法與順序建議。',
+                content: '安全洗滌法與順序建議。',
                 fullContent: '🛀 清潔順序：\n\n- 抱好：橄欖球姿勢側抱，手托後頸，拇指扣住耳朵防進水。\n- 洗臉：布巾輕輕擦拭。\n- 洗頭：搓洗頭皮後擦乾。\n- 洗身體：留意皺褶處、腋下與生殖器。',
                 tips: ['支托後頸', '水溫及體溫', '防耳朵進水'],
                 source: '育兒技巧',
                 icon: 'bathtub',
-                color: 'bg-cyan-50'
+                color: 'bg-cyan-50',
+                minMonth: 1,
+                maxMonth: 6
             },
             {
                 id: 'post_feeding_assist',
                 title: '親餵與瓶餵協助',
                 subtitle: '神隊友的支援',
-                desc: '爸爸可以做很多事。',
+                content: '爸爸可以做很多事。',
                 fullContent: '🍼 餵食協助點滴：\n\n* 親餵：準備靠枕、按摩太太肩膀、喝奶後清潔寶寶口腔。\n* 瓶餵：奶瓶傾斜讓奶水充滿奶嘴（不吞空氣）、觀察寶寶情緒不強迫。',
                 tips: ['清潔口腔', '輔助抱枕', '觀察反應'],
                 source: '育兒技巧',
                 icon: 'liquid_styling',
-                color: 'bg-orange-50'
+                color: 'bg-orange-50',
+                minMonth: 1,
+                maxMonth: 12
             },
             {
                 id: 'post_burping',
                 title: '拍嗝與防吐奶',
                 subtitle: '空掌輕拍背部',
-                desc: '托住下巴，釋放胃部氣體。',
+                content: '托住下巴，釋放胃部氣體。',
                 fullContent: '💨 拍嗝技巧：\n\n1. 寶寶側坐：托住其下巴與肩膀穩定。\n2. 空掌輕拍：手心微彎呈空掌，在背部向上輕拍。',
                 tips: ['手呈空掌', '注意下巴支撐', '不餵太急'],
                 source: '育兒技巧',
                 icon: 'baby_changing_station',
-                color: 'bg-amber-50'
+                color: 'bg-amber-50',
+                minMonth: 1,
+                maxMonth: 6
             },
             {
                 id: 'post_umbilical',
                 title: '臍帶護理指南',
                 subtitle: '定期酒精消毒',
-                desc: '一邊消毒，一邊乾燥。',
+                content: '一邊消毒，一邊乾燥。',
                 fullContent: '🚑 臍帶清潔兩部曲：\n\n1. 消毒：使用 75% 酒精，由內往外擦拭根部一圈。\n2. 乾燥：使用 95% 酒精，由內往外重複一次。',
                 tips: ['完全乾燥', '無異味出血', '每日 2-3 次'],
                 source: '育兒技巧',
                 icon: 'medical_information',
-                color: 'bg-red-50'
+                color: 'bg-red-50',
+                minMonth: 1,
+                maxMonth: 1
             },
             {
                 id: 'post_soothing',
                 title: '新生兒哄睡與安撫',
                 subtitle: '增加安全感',
-                desc: '揉眼睛、打呵欠就要準備睡了。',
+                content: '揉眼睛、打呵欠就要準備睡了。',
                 fullContent: '💤 安撫要點：\n\n- 輕拍背部或溫柔撫摸。\n- 適時搭配安撫奶嘴提供安全感。\n- 掌握黃金時機：在寶寶「躁動」時就開始哄，而不是等到「大哭」。',
                 tips: ['觀察睡眠訊號', '奶嘴輔助', '穩定白噪音'],
                 source: '育兒技巧',
                 icon: 'child_care',
-                color: 'bg-purple-50'
+                color: 'bg-purple-50',
+                minMonth: 1,
+                maxMonth: 12
             },
             {
                 id: 'post_crying_meaning',
                 title: '看懂寶寶的語言',
                 subtitle: '哭聲辨識攻略',
-                desc: '肚子餓？尿布濕？還是想抱抱？',
+                content: '肚子餓？尿布濕？還是想抱抱？',
                 fullContent: '🗣️ 哭聲解密：\n\n1. 飢餓：頻率高低起伏，伴隨寻乳反應。\n2. 尿布濕：大聲且不停的，伴隨蹭腳動作。\n3. 想睡：一陣一陣的，行為開始煩躁不安。\n4. 想被安撫：眼睛注視照顧者，發出憐惜哭聲。\n5. 不舒服：排除前面四項後，雙腿捲縮（可能是腸絞痛）或微弱呻吟。',
                 tips: ['先排除生理需求', '多觀察肢體', '大聲多為不適'],
                 source: '育兒分析',
                 icon: 'forum',
-                color: 'bg-violet-50'
+                color: 'bg-violet-50',
+                minMonth: 1,
+                maxMonth: 6
             }
         ],
         wellness: [
@@ -296,155 +347,183 @@ export const postpartumPool: any = {
                 id: 'post_dev_1',
                 title: '第 1 個月：睡眠與覺醒',
                 subtitle: '新生兒適應期',
-                desc: '大部分時間都在睡覺，視力仍模糊。',
+                content: '大部分時間都在睡覺，視力仍模糊。',
                 fullContent: '🍼 月齡發展｜第 1 個月：\n\n- 睡眠：主要活動是睡眠（12-16小時），幫助大腦快速成長。\n- 互動：適當解開束縛，帶著動動手腳，誘發大動作發展。',
                 tips: ['仰睡最安全', '多睡覺長大', '視力模糊期'],
                 source: '里程碑',
                 icon: 'bedroom_baby',
-                color: 'bg-blue-50'
+                color: 'bg-blue-50',
+                minMonth: 1,
+                maxMonth: 1
             },
             {
                 id: 'post_dev_2',
                 title: '第 2 個月：抓握與情緒',
                 subtitle: '探索雙手力量',
-                desc: '抓握反射明顯，常握握手可訓練肌肉。',
+                content: '抓握反射明顯，常握握手可訓練肌肉。',
                 fullContent: '🍼 月齡發展｜第 2 個月：\n\n- 哭泣：透過哭聲表達需求與溝通。\n- 反射：抓握反射明顯，可以帶寶寶擊掌、握手，訓練小肌肉與協調。',
                 tips: ['握握手練習', '透過撫摸安撫', '對聲音有反應'],
                 source: '里程碑',
                 icon: 'front_hand',
-                color: 'bg-teal-50'
+                color: 'bg-teal-50',
+                minMonth: 2,
+                maxMonth: 2
             },
             {
                 id: 'post_dev_3',
                 title: '第 3 個月：抬頭觀察',
                 subtitle: '頸部力量增強',
-                desc: '俯臥時可將頭抬起 45 度。',
+                content: '俯臥時可將頭抬起 45 度。',
                 fullContent: '🍼 月齡發展｜第 3 個月：\n\n- 體力：頸部肌肉變強，趴著時能抬頭看。這是練習肺活量與肺部擴張的好時機。',
                 tips: ['抬頭 45 度', '哭泣是互動工具', '仔細聆聽哭聲'],
                 source: '里程碑',
                 icon: 'visibility',
-                color: 'bg-cyan-50'
+                color: 'bg-cyan-50',
+                minMonth: 3,
+                maxMonth: 3
             },
             {
                 id: 'post_dev_4',
                 title: '第 4 個月：翻身與認知',
                 subtitle: '視覺認人期',
-                desc: '會翻身、會大笑，開始認得熟面孔。',
+                content: '會翻身、會大笑，開始認得熟面孔。',
                 fullContent: '🍼 月齡發展｜第 4 個月：\n\n- 運動：開始嘗試翻身；俯臥能抬頭至 90 度。\n- 社交：會笑出聲或尖叫，眼睛開始會認人。\n- 認知：給予大量語言與感官刺激。',
                 tips: ['抬頭 90 度', '翻身與大笑', '眼睛會認人'],
                 source: '里程碑',
                 icon: 'sentiment_very_satisfied',
-                color: 'bg-indigo-50'
+                color: 'bg-indigo-50',
+                minMonth: 4,
+                maxMonth: 4
             },
             {
                 id: 'post_dev_5',
                 title: '第 5 個月：長牙與回應',
                 subtitle: '第一顆乳牙',
-                desc: '會給予回應，被抱起會笑。',
+                content: '會給予回應，被抱起會笑。',
                 fullContent: '🍼 月齡發展｜第 5 個月：\n\n- 生理：部分寶寶開始冒出第一顆乳牙（需注意口腔清潔）。\n- 社交：對於人的接觸會給回應，睜大眼睛想看清楚人。',
                 tips: ['注意口腔清潔', '主動互動回應', '對人感興趣'],
                 source: '里程碑',
                 icon: 'child_care',
-                color: 'bg-amber-50'
+                color: 'bg-amber-50',
+                minMonth: 5,
+                maxMonth: 5
             },
             {
                 id: 'post_dev_6',
                 title: '第 6 個月：副食品開啟',
                 subtitle: '坐姿練習與勾物',
-                desc: '可以嘗試副食品，坐著時頭不後仰。',
+                content: '可以嘗試副食品，坐著時頭不後仰。',
                 fullContent: '🍼 月齡發展｜第 6 個月：\n\n- 生理：原本尋乳/吸吮反射，開始轉向有意識的進食。可以餵副食品。\n- 運動：坐著時頭不會後仰，會嘗試用手去勾東西。',
                 tips: ['副食品嘗試', '訓練坐姿', '手勾物品'],
                 source: '里程碑',
                 icon: 'restaurant',
-                color: 'bg-orange-50'
+                color: 'bg-orange-50',
+                minMonth: 6,
+                maxMonth: 6
             },
             {
                 id: 'post_dev_7_8',
                 title: '第 7-8 個月：爬行',
                 subtitle: '大動作發育',
-                desc: '學會坐立與協調爬行。',
+                content: '學會坐立與協調爬行。',
                 fullContent: '🍼 月齡發展｜第 7-8 個月：\n\n- 7月：嘗試保持坐姿，學習平衡。\n- 8月：學會手腳協調爬行，能抓積木玩玩具。',
                 tips: ['學習獨立坐立', '手腳協調爬行', '玩抓積木'],
                 source: '里程碑',
                 icon: 'directions_run',
-                color: 'bg-green-50'
+                color: 'bg-green-50',
+                minMonth: 7,
+                maxMonth: 8
             },
             {
                 id: 'post_dev_9_10',
                 title: '第 9-10 個月：扶站',
                 subtitle: '學步的前奏',
-                desc: '嘗試扶著家具站立，斷夜奶。',
+                content: '嘗試扶著家具站立，斷夜奶。',
                 fullContent: '🍼 月齡發展｜第 9-10 個月：\n\n- 9月：扶家具站立。\n- 10月：逐漸不再需要深夜餵奶，養成規律作息。',
                 tips: ['扶物站立', '斷夜奶練習', '規律睡覺習慣'],
                 source: '里程碑',
                 icon: 'stairs',
-                color: 'bg-yellow-50'
+                color: 'bg-yellow-50',
+                minMonth: 9,
+                maxMonth: 10
             },
             {
                 id: 'post_dev_11_12',
                 title: '第 11-12 個月：站立與語言',
                 subtitle: '開始說話與學走',
-                desc: '叫爸爸媽媽，練習獨自站立。',
+                content: '叫爸爸媽媽，練習獨自站立。',
                 fullContent: '🍼 月齡發展｜第 11-12 個月：\n\n- 11月：會叫簡單詞彙（爸、媽）；能獨自站立。\n- 12月：開始走路探索；會有揮手等簡單手勢。',
                 tips: ['叫爸媽', '獨自站立與走', '揮手說再見'],
                 source: '里程碑',
                 icon: 'celebration',
-                color: 'bg-rose-50'
+                color: 'bg-rose-50',
+                minMonth: 11,
+                maxMonth: 12
             },
             {
                 id: 'post_depression',
                 title: '產後情緒與憂鬱',
                 subtitle: '傾聽與陪伴',
-                desc: '勝過千言萬語的建議。',
+                content: '勝過千言萬語的建議。',
                 fullContent: '🌧️ 情緒對策：\n\n- 使用「愛丁堡產後憂鬱量表」自評。\n- 家人應給予傾聽、理解，取代糾正。\n- 以實際行動支持（如：分擔家務），拒當家庭邊緣人。',
                 tips: ['量表自評', '實際分擔', '專業醫學諮詢'],
                 source: '心理調適',
                 icon: 'psychology',
-                color: 'bg-red-50'
+                color: 'bg-red-50',
+                minMonth: 1,
+                maxMonth: 12
             },
             {
                 id: 'post_sleep_coping',
                 title: '睡眠不足的應對',
                 subtitle: '跟著寶寶一起睡',
-                desc: '即使是摺運動也能分散壓力。',
+                content: '即使是摺運動也能分散壓力。',
                 fullContent: '☕ 熬過斷魂夜的小撇步：\n\n1. 跟著寶寶睡：即使在白天，寶寶睡覺時你就跟著補眠。\n2. 輪流值班：爸爸媽媽約定時段休息，休息的人戴耳塞隔絕聲音。\n3. 優先順序：照顧好自己和寶寶最重要，家事可以晚點甚至外包。',
                 tips: ['白天補眠', '輪流顧夜班', '家事外包'],
                 source: '生活指南',
                 icon: 'hotel',
-                color: 'bg-indigo-50'
+                color: 'bg-indigo-50',
+                minMonth: 1,
+                maxMonth: 6
             },
             {
                 id: 'post_self_adjustment',
                 title: '身心調適與管理',
                 subtitle: '接受不完美',
-                desc: '情緒要說出來，不是撐過去。',
+                content: '情緒要說出來，不是撐過去。',
                 fullContent: '🌱 媽咪的心理防禦：\n\n- 接受混亂是常態，產後適應需要數個月。\n- 把「我很累」說出口，這不是脆弱，是尋求保護。\n- 透過情緒書寫（每天 5 分鐘）進行自我察覺。',
                 tips: ['降低期待', '自我察覺', '向外求援'],
                 source: '心理調適',
                 icon: 'self_improvement',
-                color: 'bg-amber-50'
+                color: 'bg-amber-50',
+                minMonth: 1,
+                maxMonth: 12
             },
             {
                 id: 'post_god_teammate',
                 title: '伴侶合作神隊友',
                 subtitle: '團隊作戰',
-                desc: '爸爸也需要建立父子連結。',
+                content: '爸爸也需要建立父子連結。',
                 fullContent: '神隊友攻略：\n\n- 爸爸負責固定項目（如：換尿布、洗澡）。\n- 每天肯定對方的付出，減少責備。\n- 設定每週一小時「非育兒時間」交流。',
                 tips: ['讚美取代責備', '固定分工', '非育兒交流'],
                 source: '家庭關係',
                 icon: 'groups',
-                color: 'bg-blue-50'
+                color: 'bg-blue-50',
+                minMonth: 1,
+                maxMonth: 12
             },
             {
                 id: 'post_social_resources',
                 title: '新手爸媽社群資源',
                 subtitle: '同儕的力量',
-                desc: '多一個有效的情緒抒發出口。',
+                content: '多一個有效的情緒抒發出口。',
                 fullContent: '🌍 尋求共鳴：\n加入新手爸媽社群，透過同儕交流獲取經驗。善用作息紀錄 APP，讓瑣事不佔大腦空間。',
                 tips: ['紀錄 APP', '互助社群', '情感宣洩'],
                 source: '生活指南',
                 icon: 'public',
-                color: 'bg-green-50'
+                color: 'bg-green-50',
+                minMonth: 1,
+                maxMonth: 12
             }
         ]
     }

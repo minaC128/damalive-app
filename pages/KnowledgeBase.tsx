@@ -28,24 +28,62 @@ const KnowledgeBase: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile
 
   useEffect(() => {
     const today = new Date();
-    // 使用日期 + 月份 + 年份 生成更穩定的 seed
     const seed = today.getFullYear() * 1000 + (today.getMonth() + 1) * 50 + today.getDate();
 
     const langKey = user.preferredLanguage || 'zh';
     const langPool = user.isPostpartum ? postpartumPool : pregnancyPool;
     const currentLangPool = langPool[langKey] || langPool['zh'];
-    const pool = currentLangPool[activeTab] || [];
+    const pool: KnowledgeItem[] = currentLangPool[activeTab] || [];
 
-    const mappedPool = pool.map((item: any) => ({
-      ...item,
-      content: item.desc || ''
-    }));
+    // --- 階段篩選邏輯 ---
+    let filtered: KnowledgeItem[] = [];
 
-    const shuffled = shuffleWithSeed(mappedPool as any, seed);
-    // 確保一個類別至少出現 2 個（如果池子裡夠多的話）
-    // 目前邏輯是顯示全部已打亂的內容，如果想要限制數量可以 slice
-    setShuffledItems(shuffled);
-  }, [user.isPostpartum, activeTab, user.preferredLanguage]);
+    if (user.isPostpartum) {
+      // 計算寶寶月齡 (簡易版：基於 birthDate)
+      let babyMonths = 1;
+      if (user.birthDate) {
+        const birth = new Date(user.birthDate);
+        const diffTime = Math.abs(today.getTime() - birth.getTime());
+        babyMonths = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 30.44));
+      }
+      babyMonths = Math.max(1, Math.min(12, babyMonths));
+
+      // 優先顯示該月份區間的小卡，或沒有設定限制的小卡
+      filtered = pool.filter(item => {
+        if (!item.minMonth && !item.maxMonth) return true;
+        const min = item.minMonth || 1;
+        const max = item.maxMonth || 12;
+        return babyMonths >= min && babyMonths <= max;
+      });
+    } else {
+      // 計算懷孕週數 (基於 lmpDate)
+      let pregWeeks = 4; // 預設初期
+      if (user.lmpDate) {
+        const lmp = new Date(user.lmpDate);
+        const diffTime = Math.abs(today.getTime() - lmp.getTime());
+        pregWeeks = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 7));
+      }
+      pregWeeks = Math.max(1, Math.min(42, pregWeeks));
+
+      filtered = pool.filter(item => {
+        if (!item.minWeek && !item.maxWeek) return true;
+        const min = item.minWeek || 1;
+        const max = item.maxWeek || 42;
+        return pregWeeks >= min && pregWeeks <= max;
+      });
+    }
+
+    // 隨機排序並確保至少顯示 2 個 (如果過濾後太少，則從原始池子補齊)
+    let finalItems = shuffleWithSeed(filtered, seed);
+
+    if (finalItems.length < 2 && pool.length >= 2) {
+      const remaining = pool.filter(p => !finalItems.find(f => f.id === p.id));
+      const filler = shuffleWithSeed(remaining, seed).slice(0, 2 - finalItems.length);
+      finalItems = [...finalItems, ...filler];
+    }
+
+    setShuffledItems(finalItems);
+  }, [user.isPostpartum, activeTab, user.preferredLanguage, user.birthDate, user.lmpDate]);
 
   const handleToggleSave = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();

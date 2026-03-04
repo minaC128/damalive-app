@@ -57,4 +57,9 @@ export interface KnowledgeItem {
   source: string;
   icon: string;
   color: string;
+  // Stage filtering (optional)
+  minWeek?: number;  // For pregnancy (1-40)
+  maxWeek?: number;
+  minMonth?: number; // For postpartum (1-12)
+  maxMonth?: number;
 }
