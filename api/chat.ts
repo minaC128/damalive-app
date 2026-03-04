@@ -48,9 +48,11 @@ export const handler = async (event: any) => {
     } catch (error: any) {
         console.error('Chat API Error:', error);
 
-        let errorMsg = '哎呀，小達連線稍微斷了，請稍後再試！🧸';
+        let errorMsg = `哎呀，小達連線稍微斷了：${error.message || '未知錯誤'} 🧸`;
         if (error?.message?.includes('API key not valid')) {
             errorMsg = '❌ Gemini API Key 無效，請檢查環境變數設定。';
+        } else if (error?.message?.includes('model') && error?.message?.includes('not found')) {
+            errorMsg = '❌ 找不到或不支援的 AI 模型，請確認模型名稱是否正確。';
         }
 
         return {
