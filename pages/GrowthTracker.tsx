@@ -247,7 +247,7 @@ const GrowthTracker: React.FC<{ user: UserProfile }> = ({ user }) => {
           <h2 className="text-2xl font-bold text-dama-brown">{data.title}</h2>
         </div>
 
-        <div className="w-full aspect-square max-w-[280px] bg-dama-bg rounded-[56px] border-2 border-dashed border-dama-sakura/40 flex items-center justify-center shadow-[inset_0_4px_12px_rgba(242,206,206,0.2)] relative mb-8 transition-transform overflow-hidden hover:scale-[1.02]">
+        <div className="w-full aspect-square max-w-[280px] bg-white rounded-[56px] border-2 border-dashed border-dama-sakura/40 flex items-center justify-center shadow-[inset_0_4px_12px_rgba(242,206,206,0.2)] relative mb-8 transition-transform overflow-hidden hover:scale-[1.02]">
           {isGenerating && !generatedImg ? (
             <div className="flex flex-col items-center gap-3">
               <span className="material-symbols-outlined text-4xl text-dama-sakura animate-spin">auto_awesome</span>
