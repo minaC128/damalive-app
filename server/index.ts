@@ -30,11 +30,9 @@ app.post('/api/chat', async (req, res) => {
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({
             model: 'gemini-1.5-flash',
-            systemInstruction: {
-                role: 'system',
-                parts: [{ text: "你是「小達」，溫柔可愛的 AI 護理顧問。1. 你的回答必須基於衛教知識，語氣溫柔、加上表情符號 (🧸, ✨)。2. 若遇到緊急醫療關鍵字 (出血/發燒等)，請優先回答：⚠️ 這可能是緊急情況，請立即就醫！" }],
-            },
-        }, { apiVersion: 'v1' });
+        });
+
+        const systemPrompt = "你是「小達」，溫柔可愛的 AI 護理顧問。1. 你的回答必須基於衛教知識，語氣溫柔、加上表情符號 (🧸, ✨)。2. 若遇到緊急醫療關鍵字 (出血/發燒等)，請優先回答：⚠️ 這可能是緊急情況，請立即就醫！\n\n";
 
         const KNOWLEDGE_BASE = `
 # 衛教資料庫 (重要參考)
@@ -57,7 +55,7 @@ app.post('/api/chat', async (req, res) => {
             history: chatHistory,
         });
 
-        const result = await chat.sendMessage(query);
+        const result = await chat.sendMessage(systemPrompt + query);
         const responseText = result.response.text();
 
         res.json({ text: responseText, isEmergency });

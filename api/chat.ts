@@ -23,11 +23,9 @@ export const handler = async (event: any) => {
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({
             model: 'gemini-1.5-flash',
-            systemInstruction: {
-                role: 'system',
-                parts: [{ text: "你是「小達」，溫柔可愛的 AI 護理顧問。1. 你的回答必須基於衛教知識，語氣溫柔、加上表情符號 (🧸, ✨)。2. 若遇到緊急醫療關鍵字 (出血/發燒等)，請優先回答：⚠️ 這可能是緊急情況，請立即就醫！" }],
-            },
-        }, { apiVersion: 'v1' });
+        });
+
+        const systemPrompt = "你是「小達」，溫柔可愛的 AI 護理顧問。1. 你的回答必須基於衛教知識，語氣溫柔、加上表情符號 (🧸, ✨)。2. 若遇到緊急醫療關鍵字 (出血/發燒等)，請優先回答：⚠️ 這可能是緊急情況，請立即就醫！\n\n";
 
         const chatHistory = (history || []).map((msg: any) => ({
             role: msg.role === 'user' ? 'user' : 'model',
@@ -35,7 +33,7 @@ export const handler = async (event: any) => {
         }));
 
         const chat = model.startChat({ history: chatHistory });
-        const result = await chat.sendMessage(query);
+        const result = await chat.sendMessage(systemPrompt + query);
         const responseText = result.response.text();
 
         const isEmergency = /出血|痛|發燒|破水|不動|急診/.test(query);
@@ -48,7 +46,7 @@ export const handler = async (event: any) => {
     } catch (error: any) {
         console.error('Chat API Error:', error);
 
-        const errorMsg = `哎呀，小達連線稍微斷了：${error.message || '未知錯誤'} 🧸`;
+        const errorMsg = `哎呀，小達連線稍微斷了：${error.message || '未知錯誤'} 🧸\n\n[系統診斷：請確認 API Key 是否有效，或在 Google AI Studio 測試該金鑰。]`;
 
         return {
             statusCode: 500,
