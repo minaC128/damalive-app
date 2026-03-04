@@ -169,13 +169,21 @@ const GrowthTracker: React.FC<{ user: UserProfile }> = ({ user }) => {
         };
       }
 
+      const pregMonth = Math.ceil(week / 4);
+      let pregImg = null;
+      // 假設圖片名稱為 preg_month_1.png 到 preg_month_10.png
+      if (pregMonth >= 1 && pregMonth <= 10) {
+        pregImg = `/images/preg_month_${pregMonth}.png`;
+      }
+
       baseData = {
         ...stage,
         fruitName: stage.name,
         label: t.pregWeeks.replace('{weeks}', String(week)),
         progress: (week / 40) * 100,
         mode: 'pregnancy',
-        momAdvice
+        momAdvice,
+        staticImg: pregImg
       };
     }
     return baseData;
