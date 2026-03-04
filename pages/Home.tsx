@@ -94,8 +94,18 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
           }
         }
 
-        // 新增：針對孕期 8 週之前使用特定的罌粟籽插圖
-        if (!user.isPostpartum && currentWeek < 8) {
+        // 新增：針對孕期 1-10 個月使用特定的插圖 (覆蓋 Poppy Seed)
+        if (!user.isPostpartum) {
+          const pregMonth = Math.ceil(currentWeek / 4);
+          if (pregMonth >= 1 && pregMonth <= 10) {
+            setGeneratedImg(`/images/preg_month_${pregMonth}.png`);
+            setIsGenerating(false);
+            return;
+          }
+        }
+
+        // 保持 Poppy Seed 邏輯作為備用或初期 (通常 month 1 已包含)
+        if (!user.isPostpartum && currentWeek < 8 && !generatedImg) {
           setGeneratedImg('/images/poppy_seed.png');
           setIsGenerating(false);
           return;
