@@ -28,7 +28,7 @@ app.post('/api/chat', async (req, res) => {
 
         const { GoogleGenerativeAI } = await import('@google/generative-ai');
         const genAI = new GoogleGenerativeAI(apiKey);
-        const modelNames = ['gemini-1.5-flash', 'gemini-1.5-flash-latest', 'gemini-pro', 'gemini-1.5-pro', 'gemini-2.0-flash-exp'];
+        const modelNames = ['gemini-flash-latest', 'gemini-pro-latest', 'gemini-1.5-flash', 'gemini-1.5-pro'];
         let lastError: any = null;
         let responseText = '';
         let successfulModel = '';
