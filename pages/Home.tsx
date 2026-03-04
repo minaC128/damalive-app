@@ -14,6 +14,7 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
   const [generatedImg, setGeneratedImg] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [dailyKnowledge, setDailyKnowledge] = useState<{ title: string, content: string } | null>(null);
+  const [showMoodWarning, setShowMoodWarning] = useState(false);
 
   useEffect(() => {
     const checkTodayMood = async () => {
@@ -22,6 +23,14 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
       const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
       const hasMood = data.moods.some(m => m.date === today);
       setMoodAdded(hasMood);
+
+      // 檢查連續 3 天負面情緒 (疲憊 tired 或 沮喪 sad)
+      const sortedMoods = [...data.moods].sort((a, b) => b.date.localeCompare(a.date));
+      if (sortedMoods.length >= 3) {
+        const lastThreeMoods = sortedMoods.slice(0, 3);
+        const isNegativeTrend = lastThreeMoods.every(m => m.mood === 'tired' || m.mood === 'sad');
+        setShowMoodWarning(isNegativeTrend);
+      }
     };
     checkTodayMood();
   }, [user.uid]);
@@ -218,6 +227,21 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
         </div>
       </section>
 
+      {showMoodWarning && (
+        <div className="mb-6 animate-in fade-in zoom-in duration-500">
+          <div className="bg-dama-sakura/5 border border-dama-sakura/20 p-4 rounded-2xl flex items-center gap-4 shadow-sm border-dashed">
+            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shrink-0 shadow-sm">
+              <span className="material-symbols-outlined text-dama-sakura text-xl">favorite</span>
+            </div>
+            <p className="text-[11px] font-bold text-dama-brown leading-relaxed">
+              媽咪最近辛苦了，我偵測到妳最近可能比較疲累或沮喪。
+              <span className="block text-dama-sakura/80 mt-1">記得要注意心情變化，不要太過操勞，適時給自己一點放鬆的時間喔～💖</span>
+            </p>
+          </div>
+        </div>
+      )
+      }
+
       <section className="flex flex-col items-center mb-10">
         <div
           className="perspective-1000 w-full aspect-[4/3] max-w-[320px] cursor-pointer group"
@@ -281,7 +305,7 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
 
       <p className="mt-4 text-center text-[10px] text-dama-brown/30 font-bold tracking-wider">點擊卡片可以翻轉</p>
       <p className="mt-4 text-center text-[10px] text-dama-brown/20 font-bold italic tracking-wide">{t.slogan}</p>
-    </div>
+    </div >
   );
 };
 
