@@ -180,12 +180,18 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
 
   const savedItems = useMemo(() => {
     if (!user.savedKnowledgeIds) return [];
+
+    // 獲取目前語言或回退到中文
+    const pKey = user.preferredLanguage || 'zh';
+    const preg = pregnancyPool[pKey] || pregnancyPool['zh'];
+    const post = postpartumPool[pKey] || postpartumPool['zh'];
+
     const all = [
-      ...pregnancyPool.nutrition, ...pregnancyPool.exercise, ...pregnancyPool.wellness,
-      ...postpartumPool.nutrition, ...postpartumPool.exercise, ...postpartumPool.wellness
+      ...(preg.nutrition || []), ...(preg.exercise || []), ...(preg.wellness || []),
+      ...(post.nutrition || []), ...(post.exercise || []), ...(post.wellness || [])
     ];
     return all.filter(item => user.savedKnowledgeIds?.includes(item.id));
-  }, [user.savedKnowledgeIds]);
+  }, [user.savedKnowledgeIds, user.preferredLanguage]);
 
   return (
     <div className="p-6 animate-in fade-in duration-500 pb-32">
