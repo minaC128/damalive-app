@@ -284,7 +284,7 @@ export const postpartumPool: { [key: string]: { [category: string]: KnowledgeIte
                 fullContent: '🍼 餵食協助點滴：\n\n* 親餵：準備靠枕、按摩太太肩膀、喝奶後清潔寶寶口腔。\n* 瓶餵：奶瓶傾斜讓奶水充滿奶嘴（不吞空氣）、觀察寶寶情緒不強迫。',
                 tips: ['清潔口腔', '輔助抱枕', '觀察反應'],
                 source: '育兒技巧',
-                icon: 'liquid_styling',
+                icon: 'local_drink',
                 color: 'bg-orange-50',
                 minMonth: 1,
                 maxMonth: 12
