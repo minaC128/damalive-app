@@ -200,9 +200,6 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
             <h1 className="text-3xl font-black text-dama-sakura tracking-tighter">DAMALIVE</h1>
-            <div className="px-2 py-0.5 bg-dama-sakura/10 rounded-full">
-              <span className="text-[8px] font-bold text-dama-sakura uppercase tracking-widest">Beta</span>
-            </div>
           </div>
           <p className="text-[10px] text-dama-brown/60 tracking-widest mt-1 uppercase font-bold">{t.greeting} • {user.name} • {getSubheader()}</p>
         </div>
@@ -244,8 +241,8 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
                     }}
                   />
                 )}
-                <div className="absolute bottom-4 left-4 right-4 bg-white/80 backdrop-blur-sm py-2 px-4 rounded-full text-center shadow-sm">
-                  <p className="text-[10px] font-bold text-dama-sakura tracking-wider">{t.today}</p>
+                <div className="absolute bottom-4 left-4 right-4 py-2 px-4 text-center">
+                  <p className="text-[10px] font-bold text-dama-brown/30 tracking-wider">點擊卡片可以翻轉</p>
                 </div>
               </div>
             </div>
