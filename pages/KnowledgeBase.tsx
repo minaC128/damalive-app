@@ -29,7 +29,12 @@ const KnowledgeBase: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile
   useEffect(() => {
     const today = new Date();
     const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
-    const pool = user.isPostpartum ? postpartumPool[activeTab] : pregnancyPool[activeTab];
+
+    // 根據語言選擇對應的知識池
+    const langKey = user.preferredLanguage || 'zh';
+    const langPool = user.isPostpartum ? postpartumPool : pregnancyPool;
+    const currentLangPool = langPool[langKey] || langPool['zh'];
+    const pool = currentLangPool[activeTab] || [];
 
     // 將 desc 映射到 content 以符合 KnowledgeItem 介面
     const mappedPool = pool.map(item => ({

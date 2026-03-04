@@ -55,9 +55,13 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
       }
 
       const type = user.isPostpartum ? 'month' : 'week';
-      const knowledge = await getDailyKnowledge(user.isPostpartum, daysDiff, type);
+      const knowledge = await getDailyKnowledge(user.isPostpartum, daysDiff, type, lang as any);
       if (knowledge && knowledge.length > 0) {
-        setDailyKnowledge({ title: knowledge[0].title, content: knowledge[0].content });
+        const item = knowledge[0];
+        setDailyKnowledge({
+          title: item.title,
+          content: item.content
+        });
       }
     };
     fetchKnowledge();

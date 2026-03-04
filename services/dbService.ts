@@ -146,7 +146,8 @@ export const deleteNote = async (uid: string, noteId: string, onSync?: any) => {
 export const getDailyKnowledge = async (
   isPostpartum: boolean,
   daysDiff: number,
-  preferredType?: 'week' | 'month'
+  preferredType?: 'week' | 'month',
+  lang: string = 'zh'
 ): Promise<any[]> => {
   const category = isPostpartum ? 'postpartum' : 'pregnancy';
   let periodType: 'week' | 'month' = preferredType || 'week';
@@ -181,7 +182,22 @@ export const getDailyKnowledge = async (
     .select('*')
     .eq('category', category)
     .eq('period_type', periodType)
-    .eq('period_value', periodValue);
+    .eq('period_value', periodValue)
+    .eq('lang', lang);
+
+  if (error || !data || data.length === 0) {
+    if (lang !== 'zh') {
+      console.log(`Knowledge not found for ${lang}, falling back to zh`);
+      const { data: zhData } = await supabase
+        .from('knowledge_base')
+        .select('*')
+        .eq('category', category)
+        .eq('period_type', periodType)
+        .eq('period_value', periodValue)
+        .eq('lang', 'zh');
+      if (zhData && zhData.length > 0) return zhData;
+    }
+  }
 
   if (error) {
     console.error('Error fetching knowledge:', error);
@@ -196,6 +212,7 @@ export const getDailyKnowledge = async (
       .eq('category', category)
       .eq('period_type', 'month')
       .eq('period_value', 0)
+      .eq('lang', lang)
       .limit(1);
     return fallbackData || [];
   }
