@@ -94,6 +94,13 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
           }
         }
 
+        // 新增：針對孕期 8 週之前使用特定的罌粟籽插圖
+        if (!user.isPostpartum && currentWeek < 8) {
+          setGeneratedImg('/images/poppy_seed.png');
+          setIsGenerating(false);
+          return;
+        }
+
         let ageText = user.isPostpartum ? 'newborn baby' : `fetus at ${currentWeek} weeks`;
         const prompt = `Minimalist nursery illustration of ${ageText}. Soft watercolor, pastel colors, white background, cute children's book style.`;
 
