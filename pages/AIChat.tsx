@@ -67,12 +67,11 @@ const AIChat: React.FC<{
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: newMessages.map(m => ({ role: m.role, content: m.content })),
-          userContext: {
-            name: user.name,
-            stage: user.isPostpartum ? 'postpartum' : 'pregnancy',
-            language: lang
-          }
+          query: input, // 最後一則訊息作為 query
+          history: messages.map(m => ({
+            role: m.role === 'user' ? 'user' : 'model',
+            parts: [{ text: m.content }]
+          }))
         }),
       });
 
@@ -81,7 +80,7 @@ const AIChat: React.FC<{
       const data = await response.json();
       const aiMessage: ChatMessage = {
         role: 'assistant',
-        content: data.content,
+        content: data.text, // 後端回傳的是 text 欄位
         timestamp: Date.now()
       };
 
