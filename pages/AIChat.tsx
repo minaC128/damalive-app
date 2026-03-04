@@ -75,7 +75,10 @@ const AIChat: React.FC<{
         }),
       });
 
-      if (!response.ok) throw new Error('Failed to fetch AI response');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.text || 'Failed to fetch AI response');
+      }
 
       const data = await response.json();
       const aiMessage: ChatMessage = {
@@ -88,11 +91,18 @@ const AIChat: React.FC<{
       setMessages(finalMessages);
       await saveChatMessage(user.uid, currentChatId, finalMessages, onSyncStatus);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error('Chat error:', error);
+
+      let errorText = t.error;
+      // 嘗試從後端獲取更具體的錯誤訊息
+      if (error instanceof Error && error.message) {
+        errorText = error.message;
+      }
+
       const errorMessage: ChatMessage = {
         role: 'assistant',
-        content: t.error,
+        content: errorText,
         timestamp: Date.now()
       };
       setMessages([...newMessages, errorMessage]);

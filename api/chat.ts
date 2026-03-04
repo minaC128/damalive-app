@@ -6,7 +6,18 @@ export const handler = async (event: any) => {
     }
 
     try {
-        const apiKey = process.env.GEMINI_API_KEY!;
+        const apiKey = process.env.GEMINI_API_KEY;
+
+        if (!apiKey) {
+            return {
+                statusCode: 500,
+                body: JSON.stringify({
+                    text: '⚠️ 後端尚未設定 GEMINI_API_KEY。請檢查 Vercel/Netlify 的環境變數設定。🧸',
+                    isEmergency: false
+                })
+            };
+        }
+
         const { query, history } = JSON.parse(event.body);
 
         const genAI = new GoogleGenerativeAI(apiKey);
@@ -31,13 +42,21 @@ export const handler = async (event: any) => {
 
         return {
             statusCode: 200,
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ text: responseText, isEmergency })
         };
     } catch (error: any) {
         console.error('Chat API Error:', error);
+
+        let errorMsg = '哎呀，小達連線稍微斷了，請稍後再試！🧸';
+        if (error?.message?.includes('API key not valid')) {
+            errorMsg = '❌ Gemini API Key 無效，請檢查環境變數設定。';
+        }
+
         return {
             statusCode: 500,
-            body: JSON.stringify({ text: '哎呀，小達連線稍微斷了，請稍後再試！🧸', isEmergency: false })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: errorMsg, isEmergency: false })
         };
     }
 };
