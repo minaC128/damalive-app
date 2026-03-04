@@ -241,9 +241,6 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
                     }}
                   />
                 )}
-                <div className="absolute bottom-4 left-4 right-4 py-2 px-4 text-center">
-                  <p className="text-[10px] font-bold text-dama-brown/30 tracking-wider">點擊卡片可以翻轉</p>
-                </div>
               </div>
             </div>
 
@@ -282,7 +279,8 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
         </div>
       </section>
 
-      <p className="mt-8 text-center text-[10px] text-dama-brown/30 font-bold italic tracking-wide">{t.slogan}</p>
+      <p className="mt-4 text-center text-[10px] text-dama-brown/30 font-bold tracking-wider">點擊卡片可以翻轉</p>
+      <p className="mt-4 text-center text-[10px] text-dama-brown/20 font-bold italic tracking-wide">{t.slogan}</p>
     </div>
   );
 };
