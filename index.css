@@ -15,7 +15,7 @@ html.font-size-large {
 }
 
 .bg-dotted-grid {
-    background-image: radial-gradient(#e5ccba 1.5px, transparent 1.5px);
+    background-image: radial-gradient(#f0e6e0 1.5px, transparent 1.5px);
     background-size: 24px 24px;
     background-color: #faf7f5;
 }
