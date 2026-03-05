@@ -154,24 +154,26 @@ const AIChat: React.FC<{
   return (
     <div className="flex flex-col h-screen bg-dotted-grid relative overflow-hidden">
       {/* Header */}
-      <header className="p-4 bg-white flex justify-between items-center border-b border-gray-100 shadow-sm sticky top-0 z-20">
+      <header className="p-4 pt-6 bg-white flex justify-between items-center border-b border-gray-50 shadow-sm sticky top-0 z-20">
         <button
           onClick={() => setShowHistory(true)}
-          className="flex flex-col items-center gap-0.5 text-[#D4A5A5] hover:opacity-70 transition-opacity"
+          className="flex flex-col items-center gap-1 text-[#D4A5A5] hover:opacity-70 transition-opacity"
         >
-          <span className="material-symbols-outlined text-2xl">history</span>
-          <span className="text-[10px] font-bold">紀錄</span>
+          <div className="w-6 h-6 flex items-center justify-center">
+            <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>history</span>
+          </div>
+          <span className="text-[10px] font-bold tracking-wider">紀錄</span>
         </button>
 
         <div className="flex flex-col items-center">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-[#FFB7B7] rounded-full flex items-center justify-center shadow-inner">
-              <span className="material-symbols-outlined text-white text-xl">pets</span>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#FFBACA] rounded-full flex items-center justify-center shadow-sm">
+              <span className="material-symbols-outlined text-white text-2xl">pets</span>
             </div>
-            <div className="flex flex-col">
-              <h1 className="font-bold text-gray-700 text-lg leading-tight">小達 AI 護理顧問</h1>
+            <div className="flex flex-col items-start">
+              <h1 className="font-bold text-[#5C4D4D] text-lg leading-tight">小達 AI 護理顧問</h1>
               <div className="flex items-center gap-1">
-                <span className="w-2 h-2 bg-[#69C181] rounded-full"></span>
+                <span className="w-1.5 h-1.5 bg-[#69C181] rounded-full"></span>
                 <span className="text-[#69C181] text-[10px] font-bold">溫柔守護中</span>
               </div>
             </div>
@@ -180,29 +182,52 @@ const AIChat: React.FC<{
 
         <button
           onClick={handleNewChat}
-          className="flex flex-col items-center gap-0.5 text-[#69C181] hover:opacity-70 transition-opacity"
+          className="flex flex-col items-center gap-1 text-[#69C181] hover:opacity-70 transition-opacity"
         >
-          <span className="material-symbols-outlined text-2xl">add_box</span>
-          <span className="text-[10px] font-bold">新對話</span>
+          <div className="w-6 h-6 flex items-center justify-center border border-[#69C181] rounded-sm">
+            <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 0, 'wght' 600" }}>add</span>
+          </div>
+          <span className="text-[10px] font-bold tracking-wider">新對話</span>
         </button>
       </header>
 
       {/* Chat Area */}
       <div className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar pb-32">
-        {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full opacity-30 text-center px-10">
-            <span className="material-symbols-outlined text-7xl mb-4 text-dama-sakura">chat_bubble</span>
-            <p className="text-base font-bold text-dama-brown">{t.welcome}</p>
-            <p className="text-xs mt-2 leading-relaxed">{t.suggestion}</p>
+        {(!messages || messages.length === 0) ? (
+          <div className="flex flex-col items-center justify-center h-full text-center px-4 animate-in fade-in duration-700">
+            <div className="relative mb-6 opacity-20">
+              <span className="material-symbols-outlined text-5xl text-gray-400 absolute -left-4 -top-2 rotate-[-15deg]">pets</span>
+              <span className="material-symbols-outlined text-6xl text-gray-500 relative z-10">pets</span>
+            </div>
+
+            <p className="text-[#A5928E] font-medium text-base mb-8 tracking-wide leading-relaxed">
+              「哈囉！我是小達，<br />今天有什麼想聊聊的嗎？🧸」
+            </p>
+
+            <div className="flex flex-wrap justify-center gap-2 max-w-[280px]">
+              {['懷孕初期飲食', '什麼是葉酸？', '最近很焦慮...'].map((suggestion) => (
+                <button
+                  key={suggestion}
+                  onClick={() => {
+                    setInput(suggestion);
+                    // 稍微延遲讓 input 更新後再送出
+                    setTimeout(handleSend, 0);
+                  }}
+                  className="px-4 py-2 bg-white/60 border border-gray-100 rounded-full text-[13px] text-gray-400 hover:bg-white hover:shadow-sm transition-all shadow-sm active:scale-95"
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
           </div>
         ) : (
           messages.map((m, i) => (
             <div key={i} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'} animate-in slide-in-from-bottom-2`}>
               <div className={`max-w-[75%] p-4 px-6 rounded-[24px] shadow-sm text-[15px] leading-relaxed relative ${m.role === 'user'
                 ? 'bg-[#FDE3D2] text-gray-700 rounded-tr-none'
-                : 'bg-white text-gray-700 rounded-tl-none border border-white shadow-md'
+                : 'bg-white text-gray-700 rounded-tl-none border border-white'
                 }`}>
-                {renderFormattedText(m.content)}
+                {renderFormattedText(m.content || '')}
               </div>
               <p className="text-[10px] mt-1.5 text-gray-400 font-medium px-1">
                 {m.timestamp && !isNaN(Number(m.timestamp))
@@ -214,11 +239,11 @@ const AIChat: React.FC<{
         )}
         {isLoading && (
           <div className="flex flex-col items-start animate-pulse">
-            <div className="bg-white p-4 px-6 rounded-[24px] rounded-tl-none shadow-md border border-white">
+            <div className="bg-white p-4 px-6 rounded-[24px] rounded-tl-none shadow-sm border border-white">
               <div className="flex gap-1.5">
-                <div className="w-2 h-2 bg-[#FFB7B7] rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-[#FFB7B7] rounded-full animate-bounce [animation-delay:0.2s]"></div>
-                <div className="w-2 h-2 bg-[#FFB7B7] rounded-full animate-bounce [animation-delay:0.4s]"></div>
+                <div className="w-2 h-2 bg-[#FFBACA] rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-[#FFBACA] rounded-full animate-bounce [animation-delay:0.2s]"></div>
+                <div className="w-2 h-2 bg-[#FFBACA] rounded-full animate-bounce [animation-delay:0.4s]"></div>
               </div>
             </div>
           </div>
@@ -228,20 +253,20 @@ const AIChat: React.FC<{
 
       {/* Input Area */}
       <div className="fixed bottom-24 left-0 right-0 p-4 z-20 pointer-events-none">
-        <div className="max-w-md mx-auto relative flex items-center bg-white rounded-full shadow-lg border border-gray-100 p-1 pointer-events-auto overflow-hidden">
+        <div className="max-w-md mx-auto relative flex items-center bg-[#F9F6F4] rounded-full shadow-lg border border-white/50 p-1 pointer-events-auto overflow-hidden">
           <input
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyPress={e => e.key === 'Enter' && handleSend()}
             placeholder="溫柔提問..."
-            className="flex-1 bg-transparent border-none rounded-full py-4 pl-6 pr-14 text-sm focus:ring-0 placeholder-gray-300 font-medium text-gray-600"
+            className="flex-1 bg-transparent border-none rounded-full py-4 pl-6 pr-14 text-sm focus:ring-0 placeholder-gray-300 font-medium text-[#5C4D4D]"
           />
           <button
             onClick={handleSend}
             disabled={!input.trim() || isLoading}
-            className={`absolute right-1.5 w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-sm ${input.trim()
-              ? 'bg-[#F0F2F5] text-gray-400'
-              : 'bg-gray-50 text-gray-200'
+            className={`absolute right-1.5 w-12 h-12 rounded-full flex items-center justify-center transition-all bg-white shadow-sm active:scale-95 ${input.trim()
+              ? 'text-gray-400'
+              : 'text-gray-200 opacity-50'
               }`}
           >
             <span className="material-symbols-outlined text-2xl">send</span>
