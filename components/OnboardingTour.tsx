@@ -13,6 +13,18 @@ const OnboardingTour: React.FC<OnboardingTourProps> = ({ language, onFinish }) =
 
     const steps = [
         {
+            title: t.welcomeTitle,
+            desc: t.welcomeDesc,
+            icon: 'waving_hand',
+            color: 'bg-dama-sakura/10'
+        },
+        {
+            title: t.identityTitle,
+            desc: t.identityDesc,
+            icon: 'person_search',
+            color: 'bg-dama-matcha/10'
+        },
+        {
             title: t.step1Title,
             desc: t.step1Desc,
             icon: 'account_circle',
