@@ -144,6 +144,9 @@ const AIChat: React.FC<{
       setMessages([...newMessages, errorMessage]);
     } finally {
       setIsLoading(false);
+      // 強制讀取一次確保 UI 同步
+      const history = await getChatHistory(user.uid);
+      setSessions(mapHistoryToSessions(history));
     }
   };
 
@@ -196,7 +199,10 @@ const AIChat: React.FC<{
               <span className="material-symbols-outlined text-white text-2xl">pets</span>
             </div>
             <div className="flex flex-col items-start">
-              <h1 className="font-bold text-[#5C4D4D] text-lg leading-tight">小達 AI 護理顧問</h1>
+              <h1 className="font-bold text-[#5C4D4D] text-lg leading-tight flex items-center gap-1">
+                小達 AI 護理顧問
+                <span className="text-[8px] bg-red-100 text-red-400 px-1 rounded">v4</span>
+              </h1>
               <div className="flex items-center gap-1">
                 <span className="w-1.5 h-1.5 bg-[#69C181] rounded-full"></span>
                 <span className="text-[#69C181] text-[10px] font-bold">溫柔守護中</span>
@@ -231,7 +237,7 @@ const AIChat: React.FC<{
               「哈囉！我是小達，<br />今天有什麼想聊聊的嗎？🧸」
             </p>
 
-            <div className="flex flex-col items-center gap-3 w-full max-w-[280px] px-8">
+            <div className="flex flex-col items-center space-y-3 w-full max-w-[300px] px-4">
               {currentSuggestions.map((suggestion) => (
                 <button
                   key={suggestion}
@@ -239,7 +245,7 @@ const AIChat: React.FC<{
                     setInput(suggestion);
                     setTimeout(handleSend, 50);
                   }}
-                  className="w-full px-5 py-3 tracking-wide bg-white/80 border border-gray-100 rounded-full text-[13px] text-gray-500 hover:bg-white hover:shadow-md transition-all shadow-sm active:scale-95 text-center font-medium"
+                  className="w-full min-w-[200px] px-6 py-4 tracking-wide bg-white border border-gray-100/50 rounded-full text-[14px] text-gray-500 hover:bg-dama-brown/5 hover:text-dama-brown transition-all shadow-sm active:scale-95 text-center font-bold"
                 >
                   {suggestion}
                 </button>
