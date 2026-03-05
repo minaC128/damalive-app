@@ -167,15 +167,37 @@ const AIChat: React.FC<{
   };
 
   const renderFormattedText = (text: string) => {
-    const parts = text.split(/(\*\*.*?\*\*|- .*?\n)/g);
-    return parts.map((part, i) => {
-      if (part.startsWith('**') && part.endsWith('**')) {
-        return <strong key={i} className="text-dama-sakura block my-1">{part.slice(2, -2)}</strong>;
+    // 預處理：將連續兩個換行轉換為段落間距，並處理單個換行為 <br />
+    const lines = text.split('\n');
+    return lines.map((line, i) => {
+      let content: React.ReactNode = line;
+
+      // 處理加粗
+      if (line.includes('**')) {
+        const parts = line.split(/(\*\*.*?\*\*)/g);
+        content = parts.map((part, pi) => {
+          if (part.startsWith('**') && part.endsWith('**')) {
+            return <strong key={pi} className="text-dama-sakura font-bold">{part.slice(2, -2)}</strong>;
+          }
+          return part;
+        });
       }
-      if (part.startsWith('- ')) {
-        return <li key={i} className="ml-4 list-disc text-dama-brown/80 my-1">{part.slice(2)}</li>;
+
+      // 處理列表
+      if (line.trim().startsWith('- ')) {
+        return (
+          <div key={i} className="flex gap-2 ml-1 my-1">
+            <span className="text-dama-sakura">•</span>
+            <span className="flex-1">{content.toString().replace('- ', '')}</span>
+          </div>
+        );
       }
-      return <span key={i}>{part}</span>;
+
+      return (
+        <div key={i} className={line.trim() === '' ? 'h-2' : 'min-h-[1.2em]'}>
+          {content}
+        </div>
+      );
     });
   };
 
@@ -225,16 +247,15 @@ const AIChat: React.FC<{
       <div className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar pb-32">
         {(!messages || messages.length === 0) && !isLoading ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-4 animate-in fade-in duration-700">
-            <div className="relative mb-10 flex items-center justify-center grayscale opacity-30">
-              <span className="text-4xl absolute -left-4 -top-2 rotate-[-20deg]">🐾</span>
-              <span className="text-5xl relative z-10 rotate-[15deg]">🐾</span>
+            <div className="relative mb-10 flex items-center justify-center grayscale opacity-20">
+              <span className="text-5xl rotate-[15deg] select-none">🐾</span>
             </div>
 
             <p className="text-[#A5928E] font-medium text-base mb-14 tracking-wide leading-relaxed">
               「哈囉！！我是小達，<br />今天有什麼想聊聊的嗎？🧸」
             </p>
 
-            <div className="flex flex-row justify-center gap-3 w-full px-4 mb-4 overflow-x-auto no-scrollbar">
+            <div className="flex flex-row justify-center gap-2 w-full px-2 mb-4 overflow-x-auto no-scrollbar">
               {currentSuggestions.map((suggestion) => (
                 <button
                   key={suggestion}
@@ -242,7 +263,7 @@ const AIChat: React.FC<{
                     setInput(suggestion);
                     setTimeout(handleSend, 50);
                   }}
-                  className="px-5 py-2.5 bg-white border border-gray-100 rounded-full text-[13px] text-gray-400 hover:bg-gray-50 transition-all shadow-sm active:scale-95 whitespace-nowrap"
+                  className="px-3 py-2 bg-white border border-gray-100/80 rounded-full text-[11px] text-gray-400 hover:bg-gray-50 transition-all shadow-sm active:scale-95 whitespace-nowrap"
                 >
                   {suggestion}
                 </button>
@@ -252,7 +273,7 @@ const AIChat: React.FC<{
         ) : (
           messages.map((m, i) => (
             <div key={i} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'} animate-in slide-in-from-bottom-2`}>
-              <div className={`max-w-[75%] p-4 px-6 rounded-[24px] shadow-sm text-[15px] leading-relaxed relative ${m.role === 'user'
+              <div className={`max-w-[85%] p-4 px-5 rounded-[22px] shadow-sm text-[14px] leading-relaxed relative ${m.role === 'user'
                 ? 'bg-[#FDE3D2] text-gray-700 rounded-tr-none'
                 : 'bg-white text-gray-700 rounded-tl-none border border-white'
                 }`}>
