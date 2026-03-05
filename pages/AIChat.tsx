@@ -53,14 +53,16 @@ const AIChat: React.FC<{
         // If it's a string Date, convert to number
         if (typeof ts === 'string') ts = new Date(ts).getTime();
 
+        const lastContent = lastMsg?.content || '';
+
         return {
           id,
-          lastMessage: lastMsg?.content || '',
+          lastMessage: lastContent,
           timestamp: Number(ts) || Date.now()
         };
       })
-      // 過濾掉沒有內容或標題為空的紀錄
-      .filter(s => s.lastMessage && s.lastMessage !== 'Empty Chat' && s.lastMessage.trim() !== '')
+      // 放寬過濾，確保內容一定能顯示出現在列表中
+      .filter(s => s.lastMessage && s.lastMessage.trim() !== '')
       .sort((a, b) => b.timestamp - a.timestamp);
   };
 
@@ -178,11 +180,14 @@ const AIChat: React.FC<{
     return lines.map((line, i) => {
       let content: React.ReactNode = line;
 
-      // 處理標題 ###
-      if (line.startsWith('### ')) {
+      // 處理標題 ### 或 ## 或 # (更寬容的匹配)
+      const trimmedLine = line.trim();
+      if (trimmedLine.startsWith('#')) {
+        const level = (trimmedLine.match(/^#+/) || ['#'])[0].length;
+        const textOnly = trimmedLine.replace(/^#+\s*/, '');
         return (
-          <h3 key={i} className="text-base font-bold text-dama-sakura mt-3 mb-1 flex items-center gap-1">
-            <span className="opacity-50 text-xs">#</span> {line.replace('### ', '')}
+          <h3 key={i} className={`font-bold text-dama-sakura mb-1 flex items-center gap-1 ${level === 3 ? 'text-base mt-4' : 'text-lg mt-5'}`}>
+            <span className="opacity-30 text-[10px]">{'#'.repeat(level)}</span> {textOnly}
           </h3>
         );
       }
@@ -292,7 +297,7 @@ const AIChat: React.FC<{
         ) : (
           messages.map((m, i) => (
             <div key={i} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'} animate-in slide-in-from-bottom-2`}>
-              <div className={`max-w-[85%] p-4 px-5 rounded-[22px] shadow-sm text-[14px] leading-relaxed relative ${m.role === 'user'
+              <div className={`max-w-[85%] p-4 px-5 rounded-[22px] shadow-sm text-[13px] leading-relaxed relative ${m.role === 'user'
                 ? 'bg-[#FDE3D2] text-gray-700 rounded-tr-none'
                 : 'bg-white text-gray-700 rounded-tl-none border border-white'
                 }`}>
