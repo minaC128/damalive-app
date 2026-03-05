@@ -237,27 +237,27 @@ const AIChat: React.FC<{
   return (
     <div className="flex flex-col h-screen bg-dotted-grid relative overflow-hidden">
       {/* Header */}
-      <header className="flex items-center justify-between p-6 pt-10 sticky top-0 bg-[#FAF3E0] z-[30] shadow-sm">
+      <header className="p-4 px-6 border-b border-gray-50/50 relative z-[30] bg-[#FAF7F5] flex items-center justify-between">
         <button
           onClick={() => setShowHistory(true)}
-          className="flex flex-col items-center gap-1.5 group transition-all active:scale-90"
+          className="flex flex-col items-center gap-1 text-[#D4A5A5] hover:opacity-70 transition-opacity"
         >
-          <div className="p-2.5 rounded-2xl bg-[#7E593E]/10 text-[#7E593E] group-hover:bg-[#7E593E] group-hover:text-[#FAF3E0] transition-all shadow-sm">
-            <span className="material-symbols-outlined text-2xl">history</span>
+          <div className="w-6 h-6 flex items-center justify-center">
+            <span className="material-symbols-outlined text-2xl" style={{ fontVariationSettings: "'FILL' 0, 'wght' 300" }}>history</span>
           </div>
-          <span className="text-[10px] font-black text-[#A07855] tracking-widest uppercase">紀錄</span>
+          <span className="text-[10px] font-bold tracking-wider">紀錄</span>
         </button>
 
         <div className="flex flex-col items-center">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-[#7E593E] rounded-2xl flex items-center justify-center shadow-lg rotate-3">
-              <span className="text-3xl">🍪</span>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#FFBACA] rounded-full flex items-center justify-center shadow-sm">
+              <span className="material-symbols-outlined text-white text-2xl">pets</span>
             </div>
-            <div className="text-left">
-              <h1 className="text-xl font-black text-[#3E2723] tracking-tighter">{t.title}</h1>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="w-2 h-2 bg-[#69C181] rounded-full animate-pulse shadow-[0_0_8px_#69C181]"></span>
-                <span className="text-[11px] font-black text-[#A07855] tracking-widest leading-none">溫柔守護中</span>
+            <div className="flex flex-col items-start">
+              <h1 className="font-bold text-[#5C4D4D] text-lg leading-tight">{t.title}</h1>
+              <div className="flex items-center gap-1">
+                <span className="w-1.5 h-1.5 bg-[#69C181] rounded-full"></span>
+                <span className="text-[#69C181] text-[10px] font-bold">溫柔守護中</span>
               </div>
             </div>
           </div>
@@ -265,12 +265,12 @@ const AIChat: React.FC<{
 
         <button
           onClick={handleNewChat}
-          className="flex flex-col items-center gap-1.5 group transition-all active:scale-90"
+          className="flex flex-col items-center gap-1 text-[#69C181] hover:opacity-70 transition-opacity"
         >
-          <div className="p-2.5 rounded-2xl bg-[#7E593E]/10 text-[#7E593E] group-hover:bg-[#7E593E] group-hover:text-[#FAF3E0] transition-all shadow-sm border border-[#7E593E]/20">
-            <span className="material-symbols-outlined text-2xl font-bold">add</span>
+          <div className="w-6 h-6 flex items-center justify-center border border-[#69C181] rounded-sm">
+            <span className="material-symbols-outlined text-xl" style={{ fontVariationSettings: "'FILL' 0, 'wght' 600" }}>add</span>
           </div>
-          <span className="text-[10px] font-black text-[#A07855] tracking-widest uppercase">新對話</span>
+          <span className="text-[10px] font-bold tracking-wider">新對話</span>
         </button>
       </header>
 
@@ -278,11 +278,11 @@ const AIChat: React.FC<{
       <div className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar pb-32">
         {(!messages || messages.length === 0) && !isLoading ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-6 animate-in fade-in duration-1000">
-            <div className="relative mb-12 flex items-center justify-center opacity-40">
+            <div className="relative mb-12 flex items-center justify-center grayscale opacity-20">
               <span className="text-6xl select-none animate-bounce">🐾</span>
             </div>
 
-            <p className="text-[#A07855] font-black text-lg mb-12 tracking-wide leading-relaxed">
+            <p className="text-[#A5928E] font-semibold text-lg mb-12 tracking-wide leading-relaxed">
               「哈囉！！我是小達，<br />今天有什麼想聊聊的嗎？🧸」
             </p>
 
@@ -294,7 +294,7 @@ const AIChat: React.FC<{
                     setInput(suggestion);
                     setTimeout(handleSend, 50);
                   }}
-                  className="px-6 py-5 bg-[#FAF3E0] border-2 border-[#7E593E]/10 rounded-[28px] text-[13px] text-[#3E2723] font-black hover:bg-[#7E593E]/5 transition-all shadow-sm active:scale-95 text-center leading-snug"
+                  className="px-6 py-4 bg-[#FEF9F6] border border-[#F5CBA7]/20 rounded-[22px] text-[13px] text-[#5C4D4D] font-bold hover:bg-[#FAD4C0] transition-all shadow-sm active:scale-95 text-center"
                 >
                   {suggestion}
                 </button>
@@ -302,15 +302,15 @@ const AIChat: React.FC<{
             </div>
           </div>
         ) : (
-          messages.map((m, idx) => (
-            <div key={idx} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'} animate-in slide-in-from-bottom-2`}>
-              <div className={`max-w-[85%] p-5 px-6 rounded-[30px] shadow-sm text-[13px] leading-relaxed relative font-medium ${m.role === 'user'
-                ? 'bg-[#7E593E] text-[#FFF9F5] rounded-tr-none'
-                : 'bg-white text-[#3E2723] rounded-tl-none border border-[#7E593E]/5'
+          messages.map((m, i) => (
+            <div key={i} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'} animate-in slide-in-from-bottom-2`}>
+              <div className={`max-w-[85%] p-4 px-5 rounded-[22px] shadow-sm text-[13px] leading-relaxed relative ${m.role === 'user'
+                ? 'bg-[#FDE3D2] text-gray-700 rounded-tr-none'
+                : 'bg-white text-gray-700 rounded-tl-none border border-white'
                 }`}>
                 {renderFormattedText(m.content || '')}
               </div>
-              <p className="text-[10px] mt-2 text-[#A07855] font-black px-1 opacity-60 uppercase tracking-widest">
+              <p className="text-[10px] mt-1.5 text-gray-400 font-medium px-1">
                 {m.timestamp && !isNaN(Number(m.timestamp))
                   ? new Date(m.timestamp).toLocaleTimeString('zh-TW', { hour: 'numeric', minute: '2-digit', hour12: true })
                   : '剛剛'}
@@ -319,12 +319,12 @@ const AIChat: React.FC<{
           ))
         )}
         {isLoading && (
-          <div className="flex flex-col items-start">
-            <div className="bg-white p-5 px-8 rounded-[30px] rounded-tl-none shadow-sm border border-[#7E593E]/5">
+          <div className="flex flex-col items-start animate-pulse">
+            <div className="bg-white p-4 px-6 rounded-[24px] rounded-tl-none shadow-sm border border-white">
               <div className="flex gap-1.5">
-                <div className="w-2 h-2 bg-[#A07855] rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-[#A07855] rounded-full animate-bounce [animation-delay:0.2s]"></div>
-                <div className="w-2 h-2 bg-[#A07855] rounded-full animate-bounce [animation-delay:0.4s]"></div>
+                <div className="w-2 h-2 bg-[#FFBACA] rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-[#FFBACA] rounded-full animate-bounce [animation-delay:0.2s]"></div>
+                <div className="w-2 h-2 bg-[#FFBACA] rounded-full animate-bounce [animation-delay:0.4s]"></div>
               </div>
             </div>
           </div>
@@ -333,24 +333,24 @@ const AIChat: React.FC<{
       </div>
 
       {/* Input Area */}
-      <div className="fixed bottom-24 left-0 right-0 p-5 z-[30] pointer-events-none">
-        <div className="max-w-md mx-auto relative flex items-center bg-white rounded-[35px] shadow-2xl border border-[#7E593E]/10 p-2.5 pointer-events-auto overflow-hidden">
+      <div className="fixed bottom-24 left-0 right-0 p-4 z-20 pointer-events-none">
+        <div className="max-w-md mx-auto relative flex items-center bg-[#F9F6F4] rounded-full shadow-lg border border-white/50 p-1 pointer-events-auto overflow-hidden">
           <input
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyPress={e => e.key === 'Enter' && handleSend()}
             placeholder="溫柔提問..."
-            className="flex-1 bg-transparent border-none rounded-full py-4 pl-6 pr-14 text-sm focus:ring-0 placeholder-[#A07855]/40 font-black text-[#3E2723]"
+            className="flex-1 bg-transparent border-none rounded-full py-4 pl-6 pr-14 text-sm focus:ring-0 placeholder-gray-300 font-medium text-[#5C4D4D]"
           />
           <button
             onClick={handleSend}
             disabled={!input.trim() || isLoading}
-            className={`absolute right-2.5 w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-lg active:scale-95 ${input.trim()
-              ? 'bg-[#7E593E] text-[#FAF3E0] hover:scale-105'
-              : 'bg-gray-50 text-gray-200 opacity-50'
+            className={`absolute right-1.5 w-12 h-12 rounded-full flex items-center justify-center transition-all bg-white shadow-sm active:scale-95 ${input.trim()
+              ? 'text-gray-400'
+              : 'text-gray-200 opacity-50'
               }`}
           >
-            <span className="material-symbols-outlined text-2xl font-black">send</span>
+            <span className="material-symbols-outlined text-2xl">send</span>
           </button>
         </div>
       </div>
@@ -359,28 +359,28 @@ const AIChat: React.FC<{
         <>
           {/* Backdrop */}
           <div
-            className="fixed inset-0 z-[100] bg-[#3E2723]/60 backdrop-blur-[4px] animate-in fade-in duration-300 pointer-events-auto"
+            className="fixed inset-0 z-[100] bg-black/20 backdrop-blur-[2px] animate-in fade-in duration-300 pointer-events-auto"
             onClick={() => setShowHistory(false)}
           />
 
           {/* Bottom Sheet History */}
-          <div className="fixed bottom-0 left-0 right-0 z-[110] bg-[#FAF3E0] rounded-t-[45px] shadow-2xl animate-in slide-in-from-bottom duration-500 flex flex-col max-h-[85vh] pointer-events-auto">
-            <header className="p-8 pb-4 flex items-center justify-between sticky top-0 bg-[#FAF3E0] rounded-t-[45px] z-10">
-              <div className="w-12 h-1.5 bg-[#7E593E]/20 rounded-full absolute top-4 left-1/2 -translate-x-1/2" />
-              <h2 className="font-black text-[#3E2723] text-xl pl-2">聊天歷史紀錄</h2>
+          <div className="fixed bottom-0 left-0 right-0 z-[110] bg-[#faf7f5] rounded-t-[40px] shadow-2xl animate-in slide-in-from-bottom duration-500 flex flex-col max-h-[75vh] pointer-events-auto">
+            <header className="p-6 pb-2 flex items-center justify-between sticky top-0 bg-[#faf7f5] rounded-t-[40px] z-10">
+              <div className="w-10 h-1 bg-gray-200 rounded-full absolute top-3 left-1/2 -translate-x-1/2" />
+              <h2 className="font-bold text-[#5c4d4d] text-lg pl-2">聊天歷史紀錄</h2>
               <button
                 onClick={() => setShowHistory(false)}
-                className="p-3 text-[#A07855] hover:text-[#7E593E] transition-colors bg-white rounded-full shadow-sm"
+                className="p-2 text-gray-400 hover:text-gray-600 transition-colors bg-white rounded-full shadow-sm"
               >
-                <span className="material-symbols-outlined text-2xl font-bold">close</span>
+                <span className="material-symbols-outlined text-2xl">close</span>
               </button>
             </header>
 
-            <div className="flex-1 p-8 pt-2 space-y-5 overflow-y-auto no-scrollbar pb-12">
+            <div className="flex-1 p-6 pt-2 space-y-4 overflow-y-auto no-scrollbar pb-10">
               {sessions.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-24 opacity-20 text-center">
-                  <span className="material-symbols-outlined text-7xl mb-4">cookie</span>
-                  <p className="text-base font-black">還沒有餅乾紀錄</p>
+                <div className="flex flex-col items-center justify-center py-20 opacity-30 text-center">
+                  <span className="material-symbols-outlined text-6xl mb-4">chat_bubble</span>
+                  <p className="text-sm font-bold">還沒有對話紀錄</p>
                 </div>
               ) : (
                 sessions.map(s => (
@@ -388,16 +388,17 @@ const AIChat: React.FC<{
                     key={s.id}
                     className="relative group"
                   >
+                    {/* Clickable session row */}
                     <div
                       onClick={() => { onSelectChat(s.id); setShowHistory(false); }}
-                      className={`p-6 bg-white rounded-[32px] border-2 transition-all cursor-pointer flex items-center gap-5 shadow-sm hover:shadow-md active:scale-[0.98] ${chatId === s.id ? 'border-[#7E593E]' : 'border-transparent'}`}
+                      className={`p-5 bg-white rounded-[28px] border transition-all cursor-pointer flex items-center gap-4 shadow-sm hover:shadow-md active:scale-[0.98] ${chatId === s.id ? 'border-[#FFBACA]' : 'border-transparent'}`}
                     >
-                      <div className="w-14 h-14 rounded-2xl bg-[#FAF3E0] flex items-center justify-center shrink-0 shadow-inner">
-                        <span className="material-symbols-outlined text-[#7E593E] text-3xl">chat_bubble</span>
+                      <div className="w-12 h-12 rounded-full bg-[#fdf2f2] flex items-center justify-center shrink-0">
+                        <span className="material-symbols-outlined text-[#FFBACA] text-2xl">chat_bubble</span>
                       </div>
-                      <div className="flex-1 min-w-0 pr-12 text-left">
-                        <p className="text-lg font-black text-[#3E2723] truncate leading-tight">{s.lastMessage}</p>
-                        <p className="text-xs text-[#A07855] font-bold mt-1.5 uppercase tracking-widest opacity-60">
+                      <div className="flex-1 min-w-0 pr-14 text-left">
+                        <p className="text-base font-bold text-[#5c4d4d] truncate">{s.lastMessage}</p>
+                        <p className="text-xs text-gray-300 font-medium mt-1 uppercase tracking-tight">
                           {s.timestamp && !isNaN(s.timestamp)
                             ? `${new Date(s.timestamp).toLocaleDateString('en-US', { month: 'short', day: '2-digit' })} ${new Date(s.timestamp).toLocaleTimeString('zh-TW', { hour: 'numeric', minute: '2-digit', hour12: true })}`
                             : '剛剛'}
@@ -405,27 +406,29 @@ const AIChat: React.FC<{
                       </div>
                     </div>
 
+                    {/* Delete button - completely isolated from the clickable row */}
                     <button
                       type="button"
                       onPointerDown={(e) => e.stopPropagation()}
                       onClick={async (e) => {
                         e.stopPropagation();
                         const myId = s.id;
-                        if (window.confirm('確定要刪除這條記錄嗎？')) {
-                          try {
-                            await deleteChatSession(user.uid, myId, onSyncStatus);
-                            if (chatId === myId) handleNewChat();
-                            const history = await getChatHistory(user.uid);
-                            setSessions(mapHistoryToSessions(history));
-                          } catch (err) {
-                            console.error(err);
-                            alert('刪除失敗，這可能是因為資料庫設定（例如 Supabase 外鍵未開啟 Cascade 刪除）或權限不足。');
-                          }
+                        if (!window.confirm('確定要刪除這條記錄嗎？')) return;
+                        try {
+                          await deleteChatSession(user.uid, myId, onSyncStatus);
+                          // Optimistically remove from UI immediately
+                          setSessions(prev => prev.filter(x => x.id !== myId));
+                          if (chatId === myId) handleNewChat();
+                        } catch (err: any) {
+                          console.error('[DeleteSession] Error:', JSON.stringify(err));
+                          const msg = err?.message || err?.details || JSON.stringify(err);
+                          alert(`刪除失敗: ${msg}\n\n請檢查 Supabase 的 RLS 政策是否允許 DELETE，或外鍵是否設定 ON DELETE CASCADE。`);
                         }
                       }}
-                      className="absolute right-6 top-1/2 -translate-y-1/2 w-14 h-14 flex items-center justify-center text-[#A07855] hover:text-red-500 hover:bg-red-50 transition-all shrink-0 bg-[#FAF3E0] rounded-full z-[120] shadow-md border border-[#7E593E]/10 pointer-events-auto"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 p-3 text-gray-400 hover:text-red-500 transition-colors shrink-0 bg-white rounded-full z-[120] shadow-sm pointer-events-auto border border-gray-100"
+                      aria-label="刪除對話"
                     >
-                      <span className="material-symbols-outlined text-2xl font-black">delete</span>
+                      <span className="material-symbols-outlined text-xl">delete</span>
                     </button>
                   </div>
                 ))
@@ -439,3 +442,5 @@ const AIChat: React.FC<{
 };
 
 export default AIChat;
+
+
