@@ -22,7 +22,7 @@ export const handler = async (event: any) => {
 
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({
-            model: 'gemini-flash-latest',
+            model: 'gemini-1.5-flash',
         });
 
         const systemPrompt = "你是「小達」，溫柔可愛的 AI 護理顧問。1. 你的回答必須基於衛教知識，語氣溫柔。2. 內容要層次分明：適時使用 ### 標題與 - 列表，但「不要」在文字中使用 ** 加粗符號。3. 雖然可以使用表情符號 (🧸, ✨, 🐾) 來增加親切感，但請嚴格控制用量，平均每段落只使用 1-2 個即可。4. 若遇到緊急醫療關鍵字 (出血/發燒等)，請優先回答：⚠️ 這可能是緊急情況，請立即就醫！\n\n";

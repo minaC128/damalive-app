@@ -26,6 +26,10 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
   const [noteForm, setNoteForm] = useState<{ title: string, content: string, category: NoteCategory, targetDate: string }>({
     title: '', content: '', category: 'note', targetDate: ''
   });
+  const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const [editNoteForm, setEditNoteForm] = useState<{ title: string, content: string, category: NoteCategory, targetDate: string }>({
+    title: '', content: '', category: 'note', targetDate: ''
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -89,6 +93,21 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
       const data = await getAllData(user.uid);
       setDbData(prev => ({ ...prev, notes: data.notes }));
     }
+  };
+
+  const handleOpenEditNote = (note: Note, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setEditingNote(note);
+    setEditNoteForm({ title: note.title, content: note.content, category: note.category, targetDate: note.targetDate || '' });
+  };
+
+  const handleUpdateNote = async () => {
+    if (!editingNote || !editNoteForm.title.trim()) return;
+    const updatedNote: Note = { ...editingNote, ...editNoteForm };
+    await saveNote(user.uid, updatedNote, onSyncStatus);
+    setEditingNote(null);
+    const data = await getAllData(user.uid);
+    setDbData(prev => ({ ...prev, notes: data.notes }));
   };
 
   const handleToggleNote = async (note: Note) => {
@@ -389,9 +408,16 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
 
                   <div className={`transition-all duration-500 overflow-hidden ${expandedNoteId === note.id ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'}`}>
                     <div className="px-5 pb-5 pt-2 border-t border-dama-sakura/5 mx-3 mb-1">
-                      <div className="bg-dama-bg/30 p-4 rounded-2xl text-xs text-dama-brown/80 leading-relaxed font-medium whitespace-pre-wrap">
+                      <div className="bg-dama-bg/30 p-4 rounded-2xl text-xs text-dama-brown/80 leading-relaxed font-medium whitespace-pre-wrap mb-3">
                         {note.content || tp.emptyContent}
                       </div>
+                      <button
+                        onClick={(e) => handleOpenEditNote(note, e)}
+                        className="w-full py-2 rounded-2xl border border-dama-sakura/20 text-dama-sakura text-[10px] font-bold flex items-center justify-center gap-1 hover:bg-dama-sakura/5 active:scale-95 transition-all"
+                      >
+                        <span className="material-symbols-outlined text-xs">edit</span>
+                        {tc.edit}
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -732,6 +758,66 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
                 {tp.saveNote}
               </button>
               <button onClick={() => setShowNoteModal(false)} className="w-full py-3 font-bold text-dama-brown/30 text-xs">
+                {tc.cancel}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {editingNote && (
+        <div className="fixed inset-0 bg-dama-brown/40 backdrop-blur-md z-[120] flex items-center justify-center p-6 animate-in fade-in">
+          <div className="bg-white w-full max-w-sm rounded-[40px] p-8 shadow-2xl relative animate-in zoom-in-95">
+            <h2 className="text-xl font-bold text-dama-brown mb-6">{tp.editTitle}</h2>
+            <div className="space-y-4">
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">{tp.inputTitle}</label>
+                <input
+                  value={editNoteForm.title}
+                  onChange={e => setEditNoteForm({ ...editNoteForm, title: e.target.value })}
+                  className="w-full bg-dama-bg border-none rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-dama-sakura"
+                  placeholder={tp.inputTitlePlaceholder}
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">{tp.category}</label>
+                <div className="flex gap-2">
+                  {(['note', 'task', 'meeting'] as NoteCategory[]).map(cat => (
+                    <button
+                      key={cat}
+                      onClick={() => setEditNoteForm({ ...editNoteForm, category: cat })}
+                      className={`flex-1 py-2 rounded-xl text-[10px] font-bold transition-all border ${editNoteForm.category === cat ? 'bg-dama-sakura border-dama-sakura text-white' : 'bg-white border-dama-sakura/20 text-dama-brown/40'}`}
+                    >
+                      {cat === 'note' ? tp.catNote : cat === 'task' ? tp.catTask : tp.catMeeting}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">{tp.targetDate}</label>
+                <input
+                  type="date"
+                  value={editNoteForm.targetDate}
+                  onChange={e => setEditNoteForm({ ...editNoteForm, targetDate: e.target.value })}
+                  className="w-full bg-dama-bg border-none rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-dama-sakura"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">{tp.content}</label>
+                <textarea
+                  rows={4}
+                  value={editNoteForm.content}
+                  onChange={e => setEditNoteForm({ ...editNoteForm, content: e.target.value })}
+                  className="w-full bg-dama-bg border-none rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-dama-sakura no-scrollbar"
+                  placeholder={tp.contentPlaceholder}
+                />
+              </div>
+            </div>
+            <div className="mt-8 flex flex-col gap-2">
+              <button onClick={handleUpdateNote} className="w-full bg-dama-sakura text-white py-4 rounded-full font-bold shadow-lg shadow-dama-sakura/20 active:scale-95 transition-all text-sm">
+                {tp.updateNote}
+              </button>
+              <button onClick={() => setEditingNote(null)} className="w-full py-3 font-bold text-dama-brown/30 text-xs">
                 {tc.cancel}
               </button>
             </div>

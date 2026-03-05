@@ -118,7 +118,8 @@ const AIChat: React.FC<{
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.text || 'Failed to fetch AI response');
+        const statusText = `API Error: ${response.status} ${response.statusText}`;
+        throw new Error(errorData.text || errorData.details || statusText);
       }
 
       const data = await response.json();

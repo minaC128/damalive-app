@@ -42,9 +42,10 @@ export const translations = {
             slogan: '「 與寶寶一同成長的每一刻 」'
         },
         planner: {
-            title: '媽咪計畫本',
+            title: '記事本',
             noNotes: '還沒有任何紀錄嗎？\n記錄下一次的產檢或是寶寶的任務吧！',
             addTitle: '新增計畫紀錄',
+            editTitle: '編輯紀錄',
             inputTitle: '標題',
             inputTitlePlaceholder: '如：產檢紀錄、寶寶預防針',
             category: '分類',
@@ -55,6 +56,7 @@ export const translations = {
             content: '內容',
             contentPlaceholder: '寫下詳細內容...',
             saveNote: '儲存紀錄',
+            updateNote: '更新紀錄',
             expected: '預計：',
             created: '建立',
             emptyContent: '無詳細內容描述',
@@ -131,9 +133,10 @@ export const translations = {
             slogan: '\"Growing together with your baby.\"'
         },
         planner: {
-            title: 'Mommy Planner',
+            title: 'Notebook',
             noNotes: 'No records yet?\nRecord your next check-up or baby tasks!',
             addTitle: 'Add New Record',
+            editTitle: 'Edit Record',
             inputTitle: 'Title',
             inputTitlePlaceholder: 'e.g., Prenatal check-up, Baby vaccination',
             category: 'Category',
@@ -144,6 +147,7 @@ export const translations = {
             content: 'Details',
             contentPlaceholder: 'Write down more details...',
             saveNote: 'Save Record',
+            updateNote: 'Update Record',
             expected: 'Target: ',
             created: 'Created',
             emptyContent: 'No detailed description',
@@ -220,9 +224,10 @@ export const translations = {
             slogan: '「赤ちゃんと共に歩む、かけがえのない時間」'
         },
         planner: {
-            title: 'ママの計画帳',
+            title: 'ノート',
             noNotes: 'まだ記録がありません。\n次回の健診や育児タスクを記録しましょう！',
             addTitle: '新しい記録を追加',
+            editTitle: '記録を編集',
             inputTitle: 'タイトル',
             inputTitlePlaceholder: '例：妊婦健診、赤ちゃんの予防接種',
             category: 'カテゴリー',
@@ -233,6 +238,7 @@ export const translations = {
             content: '詳細',
             contentPlaceholder: '詳細を入力してください...',
             saveNote: '記録を保存',
+            updateNote: '記録を更新',
             expected: '予定：',
             created: '作成日',
             emptyContent: '詳細な説明はありません',

@@ -29,7 +29,7 @@ app.post('/api/chat', async (req, res) => {
         const { GoogleGenerativeAI } = await import('@google/generative-ai');
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({
-            model: 'gemini-flash-latest',
+            model: 'gemini-1.5-flash',
         });
 
         const systemPrompt = "你是「小達」，溫柔可愛的 AI 護理顧問。1. 你的回答必須基於衛教知識，語氣溫柔、加上表情符號 (🧸, ✨)。2. 若遇到緊急醫療關鍵字 (出血/發燒等)，請優先回答：⚠️ 這可能是緊急情況，請立即就醫！\n\n";
@@ -60,16 +60,21 @@ app.post('/api/chat', async (req, res) => {
 
         res.json({ text: responseText, isEmergency });
     } catch (error: any) {
-        console.error('Gemini API Error details:', JSON.stringify(error, null, 2) || error);
+        console.error('Gemini API Error:', error);
 
         let errorMsg = '哎呀，小達連線稍微斷了，請稍後再試！🧸';
-        if (error?.message?.includes('API key not valid')) {
+        const rawError = error?.message || '';
+
+        if (rawError.includes('API key not valid')) {
             errorMsg = '❌ API Key 無效，請確認 .env.local 中的設定。';
+        } else if (rawError.includes('not found')) {
+            errorMsg = `❌ 模型錯誤: ${rawError}`;
         }
 
         res.status(500).json({
             text: errorMsg,
             isEmergency: false,
+            details: rawError
         });
     }
 });
