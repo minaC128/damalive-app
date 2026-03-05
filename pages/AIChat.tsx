@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
+// UI Version: 2026-03-05-v3-Zen
 import { UserProfile, ChatMessage } from '../types';
 import { getChatHistory, saveChatMessage, deleteChatSession } from '../services/dbService';
 import { translations } from '../data/translations';
