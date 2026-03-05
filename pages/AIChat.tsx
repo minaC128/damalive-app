@@ -263,27 +263,32 @@ const AIChat: React.FC<{
       <div className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar pb-32">
         {(!messages || messages.length === 0) && !isLoading ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-4 animate-in fade-in duration-700">
-            <div className="relative mb-10 flex items-center justify-center grayscale opacity-20">
-              <span className="text-5xl rotate-[15deg] select-none">🐾</span>
+            <div className="relative mb-8 flex flex-col items-center justify-center grayscale opacity-15">
+              <div className="flex gap-4">
+                <span className="text-4xl select-none rotate-[-15deg]">🐾</span>
+                <span className="text-4xl select-none rotate-[15deg] translate-y-6">🐾</span>
+              </div>
             </div>
 
-            <p className="text-[#A5928E] font-medium text-base mb-14 tracking-wide leading-relaxed">
+            <p className="text-[#A5928E] font-medium text-base mb-10 tracking-wide leading-relaxed">
               「哈囉！！我是小達，<br />今天有什麼想聊聊的嗎？🧸」
             </p>
 
-            <div className="flex flex-row gap-3 w-full px-6 mb-4 overflow-x-auto no-scrollbar scroll-smooth">
-              {currentSuggestions.map((suggestion, idx) => (
-                <button
-                  key={suggestion}
-                  onClick={() => {
-                    setInput(suggestion);
-                    setTimeout(handleSend, 50);
-                  }}
-                  className={`px-4 py-2 bg-white border border-gray-100/80 rounded-full text-[12px] text-gray-500 hover:bg-gray-50 transition-all shadow-sm active:scale-95 whitespace-nowrap ${idx === currentSuggestions.length - 1 ? 'mr-6' : ''}`}
-                >
-                  {suggestion}
-                </button>
-              ))}
+            <div className="w-full overflow-x-auto no-scrollbar scroll-smooth">
+              <div className="flex flex-row justify-center gap-3 w-fit mx-auto px-8 mb-4 min-w-full">
+                {currentSuggestions.map((suggestion) => (
+                  <button
+                    key={suggestion}
+                    onClick={() => {
+                      setInput(suggestion);
+                      setTimeout(handleSend, 50);
+                    }}
+                    className="px-4 py-2 bg-white border border-gray-100/80 rounded-full text-[12px] text-gray-500 hover:bg-gray-50 transition-all shadow-sm active:scale-95 whitespace-nowrap"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         ) : (
