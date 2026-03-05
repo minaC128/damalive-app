@@ -8,6 +8,7 @@ import KnowledgeBase from './pages/KnowledgeBase';
 import Profile from './pages/Profile';
 import Navbar from './components/Navbar';
 import LoginOverlay from './components/LoginOverlay';
+import OnboardingTour from './components/OnboardingTour';
 import { Page, UserProfile } from './types';
 import { getAllData } from './services/dbService';
 import { supabase } from './services/supabaseClient';
@@ -18,6 +19,7 @@ const App: React.FC = () => {
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   const [syncStatus, setSyncStatus] = useState<'syncing' | 'synced' | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
+  const [showTour, setShowTour] = useState(false);
 
   // 監聽 Supabase Auth 狀態
   useEffect(() => {
@@ -62,6 +64,13 @@ const App: React.FC = () => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // 檢查是否需要顯示導覽
+  useEffect(() => {
+    if (user && !user.hasSeenTour && !localStorage.getItem(`hasSeenTour_${user.uid}`)) {
+      setShowTour(true);
+    }
+  }, [user]);
 
   // 監聽字體大小設定並套用到 全局
   useEffect(() => {
@@ -116,7 +125,7 @@ const App: React.FC = () => {
         />
       );
       case 'knowledge': return <KnowledgeBase user={user} onUpdateUser={setUser} onSyncStatus={onSyncStatusChange} />;
-      case 'profile': return <Profile user={user} onUpdateUser={setUser} onOpenChat={handleOpenChat} onSyncStatus={onSyncStatusChange} onLogout={handleLogout} />;
+      case 'profile': return <Profile user={user} onUpdateUser={setUser} onOpenChat={handleOpenChat} onSyncStatus={onSyncStatusChange} onLogout={handleLogout} onRestartTour={() => setShowTour(true)} />;
       default: return <Home user={user} onSyncStatus={onSyncStatusChange} />;
     }
   };
@@ -136,6 +145,22 @@ const App: React.FC = () => {
         {renderPage()}
       </main>
       <Navbar currentPage={currentPage} onNavigate={(p) => { setCurrentPage(p); }} language={user.preferredLanguage || 'zh'} />
+
+      {showTour && (
+        <OnboardingTour
+          language={user.preferredLanguage || 'zh'}
+          onFinish={async () => {
+            setShowTour(false);
+            localStorage.setItem(`hasSeenTour_${user.uid}`, 'true');
+            if (!user.hasSeenTour) {
+              const updatedUser = { ...user, hasSeenTour: true };
+              setUser(updatedUser);
+              const { saveProfile } = await import('./services/dbService');
+              await saveProfile(user.uid, updatedUser, onSyncStatusChange);
+            }
+          }}
+        />
+      )}
     </div>
   );
 };

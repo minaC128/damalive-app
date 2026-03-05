@@ -6,7 +6,14 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { pregnancyPool, postpartumPool } from '../data/knowledgePool';
 import { translations, Language } from '../data/translations';
 
-const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => void, onOpenChat: (id: string) => void, onSyncStatus: any, onLogout: () => void }> = ({ user, onUpdateUser, onOpenChat, onSyncStatus, onLogout }) => {
+const Profile: React.FC<{
+  user: UserProfile,
+  onUpdateUser: (u: UserProfile) => void,
+  onOpenChat: (id: string) => void,
+  onSyncStatus: any,
+  onLogout: () => void,
+  onRestartTour?: () => void
+}> = ({ user, onUpdateUser, onOpenChat, onSyncStatus, onLogout, onRestartTour }) => {
   const lang = user.preferredLanguage || 'zh';
   const t = translations[lang].profile;
   const tc = translations[lang].common;
@@ -825,7 +832,13 @@ const Profile: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile) => v
         </div>
       )}
 
-      <div className="mt-8 pb-8 flex justify-center">
+      <div className="mt-8 pb-4 flex flex-col items-center gap-4">
+        {onRestartTour && (
+          <button onClick={onRestartTour} className="flex items-center gap-2 px-8 py-3 rounded-full bg-dama-sakura/10 text-dama-sakura font-bold text-sm hover:bg-dama-sakura/20 active:scale-95 transition-all">
+            <span className="material-symbols-outlined text-lg">explore</span>
+            {t.featureGuide}
+          </button>
+        )}
         <button onClick={onLogout} className="flex items-center gap-2 px-8 py-3 rounded-full border-2 border-red-200 text-red-400 font-bold text-sm hover:bg-red-50 active:scale-95 transition-all">
           <span className="material-symbols-outlined text-lg">logout</span>
           {tc.logout}

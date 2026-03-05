@@ -27,6 +27,7 @@ export interface UserProfile {
   fontSize?: 'small' | 'medium' | 'large';
   preferredLanguage?: 'zh' | 'en' | 'ja';
   savedKnowledgeIds?: string[];
+  hasSeenTour?: boolean;
 }
 
 export interface ChatSession {

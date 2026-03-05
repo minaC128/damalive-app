@@ -90,7 +90,25 @@ export const translations = {
             noSaved: '還沒有收藏任何小卡嗎？\n在知識庫點擊愛心即可收藏！',
             noSavedDesc: '收藏的小卡會顯示在這裡，方便隨時查閱。',
             moodTrend: '情緒趨勢',
-            moodMonthly: '情緒月份紀錄'
+            moodMonthly: '情緒月份紀錄',
+            featureGuide: '功能導覽',
+            onboarding: {
+                welcomeTitle: '歡迎來到 DAMALIVE',
+                welcomeDesc: '您的育兒路上溫馨陪伴',
+                identityTitle: '專屬您的身分導覽',
+                identityDesc: '我們為「孕期」與「產後」提供不同建議',
+                profileTitle: '建立您的個人資料',
+                profileDesc: '在「我的」輸入日期，獲取精準資訊',
+                homeTitle: '探索您的首頁',
+                homeDesc: '紀錄今日心情，領取成長小卡',
+                knowledgeTitle: '豐富的生育知識庫',
+                knowledgeDesc: '整理可靠且即時的育兒資訊',
+                aiTitle: 'AI 育兒顧問「小達」',
+                aiDesc: '24小時解答您的所有疑問',
+                next: '下一步',
+                skip: '跳過',
+                finish: '開始使用'
+            }
         }
     },
     en: {
@@ -181,7 +199,25 @@ export const translations = {
             noSaved: 'No saved cards yet?',
             noSavedDesc: 'Your favorite knowledge cards will appear here.',
             moodTrend: 'Mood Trend',
-            moodMonthly: 'Monthly Mood Record'
+            moodMonthly: 'Monthly Mood Record',
+            featureGuide: 'Feature Guide',
+            onboarding: {
+                welcomeTitle: 'Welcome to DAMALIVE',
+                welcomeDesc: 'Warm companionship for your parenting journey',
+                identityTitle: 'Personalized Guidance',
+                identityDesc: 'Tailored advice for Pregnancy and Postpartum',
+                profileTitle: 'Setup Your Profile',
+                profileDesc: 'Enter dates in Profile for accurate info',
+                homeTitle: 'Explore Your Home',
+                homeDesc: 'Log daily mood and get growth cards',
+                knowledgeTitle: 'Rich Knowledge Base',
+                knowledgeDesc: 'Reliable and instant parenting info',
+                aiTitle: 'AI Consultant "Little Da"',
+                aiDesc: '24/7 support for all your questions',
+                next: 'Next',
+                skip: 'Skip',
+                finish: 'Get Started'
+            }
         }
     },
     ja: {
@@ -272,7 +308,25 @@ export const translations = {
             noSaved: 'お気に入りはまだありません。',
             noSavedDesc: 'お気に入りのカードがここに表示されます。',
             moodTrend: '気分の傾向',
-            moodMonthly: '今月の気分ログ'
+            moodMonthly: '今月の気分ログ',
+            featureGuide: '機能ガイド',
+            onboarding: {
+                welcomeTitle: 'DAMALIVEへようこそ',
+                welcomeDesc: 'あなたの育児に温かな寄り添いを',
+                identityTitle: 'パーソナライズされたガイド',
+                identityDesc: '「妊娠中」と「産後」に合わせたアドバイス',
+                profileTitle: 'プロフィール設定',
+                profileDesc: 'プロフィールで日付を入力して正確な情報を取得',
+                homeTitle: 'ホームを探索',
+                homeDesc: '気分を記録して成長カードを受け取る',
+                knowledgeTitle: '充実した知識ベース',
+                knowledgeDesc: '信頼できる最新の育児情報を整理',
+                aiTitle: 'AI相談役「小達」',
+                aiDesc: '24時間いつでもあなたの疑問に答えます',
+                next: '次へ',
+                skip: 'スキップ',
+                finish: 'はじめる'
+            }
         }
     }
 };
