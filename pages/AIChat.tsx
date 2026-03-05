@@ -271,15 +271,15 @@ const AIChat: React.FC<{
               「哈囉！！我是小達，<br />今天有什麼想聊聊的嗎？🧸」
             </p>
 
-            <div className="flex flex-row justify-center gap-2 w-full px-2 mb-4 overflow-x-auto no-scrollbar">
-              {currentSuggestions.map((suggestion) => (
+            <div className="flex flex-row gap-3 w-full px-6 mb-4 overflow-x-auto no-scrollbar scroll-smooth">
+              {currentSuggestions.map((suggestion, idx) => (
                 <button
                   key={suggestion}
                   onClick={() => {
                     setInput(suggestion);
                     setTimeout(handleSend, 50);
                   }}
-                  className="px-3 py-2 bg-white border border-gray-100/80 rounded-full text-[11px] text-gray-400 hover:bg-gray-50 transition-all shadow-sm active:scale-95 whitespace-nowrap"
+                  className={`px-4 py-2 bg-white border border-gray-100/80 rounded-full text-[12px] text-gray-500 hover:bg-gray-50 transition-all shadow-sm active:scale-95 whitespace-nowrap ${idx === currentSuggestions.length - 1 ? 'mr-6' : ''}`}
                 >
                   {suggestion}
                 </button>
