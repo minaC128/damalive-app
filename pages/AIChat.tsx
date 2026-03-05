@@ -49,11 +49,14 @@ const AIChat: React.FC<{
       .map(([id, msgs]: [string, any]) => {
         const lastMsg = msgs[msgs.length - 1];
         // Ensure we handle timestamp consistently
-        const ts = lastMsg?.timestamp || Date.now();
+        let ts = lastMsg?.timestamp || Date.now();
+        // If it's a string Date, convert to number
+        if (typeof ts === 'string') ts = new Date(ts).getTime();
+
         return {
           id,
           lastMessage: lastMsg?.content || '',
-          timestamp: Number(ts)
+          timestamp: Number(ts) || Date.now()
         };
       })
       // 過濾掉沒有內容或標題為空的紀錄
@@ -126,6 +129,10 @@ const AIChat: React.FC<{
       const finalMessages = [...newMessages, aiMessage];
       setMessages(finalMessages);
       await saveChatMessage(user.uid, currentChatId, finalMessages, onSyncStatus);
+
+      // 重要：儲存後立即重新讀取列表，確保「紀錄」視窗同步最新狀態
+      const history = await getChatHistory(user.uid);
+      setSessions(mapHistoryToSessions(history));
 
     } catch (error: any) {
       console.error('Chat error:', error);
