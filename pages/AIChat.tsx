@@ -388,30 +388,32 @@ const AIChat: React.FC<{
                 sessions.map(s => (
                   <div
                     key={s.id}
-                    onClick={() => { onSelectChat(s.id); setShowHistory(false); }}
-                    className={`p-5 bg-white rounded-[28px] border transition-all cursor-pointer flex items-center gap-4 relative group shadow-sm hover:shadow-md active:scale-[0.98] ${chatId === s.id ? 'border-[#FFBACA]' : 'border-transparent'}`}
+                    className="relative group"
                   >
-                    <div className="w-12 h-12 rounded-full bg-[#fdf2f2] flex items-center justify-center shrink-0">
-                      <span className="material-symbols-outlined text-[#FFBACA] text-2xl">chat_bubble</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-base font-bold text-[#5c4d4d] truncate pr-4">{s.lastMessage}</p>
-                      <p className="text-xs text-gray-300 font-medium mt-1 uppercase tracking-tight">
-                        {s.timestamp && !isNaN(s.timestamp)
-                          ? `${new Date(s.timestamp).toLocaleDateString('en-US', { month: 'short', day: '2-digit' })} ${new Date(s.timestamp).toLocaleTimeString('zh-TW', { hour: 'numeric', minute: '2-digit', hour12: true })}`
-                          : '剛剛'}
-                      </p>
+                    <div
+                      onClick={() => { onSelectChat(s.id); setShowHistory(false); }}
+                      className={`p-5 bg-white rounded-[28px] border transition-all cursor-pointer flex items-center gap-4 shadow-sm hover:shadow-md active:scale-[0.98] ${chatId === s.id ? 'border-[#FFBACA]' : 'border-transparent'}`}
+                    >
+                      <div className="w-12 h-12 rounded-full bg-[#fdf2f2] flex items-center justify-center shrink-0">
+                        <span className="material-symbols-outlined text-[#FFBACA] text-2xl">chat_bubble</span>
+                      </div>
+                      <div className="flex-1 min-w-0 pr-10">
+                        <p className="text-base font-bold text-[#5c4d4d] truncate">{s.lastMessage}</p>
+                        <p className="text-xs text-gray-300 font-medium mt-1 uppercase tracking-tight">
+                          {s.timestamp && !isNaN(s.timestamp)
+                            ? `${new Date(s.timestamp).toLocaleDateString('en-US', { month: 'short', day: '2-digit' })} ${new Date(s.timestamp).toLocaleTimeString('zh-TW', { hour: 'numeric', minute: '2-digit', hour12: true })}`
+                            : '剛剛'}
+                        </p>
+                      </div>
                     </div>
                     <button
                       type="button"
-                      onMouseDown={(e) => e.stopPropagation()}
-                      onPointerDown={(e) => e.stopPropagation()}
                       onClick={(e) => {
                         e.stopPropagation();
-                        e.preventDefault();
                         handleDeleteSession(e, s.id);
                       }}
-                      className="p-3 text-gray-400 hover:text-red-500 transition-colors shrink-0 bg-gray-50 rounded-full z-20 relative pointer-events-auto"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 p-3 text-gray-400 hover:text-red-500 transition-colors shrink-0 bg-gray-50/80 rounded-full z-20 shadow-sm"
+                      title="刪除對話"
                     >
                       <span className="material-symbols-outlined text-xl">delete</span>
                     </button>
