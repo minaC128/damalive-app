@@ -168,10 +168,15 @@ const AIChat: React.FC<{
   const handleDeleteSession = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
     if (confirm(tc.delete + '?')) {
-      await deleteChatSession(user.uid, id, onSyncStatus);
-      if (chatId === id) handleNewChat();
-      const history = await getChatHistory(user.uid);
-      setSessions(mapHistoryToSessions(history));
+      try {
+        await deleteChatSession(user.uid, id, onSyncStatus);
+        if (chatId === id) handleNewChat();
+        const history = await getChatHistory(user.uid);
+        setSessions(mapHistoryToSessions(history));
+      } catch (err) {
+        console.error('Delete failed:', err);
+        alert('刪除失敗，請稍後再試');
+      }
     }
   };
 
@@ -279,7 +284,7 @@ const AIChat: React.FC<{
                     setInput(suggestion);
                     setTimeout(handleSend, 50);
                   }}
-                  className="px-6 py-4 bg-[#FAD4C0] border border-[#F5CBA7] rounded-[22px] text-[14px] text-[#5C4D4D] font-bold hover:bg-[#F5CBA7] transition-all shadow-md active:scale-95 text-center"
+                  className="px-6 py-4 bg-[#FFF9F5] border border-[#F5CBA7]/20 rounded-[22px] text-[18px] text-[#5C4D4D] font-bold hover:bg-[#FAD4C0] transition-all shadow-sm active:scale-95 text-center"
                 >
                   {suggestion}
                 </button>
@@ -387,7 +392,7 @@ const AIChat: React.FC<{
                     </div>
                     <button
                       onClick={(e) => handleDeleteSession(e, s.id)}
-                      className="p-2 text-gray-200 hover:text-red-400 transition-colors shrink-0"
+                      className="p-3 text-gray-400 hover:text-red-500 transition-colors shrink-0 bg-gray-50 rounded-full"
                     >
                       <span className="material-symbols-outlined text-xl">delete</span>
                     </button>

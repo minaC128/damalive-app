@@ -112,7 +112,12 @@ export const saveChatMessage = async (uid: string, chatId: string, messages: any
 
 export const deleteChatSession = async (uid: string, chatId: string, onSync?: any) => {
   onSync?.('syncing');
-  await supabase.from('chat_sessions').delete().eq('id', chatId).eq('user_id', uid);
+  const { error } = await supabase.from('chat_sessions').delete().eq('id', chatId).eq('user_id', uid);
+  if (error) {
+    console.error('Error deleting chat session:', error);
+    onSync?.('synced'); // Still mark as synced to clear UI state, but maybe should be 'error'?
+    throw error;
+  }
   onSync?.('synced');
 };
 
