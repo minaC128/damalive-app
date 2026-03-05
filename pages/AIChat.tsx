@@ -43,9 +43,9 @@ const AIChat: React.FC<{
       const history = await getChatHistory(user.uid);
       setSessions(mapHistoryToSessions(history));
 
-      if (chatId && history[chatId]) {
+      if (chatId && history && history[chatId]) {
         setMessages(history[chatId]);
-      } else if (!chatId) {
+      } else {
         setMessages([]);
       }
     };
