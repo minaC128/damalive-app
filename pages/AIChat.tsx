@@ -193,14 +193,16 @@ const AIChat: React.FC<{
       }
 
       // 處理加粗 ** 或 * (支援不同的 Markdown 格號)
-      if (line.includes('**') || (line.includes('*') && !line.trim().startsWith('* '))) {
-        const parts = line.split(/(\*\*.*?\*\*|\*.*?\*)/g);
+      if (line.includes('**') || line.includes('*')) {
+        // 先處理雙星號，再處理單星號
+        const parts = line.split(/(\*\*.*?\*\*|\*[^*]+?\*)/g);
         content = parts.map((part, pi) => {
-          if ((part.startsWith('**') && part.endsWith('**'))) {
+          if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
             return <strong key={pi} className="text-dama-sakura font-bold">{part.slice(2, -2)}</strong>;
           }
           if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
-            return <strong key={pi} className="text-[#FFBACA] font-bold">{part.slice(1, -1)}</strong>;
+            // 單星號使用稍淡的粗體顏色或主色
+            return <strong key={pi} className="text-dama-sakura font-bold opacity-90">{part.slice(1, -1)}</strong>;
           }
           return part;
         });
