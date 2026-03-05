@@ -180,12 +180,13 @@ const AIChat: React.FC<{
     const applyInlineRules = (lineText: string) => {
       if (!lineText.includes('*')) return lineText;
 
-      const parts = lineText.split(/(\*\*.*?\*\*|\*[^*]+?\*)/g);
+      // 使用更寬容的正則，優先處理雙星號
+      const parts = lineText.split(/(\*\*[^*]+\*\*|\*[^*]+\*)/g);
       return parts.map((part, pi) => {
-        if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
+        if (part.startsWith('**') && part.endsWith('**') && part.length >= 5) {
           return <strong key={pi} className="text-[#C88B8B] font-bold">{part.slice(2, -2)}</strong>;
         }
-        if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
+        if (part.startsWith('*') && part.endsWith('*') && part.length >= 3) {
           return <strong key={pi} className="text-[#D4A5A5] font-bold">{part.slice(1, -1)}</strong>;
         }
         return part;
@@ -195,34 +196,33 @@ const AIChat: React.FC<{
     const lines = text.split('\n');
     return lines.map((line, i) => {
       const trimmedLine = line.trim();
+      if (!trimmedLine) return <div key={i} className="h-2" />;
 
-      // 1. 處理標題 (###)
+      // 1. 處理標題 (###) - 完全隱藏井字號
       if (trimmedLine.startsWith('#')) {
-        const level = (trimmedLine.match(/^#+/) || ['#'])[0].length;
         const textOnly = trimmedLine.replace(/^#+\s*/, '');
         return (
-          <h3 key={i} className={`font-bold text-[#D4A5A5] mb-1 flex items-center gap-1 ${level === 3 ? 'text-base mt-4' : 'text-lg mt-5'}`}>
-            <span className="opacity-30 text-[10px]">{'#'.repeat(level)}</span>
-            <span className="flex-1">{applyInlineRules(textOnly)}</span>
+          <h3 key={i} className="text-[15px] font-bold text-[#D4A5A5] mt-4 mb-2">
+            {applyInlineRules(textOnly)}
           </h3>
         );
       }
 
       // 2. 處理列表 (- 或 *)
       if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
-        const bullet = trimmedLine.startsWith('- ') ? '- ' : '* ';
-        const textOnly = trimmedLine.replace(bullet, '');
+        const bulletChar = trimmedLine.startsWith('- ') ? '- ' : '* ';
+        const textOnly = trimmedLine.replace(bulletChar, '');
         return (
-          <div key={i} className="flex gap-2 ml-1 my-1 items-start">
-            <span className="text-[#D4A5A5] mt-0.5">•</span>
-            <span className="flex-1 text-gray-700">{applyInlineRules(textOnly)}</span>
+          <div key={i} className="flex gap-2 ml-1 my-1 items-start text-gray-700">
+            <span className="text-[#D4A5A5] mt-1.5 text-[6px]">●</span>
+            <div className="flex-1">{applyInlineRules(textOnly)}</div>
           </div>
         );
       }
 
       // 3. 一般文本
       return (
-        <div key={i} className={`${trimmedLine === '' ? 'h-2' : 'min-h-[1.2em]'} break-words text-gray-700`}>
+        <div key={i} className="leading-relaxed mb-1 text-gray-700">
           {applyInlineRules(line)}
         </div>
       );
