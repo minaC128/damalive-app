@@ -186,7 +186,7 @@ const AIChat: React.FC<{
         const level = (trimmedLine.match(/^#+/) || ['#'])[0].length;
         const textOnly = trimmedLine.replace(/^#+\s*/, '');
         return (
-          <h3 key={i} className={`font-bold text-dama-sakura mb-1 flex items-center gap-1 ${level === 3 ? 'text-base mt-4' : 'text-lg mt-5'}`}>
+          <h3 key={i} className={`font-bold text-[#D4A5A5] mb-1 flex items-center gap-1 ${level === 3 ? 'text-base mt-4' : 'text-lg mt-5'}`}>
             <span className="opacity-30 text-[10px]">{'#'.repeat(level)}</span> {textOnly}
           </h3>
         );
@@ -198,11 +198,11 @@ const AIChat: React.FC<{
         const parts = line.split(/(\*\*.*?\*\*|\*[^*]+?\*)/g);
         content = parts.map((part, pi) => {
           if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
-            return <strong key={pi} className="text-dama-sakura font-bold">{part.slice(2, -2)}</strong>;
+            return <strong key={pi} className="text-[#C88B8B] font-bold">{part.slice(2, -2)}</strong>;
           }
           if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
-            // 單星號使用稍淡的粗體顏色或主色
-            return <strong key={pi} className="text-dama-sakura font-bold opacity-90">{part.slice(1, -1)}</strong>;
+            // 單星號使用較淡的顏色
+            return <strong key={pi} className="text-[#D4A5A5] font-bold">{part.slice(1, -1)}</strong>;
           }
           return part;
         });
@@ -213,8 +213,8 @@ const AIChat: React.FC<{
         const bullet = line.trim().startsWith('- ') ? '- ' : '* ';
         return (
           <div key={i} className="flex gap-2 ml-1 my-1 items-start">
-            <span className="text-dama-sakura mt-0.5">•</span>
-            <span className="flex-1">{line.trim().replace(bullet, '')}</span>
+            <span className="text-[#D4A5A5] mt-0.5">•</span>
+            <span className="flex-1 text-gray-700">{line.trim().replace(bullet, '')}</span>
           </div>
         );
       }
