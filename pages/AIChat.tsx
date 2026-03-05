@@ -22,6 +22,26 @@ const AIChat: React.FC<{
   const t = translations[lang].ai;
   const tc = translations[lang].common;
 
+  // 建議問題池
+  const SUGGESTION_POOL = [
+    '懷孕初期飲食', '什麼是葉酸？', '最近很焦慮...', '感冒可以吃藥嗎？',
+    '胎動什麼時候開始？', '如何緩解孕吐？', '產後憂鬱怎麼辦？', '餵母乳要注意什麼？',
+    '寶寶哭鬧不停', '如何選購待產包？', '孕期運動建議', '睡眠品質變差',
+    '腰痠背痛', '孕期皮膚變化', '體重管理'
+  ];
+
+  // 每 3 小時隨機更新一次建議
+  const currentSuggestions = React.useMemo(() => {
+    const threeHoursInMs = 1000 * 60 * 60 * 3;
+    const seed = Math.floor(Date.now() / threeHoursInMs);
+    const len = SUGGESTION_POOL.length;
+    // 使用 seed 決定三個不重複的索引 (簡單確定性算法)
+    const idx1 = seed % len;
+    const idx2 = (seed + 7) % len;
+    const idx3 = (seed + 13) % len;
+    return [SUGGESTION_POOL[idx1], SUGGESTION_POOL[idx2 === idx1 ? (idx2 + 1) % len : idx2], SUGGESTION_POOL[idx3 === idx1 || idx3 === idx2 ? (idx3 + 1) % len : idx3]];
+  }, []);
+
   // Helper function to map history to sorted sessions
   const mapHistoryToSessions = (history: Record<string, ChatMessage[]>) => {
     return Object.entries(history)
@@ -197,25 +217,25 @@ const AIChat: React.FC<{
       <div className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar pb-32">
         {(!messages || messages.length === 0) ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-4 animate-in fade-in duration-700">
-            <div className="relative mb-6 opacity-20">
-              <span className="material-symbols-outlined text-5xl text-gray-400 absolute -left-4 -top-2 rotate-[-15deg]">pets</span>
-              <span className="material-symbols-outlined text-6xl text-gray-500 relative z-10">pets</span>
+            <div className="relative mb-10 mt-[-20px]">
+              <span className="text-4xl absolute -left-6 -top-2 rotate-[-15deg] opacity-40">🐾</span>
+              <span className="text-5xl relative z-10 opacity-60">🐾</span>
+              <span className="text-4xl absolute -right-6 bottom-0 rotate-[10deg] opacity-30">🐾</span>
             </div>
 
-            <p className="text-[#A5928E] font-medium text-base mb-8 tracking-wide leading-relaxed">
+            <p className="text-[#A5928E] font-medium text-base mb-10 tracking-wide leading-relaxed">
               「哈囉！我是小達，<br />今天有什麼想聊聊的嗎？🧸」
             </p>
 
-            <div className="flex flex-wrap justify-center gap-2 max-w-[280px]">
-              {['懷孕初期飲食', '什麼是葉酸？', '最近很焦慮...'].map((suggestion) => (
+            <div className="flex flex-row flex-nowrap justify-center gap-2 overflow-x-auto no-scrollbar max-w-full px-4">
+              {currentSuggestions.map((suggestion) => (
                 <button
                   key={suggestion}
                   onClick={() => {
                     setInput(suggestion);
-                    // 稍微延遲讓 input 更新後再送出
-                    setTimeout(handleSend, 0);
+                    setTimeout(handleSend, 50);
                   }}
-                  className="px-4 py-2 bg-white/60 border border-gray-100 rounded-full text-[13px] text-gray-400 hover:bg-white hover:shadow-sm transition-all shadow-sm active:scale-95"
+                  className="px-3 py-1.5 bg-white/60 border border-gray-100 rounded-full text-[11px] text-gray-500 hover:bg-white hover:shadow-sm transition-all shadow-sm active:scale-95 whitespace-nowrap shrink-0"
                 >
                   {suggestion}
                 </button>
