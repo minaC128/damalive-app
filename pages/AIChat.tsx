@@ -176,10 +176,11 @@ const AIChat: React.FC<{
   };
 
   const renderFormattedText = (text: string) => {
-    // 內部輔助函式：清理所有 Markdown 符號
+    // 內部輔助函式：清理所有 Markdown 符號 (加強版)
+    // 使用正則表達式全局替換：井字號、星號
     const cleanText = (t: string) => {
-      // 移除所有 * 號 (不論單雙)
-      return t.replace(/\*/g, '');
+      if (!t) return '';
+      return t.replace(/[#*]/g, '').trim();
     };
 
     const lines = text.split('\n');
@@ -187,30 +188,29 @@ const AIChat: React.FC<{
       const trimmedLine = line.trim();
       if (!trimmedLine) return <div key={i} className="h-2" />;
 
-      // 1. 處理標題 (支援 # 數量不同的各種標題)
-      if (trimmedLine.match(/^#+/)) {
-        const textOnly = trimmedLine.replace(/^#+\s*/, '');
+      // 1. 處理標題 - 只要開頭有 # 就視為標題並徹底清除符號
+      if (trimmedLine.startsWith('#')) {
         return (
-          <h3 key={i} className="text-[15px] font-bold text-[#D4A5A5] mt-4 mb-2">
-            {cleanText(textOnly)}
+          <h3 key={i} className="text-[15px] font-bold text-[#D4A5A5] mt-5 mb-2 flex items-center gap-2">
+            <span className="w-1 h-3 bg-[#D4A5A5] rounded-full opacity-50"></span>
+            {cleanText(trimmedLine)}
           </h3>
         );
       }
 
-      // 2. 處理列表 (- 或 *)
-      if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
-        const textOnly = trimmedLine.replace(/^[-*]\s*/, '');
+      // 2. 處理列表 - 兼容多種符號
+      if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ') || trimmedLine.startsWith('•')) {
         return (
-          <div key={i} className="flex gap-2 ml-1 my-1 items-start text-gray-700">
-            <span className="text-[#D4A5A5] mt-1.5 text-[6px]">●</span>
-            <div className="flex-1">{cleanText(textOnly)}</div>
+          <div key={i} className="flex gap-2 ml-1 my-1.5 items-start text-gray-700">
+            <span className="text-[#D4A5A5] mt-1.5 text-[5px]">●</span>
+            <div className="flex-1 text-[13px]">{cleanText(trimmedLine)}</div>
           </div>
         );
       }
 
       // 3. 一般文本
       return (
-        <div key={i} className="leading-relaxed mb-1 text-gray-700">
+        <div key={i} className="leading-relaxed mb-1.5 text-gray-700 text-[13px]">
           {cleanText(line)}
         </div>
       );
