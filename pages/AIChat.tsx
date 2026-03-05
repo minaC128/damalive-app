@@ -176,52 +176,54 @@ const AIChat: React.FC<{
   };
 
   const renderFormattedText = (text: string) => {
+    // 內部輔助函式：處理行內格式 (粗體)
+    const applyInlineRules = (lineText: string) => {
+      if (!lineText.includes('*')) return lineText;
+
+      const parts = lineText.split(/(\*\*.*?\*\*|\*[^*]+?\*)/g);
+      return parts.map((part, pi) => {
+        if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
+          return <strong key={pi} className="text-[#C88B8B] font-bold">{part.slice(2, -2)}</strong>;
+        }
+        if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
+          return <strong key={pi} className="text-[#D4A5A5] font-bold">{part.slice(1, -1)}</strong>;
+        }
+        return part;
+      });
+    };
+
     const lines = text.split('\n');
     return lines.map((line, i) => {
-      let content: React.ReactNode = line;
-
-      // 處理標題 ### 或 ## 或 # (更寬容的匹配)
       const trimmedLine = line.trim();
+
+      // 1. 處理標題 (###)
       if (trimmedLine.startsWith('#')) {
         const level = (trimmedLine.match(/^#+/) || ['#'])[0].length;
         const textOnly = trimmedLine.replace(/^#+\s*/, '');
         return (
           <h3 key={i} className={`font-bold text-[#D4A5A5] mb-1 flex items-center gap-1 ${level === 3 ? 'text-base mt-4' : 'text-lg mt-5'}`}>
-            <span className="opacity-30 text-[10px]">{'#'.repeat(level)}</span> {textOnly}
+            <span className="opacity-30 text-[10px]">{'#'.repeat(level)}</span>
+            <span className="flex-1">{applyInlineRules(textOnly)}</span>
           </h3>
         );
       }
 
-      // 處理加粗 ** 或 * (支援不同的 Markdown 格號)
-      if (line.includes('**') || line.includes('*')) {
-        // 先處理雙星號，再處理單星號
-        const parts = line.split(/(\*\*.*?\*\*|\*[^*]+?\*)/g);
-        content = parts.map((part, pi) => {
-          if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
-            return <strong key={pi} className="text-[#C88B8B] font-bold">{part.slice(2, -2)}</strong>;
-          }
-          if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
-            // 單星號使用較淡的顏色
-            return <strong key={pi} className="text-[#D4A5A5] font-bold">{part.slice(1, -1)}</strong>;
-          }
-          return part;
-        });
-      }
-
-      // 處理列表 (支援 - 或 * )
-      if (line.trim().startsWith('- ') || line.trim().startsWith('* ')) {
-        const bullet = line.trim().startsWith('- ') ? '- ' : '* ';
+      // 2. 處理列表 (- 或 *)
+      if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
+        const bullet = trimmedLine.startsWith('- ') ? '- ' : '* ';
+        const textOnly = trimmedLine.replace(bullet, '');
         return (
           <div key={i} className="flex gap-2 ml-1 my-1 items-start">
             <span className="text-[#D4A5A5] mt-0.5">•</span>
-            <span className="flex-1 text-gray-700">{line.trim().replace(bullet, '')}</span>
+            <span className="flex-1 text-gray-700">{applyInlineRules(textOnly)}</span>
           </div>
         );
       }
 
+      // 3. 一般文本
       return (
-        <div key={i} className={`${line.trim() === '' ? 'h-2' : 'min-h-[1.2em]'} break-words`}>
-          {content}
+        <div key={i} className={`${trimmedLine === '' ? 'h-2' : 'min-h-[1.2em]'} break-words text-gray-700`}>
+          {applyInlineRules(line)}
         </div>
       );
     });
