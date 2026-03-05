@@ -31,10 +31,12 @@ const AIChat: React.FC<{
         const ts = lastMsg?.timestamp ? Number(lastMsg.timestamp) : 0;
         return {
           id,
-          lastMessage: lastMsg?.content || 'Empty Chat',
+          lastMessage: lastMsg?.content || '',
           timestamp: isNaN(ts) ? 0 : ts
         };
       })
+      // 過濾掉沒有內容或標題為空的紀錄
+      .filter(s => s.lastMessage && s.lastMessage !== 'Empty Chat' && s.lastMessage.trim() !== '')
       .sort((a, b) => b.timestamp - a.timestamp);
   };
 
@@ -275,49 +277,62 @@ const AIChat: React.FC<{
       </div>
 
       {showHistory && (
-        <div className="absolute inset-0 z-50 bg-[#faf7f5] animate-in slide-in-from-left duration-300 flex flex-col">
-          <header className="p-4 bg-white flex items-center border-b border-gray-100 shadow-sm sticky top-0">
-            <button onClick={() => setShowHistory(false)} className="p-2 text-gray-600 hover:opacity-70 transition-opacity">
-              <span className="material-symbols-outlined text-3xl">arrow_back</span>
-            </button>
-            <h2 className="flex-1 text-center font-bold text-[#5c4d4d] text-lg mr-10">聊天歷史紀錄</h2>
-          </header>
+        <>
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 z-[40] bg-black/20 backdrop-blur-[2px] animate-in fade-in duration-300"
+            onClick={() => setShowHistory(false)}
+          />
 
-          <div className="flex-1 p-6 space-y-4 overflow-y-auto no-scrollbar pb-32">
-            {sessions.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-full opacity-30 text-center">
-                <span className="material-symbols-outlined text-6xl mb-4">chat_bubble</span>
-                <p className="text-sm font-bold">還沒有對話紀錄</p>
-              </div>
-            ) : (
-              sessions.map(s => (
-                <div
-                  key={s.id}
-                  onClick={() => { onSelectChat(s.id); setShowHistory(false); }}
-                  className={`p-6 bg-white rounded-[32px] border transition-all cursor-pointer flex items-center gap-5 relative group shadow-sm hover:shadow-md ${chatId === s.id ? 'border-[#FFB7C5]' : 'border-transparent'}`}
-                >
-                  <div className="w-14 h-14 rounded-full bg-[#fdf2f2] flex items-center justify-center shrink-0">
-                    <span className="material-symbols-outlined text-[#FFB7B7] text-3xl">chat_bubble</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-lg font-bold text-[#5c4d4d] truncate pr-4">{s.lastMessage}</p>
-                    <p className="text-sm text-gray-300 font-medium mt-1 uppercase">
-                      {s.timestamp && !isNaN(s.timestamp)
-                        ? `${new Date(s.timestamp).toLocaleDateString('en-US', { month: 'short', day: '2-digit' })} ${new Date(s.timestamp).toLocaleTimeString('zh-TW', { hour: 'numeric', minute: '2-digit', hour12: true })}`
-                        : '剛剛'}
-                    </p>
-                  </div>
-                  <button
-                    onClick={(e) => handleDeleteSession(e, s.id)}
-                    className="p-2 text-gray-200 hover:text-red-400 transition-colors shrink-0"
-                  >
-                    <span className="material-symbols-outlined text-2xl">delete</span>
-                  </button>
+          {/* Bottom Sheet History */}
+          <div className="absolute bottom-0 left-0 right-0 z-[50] bg-[#faf7f5] rounded-t-[40px] shadow-2xl animate-in slide-in-from-bottom duration-500 flex flex-col max-h-[75vh]">
+            <header className="p-6 pb-2 flex items-center justify-between sticky top-0 bg-[#faf7f5] rounded-t-[40px] z-10">
+              <div className="w-10 h-1 hidden sm:block bg-gray-200 rounded-full absolute top-3 left-1/2 -translate-x-1/2" />
+              <h2 className="font-bold text-[#5c4d4d] text-lg pl-2">聊天歷史紀錄</h2>
+              <button
+                onClick={() => setShowHistory(false)}
+                className="p-2 text-gray-400 hover:text-gray-600 transition-colors bg-white rounded-full shadow-sm"
+              >
+                <span className="material-symbols-outlined text-2xl">close</span>
+              </button>
+            </header>
+
+            <div className="flex-1 p-6 pt-2 space-y-4 overflow-y-auto no-scrollbar pb-10">
+              {sessions.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 opacity-30 text-center">
+                  <span className="material-symbols-outlined text-6xl mb-4">chat_bubble</span>
+                  <p className="text-sm font-bold">還沒有對話紀錄</p>
                 </div>
-              ))
-            )}
+              ) : (
+                sessions.map(s => (
+                  <div
+                    key={s.id}
+                    onClick={() => { onSelectChat(s.id); setShowHistory(false); }}
+                    className={`p-5 bg-white rounded-[28px] border transition-all cursor-pointer flex items-center gap-4 relative group shadow-sm hover:shadow-md active:scale-[0.98] ${chatId === s.id ? 'border-[#FFBACA]' : 'border-transparent'}`}
+                  >
+                    <div className="w-12 h-12 rounded-full bg-[#fdf2f2] flex items-center justify-center shrink-0">
+                      <span className="material-symbols-outlined text-[#FFBACA] text-2xl">chat_bubble</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-base font-bold text-[#5c4d4d] truncate pr-4">{s.lastMessage}</p>
+                      <p className="text-xs text-gray-300 font-medium mt-1 uppercase tracking-tight">
+                        {s.timestamp && !isNaN(s.timestamp)
+                          ? `${new Date(s.timestamp).toLocaleDateString('en-US', { month: 'short', day: '2-digit' })} ${new Date(s.timestamp).toLocaleTimeString('zh-TW', { hour: 'numeric', minute: '2-digit', hour12: true })}`
+                          : '剛剛'}
+                      </p>
+                    </div>
+                    <button
+                      onClick={(e) => handleDeleteSession(e, s.id)}
+                      className="p-2 text-gray-200 hover:text-red-400 transition-colors shrink-0"
+                    >
+                      <span className="material-symbols-outlined text-xl">delete</span>
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
