@@ -165,14 +165,26 @@ const AIChat: React.FC<{
     setShowHistory(false);
   };
 
-  const handleDeleteSession = async (e: React.MouseEvent, id: string) => {
-    e.stopPropagation();
-    if (confirm(tc.delete + '?')) {
+  const handleDeleteSession = async (e: any, id: string) => {
+    if (e && e.stopPropagation) e.stopPropagation();
+    if (e && e.preventDefault) e.preventDefault();
+
+    console.log('Attempting to delete session:', id);
+
+    const confirmMsg = "確定要刪除這則對話紀錄嗎？";
+    if (window.confirm(confirmMsg)) {
       try {
+        console.log('Deletion confirmed for:', id);
         await deleteChatSession(user.uid, id, onSyncStatus);
-        if (chatId === id) handleNewChat();
+
+        if (chatId === id) {
+          handleNewChat();
+        }
+
+        // Refresh local history list
         const history = await getChatHistory(user.uid);
         setSessions(mapHistoryToSessions(history));
+        console.log('History refreshed successfully');
       } catch (err) {
         console.error('Delete failed:', err);
         alert('刪除失敗，請稍後再試');
@@ -284,7 +296,7 @@ const AIChat: React.FC<{
                     setInput(suggestion);
                     setTimeout(handleSend, 50);
                   }}
-                  className="px-6 py-4 bg-[#FFF9F5] border border-[#F5CBA7]/20 rounded-[22px] text-[18px] text-[#5C4D4D] font-bold hover:bg-[#FAD4C0] transition-all shadow-sm active:scale-95 text-center"
+                  className="px-6 py-4 bg-[#FEF9F6] border border-[#F5CBA7]/20 rounded-[22px] text-[14px] text-[#5C4D4D] font-bold hover:bg-[#FAD4C0] transition-all shadow-sm active:scale-95 text-center"
                 >
                   {suggestion}
                 </button>
@@ -391,8 +403,15 @@ const AIChat: React.FC<{
                       </p>
                     </div>
                     <button
-                      onClick={(e) => handleDeleteSession(e, s.id)}
-                      className="p-3 text-gray-400 hover:text-red-500 transition-colors shrink-0 bg-gray-50 rounded-full"
+                      type="button"
+                      onMouseDown={(e) => e.stopPropagation()}
+                      onPointerDown={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        handleDeleteSession(e, s.id);
+                      }}
+                      className="p-3 text-gray-400 hover:text-red-500 transition-colors shrink-0 bg-gray-50 rounded-full z-20 relative pointer-events-auto"
                     >
                       <span className="material-symbols-outlined text-xl">delete</span>
                     </button>
