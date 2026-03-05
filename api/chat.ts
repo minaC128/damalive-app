@@ -33,9 +33,22 @@ export const handler = async (event: any) => {
         }));
 
         const chat = model.startChat({ history: chatHistory });
-        const result = await chat.sendMessage(systemPrompt + query);
-        const responseText = result.response.text();
 
+        let result;
+        let retries = 3;
+        while (retries > 0) {
+            try {
+                result = await chat.sendMessage(systemPrompt + query);
+                break;
+            } catch (err: any) {
+                retries--;
+                if (retries === 0 || !err.message?.includes('503')) throw err;
+                console.log(`Gemini 503 error, retrying... (${3 - retries})`);
+                await new Promise(resolve => setTimeout(resolve, 1500)); // 等待 1.5 秒後重試
+            }
+        }
+
+        const responseText = result.response.text();
         const isEmergency = /出血|痛|發燒|破水|不動|急診/.test(query);
 
         return {
@@ -46,7 +59,7 @@ export const handler = async (event: any) => {
     } catch (error: any) {
         console.error('Chat API Error:', error);
 
-        const errorMsg = `哎呀，小達連線稍微斷了：${error.message || '未知錯誤'} 🧸`;
+        const errorMsg = `哎呀，小達的連線暫時有些擁擠，請稍等幾秒鐘再試試看喔！🧸✨`;
 
         return {
             statusCode: 500,
