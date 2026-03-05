@@ -67,9 +67,11 @@ const AIChat: React.FC<{
 
       if (chatId && history && history[chatId]) {
         setMessages(history[chatId]);
-      } else {
+      } else if (!chatId) {
         setMessages([]);
       }
+      // 如果有 chatId 但歷史紀錄還沒同步到，且我們有本地訊息，就先保留本地訊息
+      // 這能防止發送第一則訊息後，useEffect 重新讀取 history 導致 messages 被清空的情形
     };
     loadSessions();
   }, [user.uid, chatId]);
@@ -215,19 +217,20 @@ const AIChat: React.FC<{
 
       {/* Chat Area */}
       <div className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar pb-32">
-        {(!messages || messages.length === 0) ? (
+        {(!messages || messages.length === 0) && !isLoading ? (
           <div className="flex flex-col items-center justify-center h-full text-center px-4 animate-in fade-in duration-700">
-            <div className="relative mb-10 mt-[-20px]">
-              <span className="text-4xl absolute -left-6 -top-2 rotate-[-15deg] opacity-40">🐾</span>
-              <span className="text-5xl relative z-10 opacity-60">🐾</span>
-              <span className="text-4xl absolute -right-6 bottom-0 rotate-[10deg] opacity-30">🐾</span>
+            <div className="relative mb-14 mt-[-40px] flex items-center justify-center">
+              <span className="text-3xl absolute -left-10 -top-4 rotate-[-25deg] opacity-30 select-none">🐾</span>
+              <span className="text-5xl relative z-10 opacity-50 select-none scale-110">🐾</span>
+              <span className="text-3xl absolute -right-10 bottom-2 rotate-[20deg] opacity-20 select-none">🐾</span>
+              <span className="text-2xl absolute left-8 -bottom-6 rotate-[-10deg] opacity-15 select-none">🐾</span>
             </div>
 
-            <p className="text-[#A5928E] font-medium text-base mb-10 tracking-wide leading-relaxed">
+            <p className="text-[#A5928E] font-medium text-base mb-12 tracking-wide leading-relaxed">
               「哈囉！我是小達，<br />今天有什麼想聊聊的嗎？🧸」
             </p>
 
-            <div className="flex flex-row flex-nowrap justify-center gap-2 overflow-x-auto no-scrollbar max-w-full px-4">
+            <div className="flex flex-col items-center gap-3 w-full max-w-[280px] px-8">
               {currentSuggestions.map((suggestion) => (
                 <button
                   key={suggestion}
@@ -235,7 +238,7 @@ const AIChat: React.FC<{
                     setInput(suggestion);
                     setTimeout(handleSend, 50);
                   }}
-                  className="px-3 py-1.5 bg-white/60 border border-gray-100 rounded-full text-[11px] text-gray-500 hover:bg-white hover:shadow-sm transition-all shadow-sm active:scale-95 whitespace-nowrap shrink-0"
+                  className="w-full px-5 py-3 tracking-wide bg-white/80 border border-gray-100 rounded-full text-[13px] text-gray-500 hover:bg-white hover:shadow-md transition-all shadow-sm active:scale-95 text-center font-medium"
                 >
                   {suggestion}
                 </button>
