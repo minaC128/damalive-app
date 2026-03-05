@@ -112,7 +112,7 @@ const App: React.FC = () => {
           chatId={activeChatId}
           onSelectChat={setActiveChatId}
           onClearChatId={() => setActiveChatId(null)}
-          onSyncStatus={() => { }}
+          onSyncStatus={onSyncStatusChange}
         />
       );
       case 'knowledge': return <KnowledgeBase user={user} onUpdateUser={setUser} onSyncStatus={onSyncStatusChange} />;

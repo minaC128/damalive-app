@@ -95,13 +95,18 @@ export const saveMood = async (uid: string, mood: 'happy' | 'calm' | 'tired' | '
 
 export const saveChatMessage = async (uid: string, chatId: string, messages: any[], onSync?: any) => {
   onSync?.('syncing');
-  await supabase.from('chat_sessions').upsert({
+  const { error } = await supabase.from('chat_sessions').upsert({
     id: chatId,
     user_id: uid,
-    title: messages[0]?.content?.slice(0, 20) || 'New Chat',
+    title: messages[0]?.content?.slice(0, 30) || 'New Chat',
     messages: messages,
+    timestamp: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   });
+
+  if (error) {
+    console.error('Error saving chat message:', error);
+  }
   onSync?.('synced');
 };
 
