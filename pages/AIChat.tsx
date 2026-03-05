@@ -22,15 +22,26 @@ const AIChat: React.FC<{
   const t = translations[lang].ai;
   const tc = translations[lang].common;
 
+  // Helper function to map history to sorted sessions
+  const mapHistoryToSessions = (history: Record<string, ChatMessage[]>) => {
+    return Object.entries(history)
+      .map(([id, msgs]: [string, any]) => {
+        const lastMsg = msgs[msgs.length - 1];
+        // Ensure timestamp is a valid number
+        const ts = lastMsg?.timestamp ? Number(lastMsg.timestamp) : 0;
+        return {
+          id,
+          lastMessage: lastMsg?.content || 'Empty Chat',
+          timestamp: isNaN(ts) ? 0 : ts
+        };
+      })
+      .sort((a, b) => b.timestamp - a.timestamp);
+  };
+
   useEffect(() => {
     const loadSessions = async () => {
       const history = await getChatHistory(user.uid);
-      const sorted = Object.entries(history).map(([id, msgs]: [string, any]) => ({
-        id,
-        lastMessage: msgs[msgs.length - 1]?.content || 'Empty Chat',
-        timestamp: msgs[msgs.length - 1]?.timestamp || 0
-      })).sort((a, b) => b.timestamp - a.timestamp);
-      setSessions(sorted);
+      setSessions(mapHistoryToSessions(history));
 
       if (chatId && history[chatId]) {
         setMessages(history[chatId]);
@@ -123,11 +134,7 @@ const AIChat: React.FC<{
       await deleteChatSession(user.uid, id, onSyncStatus);
       if (chatId === id) handleNewChat();
       const history = await getChatHistory(user.uid);
-      setSessions(Object.entries(history).map(([sid, msgs]: [string, any]) => ({
-        id: sid,
-        lastMessage: msgs[msgs.length - 1]?.content || 'Empty Chat',
-        timestamp: msgs[msgs.length - 1]?.timestamp || 0
-      })));
+      setSessions(mapHistoryToSessions(history));
     }
   };
 
@@ -198,7 +205,9 @@ const AIChat: React.FC<{
                 {renderFormattedText(m.content)}
               </div>
               <p className="text-[10px] mt-1.5 text-gray-400 font-medium px-1">
-                {new Date(m.timestamp).toLocaleTimeString('zh-TW', { hour: 'numeric', minute: '2-digit', hour12: true })}
+                {m.timestamp && !isNaN(Number(m.timestamp))
+                  ? new Date(m.timestamp).toLocaleTimeString('zh-TW', { hour: 'numeric', minute: '2-digit', hour12: true })
+                  : '剛剛'}
               </p>
             </div>
           ))
