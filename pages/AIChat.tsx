@@ -48,12 +48,12 @@ const AIChat: React.FC<{
     return Object.entries(history)
       .map(([id, msgs]: [string, any]) => {
         const lastMsg = msgs[msgs.length - 1];
-        // Ensure timestamp is a valid number
-        const ts = lastMsg?.timestamp ? Number(lastMsg.timestamp) : 0;
+        // Ensure we handle timestamp consistently
+        const ts = lastMsg?.timestamp || Date.now();
         return {
           id,
           lastMessage: lastMsg?.content || '',
-          timestamp: isNaN(ts) ? 0 : ts
+          timestamp: Number(ts)
         };
       })
       // 過濾掉沒有內容或標題為空的紀錄
@@ -167,34 +167,46 @@ const AIChat: React.FC<{
   };
 
   const renderFormattedText = (text: string) => {
-    // 預處理：將連續兩個換行轉換為段落間距，並處理單個換行為 <br />
     const lines = text.split('\n');
     return lines.map((line, i) => {
       let content: React.ReactNode = line;
 
-      // 處理加粗
-      if (line.includes('**')) {
-        const parts = line.split(/(\*\*.*?\*\*)/g);
+      // 處理標題 ###
+      if (line.startsWith('### ')) {
+        return (
+          <h3 key={i} className="text-base font-bold text-dama-sakura mt-3 mb-1 flex items-center gap-1">
+            <span className="opacity-50 text-xs">#</span> {line.replace('### ', '')}
+          </h3>
+        );
+      }
+
+      // 處理加粗 ** 或 * (支援不同的 Markdown 格號)
+      if (line.includes('**') || (line.includes('*') && !line.trim().startsWith('* '))) {
+        const parts = line.split(/(\*\*.*?\*\*|\*.*?\*)/g);
         content = parts.map((part, pi) => {
-          if (part.startsWith('**') && part.endsWith('**')) {
+          if ((part.startsWith('**') && part.endsWith('**'))) {
             return <strong key={pi} className="text-dama-sakura font-bold">{part.slice(2, -2)}</strong>;
+          }
+          if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
+            return <strong key={pi} className="text-[#FFBACA] font-bold">{part.slice(1, -1)}</strong>;
           }
           return part;
         });
       }
 
-      // 處理列表
-      if (line.trim().startsWith('- ')) {
+      // 處理列表 (支援 - 或 * )
+      if (line.trim().startsWith('- ') || line.trim().startsWith('* ')) {
+        const bullet = line.trim().startsWith('- ') ? '- ' : '* ';
         return (
-          <div key={i} className="flex gap-2 ml-1 my-1">
-            <span className="text-dama-sakura">•</span>
-            <span className="flex-1">{content.toString().replace('- ', '')}</span>
+          <div key={i} className="flex gap-2 ml-1 my-1 items-start">
+            <span className="text-dama-sakura mt-0.5">•</span>
+            <span className="flex-1">{line.trim().replace(bullet, '')}</span>
           </div>
         );
       }
 
       return (
-        <div key={i} className={line.trim() === '' ? 'h-2' : 'min-h-[1.2em]'}>
+        <div key={i} className={`${line.trim() === '' ? 'h-2' : 'min-h-[1.2em]'} break-words`}>
           {content}
         </div>
       );
