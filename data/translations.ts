@@ -65,7 +65,7 @@ export const translations = {
             title: 'AI 育兒小達',
             welcome: '哈囉！我是妳的 AI 育兒助手',
             suggestion: '妳可以問我：「初期出血怎麼辦？」或「產後憂鬱如何排解？」',
-            placeholder: '輸入妳的問題...',
+            placeholder: '溫柔提問...',
             history: '聊天歷史紀錄',
             error: '抱歉，我暫時無法回應，請稍後再試。'
         },

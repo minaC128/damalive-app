@@ -145,48 +145,71 @@ const AIChat: React.FC<{
   };
 
   return (
-    <div className="flex flex-col h-screen bg-dama-bg relative">
-      <header className="p-4 bg-white/80 backdrop-blur-md flex justify-between items-center border-b border-dama-sakura/10 sticky top-0 z-10">
-        <button onClick={() => setShowHistory(true)} className="p-2 text-dama-sakura hover:bg-dama-sakura/5 rounded-full transition-colors">
-          <span className="material-symbols-outlined">history</span>
+    <div className="flex flex-col h-screen bg-dotted-grid relative overflow-hidden">
+      {/* Header */}
+      <header className="p-4 bg-white flex justify-between items-center border-b border-gray-100 shadow-sm sticky top-0 z-20">
+        <button
+          onClick={() => setShowHistory(true)}
+          className="flex flex-col items-center gap-0.5 text-[#D4A5A5] hover:opacity-70 transition-opacity"
+        >
+          <span className="material-symbols-outlined text-2xl">history</span>
+          <span className="text-[10px] font-bold">紀錄</span>
         </button>
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-dama-sakura rounded-xl flex items-center justify-center shadow-sm">
-            <span className="material-symbols-outlined text-white text-sm">pets</span>
+
+        <div className="flex flex-col items-center">
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 bg-[#FFB7B7] rounded-full flex items-center justify-center shadow-inner">
+              <span className="material-symbols-outlined text-white text-xl">pets</span>
+            </div>
+            <div className="flex flex-col">
+              <h1 className="font-bold text-gray-700 text-lg leading-tight">小達 AI 護理顧問</h1>
+              <div className="flex items-center gap-1">
+                <span className="w-2 h-2 bg-[#69C181] rounded-full"></span>
+                <span className="text-[#69C181] text-[10px] font-bold">溫柔守護中</span>
+              </div>
+            </div>
           </div>
-          <h2 className="font-bold text-dama-brown">{t.title}</h2>
         </div>
-        <button onClick={handleNewChat} className="p-2 text-dama-matcha hover:bg-dama-matcha/5 rounded-full transition-colors">
-          <span className="material-symbols-outlined">add_comment</span>
+
+        <button
+          onClick={handleNewChat}
+          className="flex flex-col items-center gap-0.5 text-[#69C181] hover:opacity-70 transition-opacity"
+        >
+          <span className="material-symbols-outlined text-2xl">add_box</span>
+          <span className="text-[10px] font-bold">新對話</span>
         </button>
       </header>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-6 no-scrollbar pb-32">
+      {/* Chat Area */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-8 no-scrollbar pb-32">
         {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full opacity-40 text-center px-10">
-            <span className="material-symbols-outlined text-6xl mb-4 text-dama-sakura">chat_bubble</span>
-            <p className="text-sm font-bold text-dama-brown">{t.welcome}</p>
-            <p className="text-[10px] mt-2 leading-relaxed">{t.suggestion}</p>
+          <div className="flex flex-col items-center justify-center h-full opacity-30 text-center px-10">
+            <span className="material-symbols-outlined text-7xl mb-4 text-dama-sakura">chat_bubble</span>
+            <p className="text-base font-bold text-dama-brown">{t.welcome}</p>
+            <p className="text-xs mt-2 leading-relaxed">{t.suggestion}</p>
           </div>
         ) : (
           messages.map((m, i) => (
-            <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'} animate-in slide-in-from-bottom-2`}>
-              <div className={`max-w-[85%] p-4 rounded-[28px] shadow-sm text-sm leading-relaxed ${m.role === 'user' ? 'bg-dama-sakura text-white rounded-tr-none' : 'bg-white text-dama-brown rounded-tl-none border border-dama-sakura/5'}`}>
+            <div key={i} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'} animate-in slide-in-from-bottom-2`}>
+              <div className={`max-w-[75%] p-4 px-6 rounded-[24px] shadow-sm text-[15px] leading-relaxed relative ${m.role === 'user'
+                ? 'bg-[#FDE3D2] text-gray-700 rounded-tr-none'
+                : 'bg-white text-gray-700 rounded-tl-none border border-white shadow-md'
+                }`}>
                 {renderFormattedText(m.content)}
-                <p className={`text-[8px] mt-1 opacity-40 ${m.role === 'user' ? 'text-right' : 'text-left'}`}>
-                  {new Date(m.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </p>
               </div>
+              <p className="text-[10px] mt-1.5 text-gray-400 font-medium px-1">
+                {new Date(m.timestamp).toLocaleTimeString('zh-TW', { hour: 'numeric', minute: '2-digit', hour12: true })}
+              </p>
             </div>
           ))
         )}
         {isLoading && (
-          <div className="flex justify-start animate-pulse">
-            <div className="bg-white p-4 rounded-[28px] rounded-tl-none border border-dama-sakura/5">
-              <div className="flex gap-1">
-                <div className="w-1.5 h-1.5 bg-dama-sakura/40 rounded-full animate-bounce"></div>
-                <div className="w-1.5 h-1.5 bg-dama-sakura/40 rounded-full animate-bounce [animation-delay:0.2s]"></div>
-                <div className="w-1.5 h-1.5 bg-dama-sakura/40 rounded-full animate-bounce [animation-delay:0.4s]"></div>
+          <div className="flex flex-col items-start animate-pulse">
+            <div className="bg-white p-4 px-6 rounded-[24px] rounded-tl-none shadow-md border border-white">
+              <div className="flex gap-1.5">
+                <div className="w-2 h-2 bg-[#FFB7B7] rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-[#FFB7B7] rounded-full animate-bounce [animation-delay:0.2s]"></div>
+                <div className="w-2 h-2 bg-[#FFB7B7] rounded-full animate-bounce [animation-delay:0.4s]"></div>
               </div>
             </div>
           </div>
@@ -194,21 +217,25 @@ const AIChat: React.FC<{
         <div ref={chatEndRef} />
       </div>
 
-      <div className="p-4 bg-white/80 backdrop-blur-md border-t border-dama-sakura/10 pb-28">
-        <div className="relative flex items-center">
+      {/* Input Area */}
+      <div className="fixed bottom-24 left-0 right-0 p-4 z-20 pointer-events-none">
+        <div className="max-w-md mx-auto relative flex items-center bg-white rounded-full shadow-lg border border-gray-100 p-1 pointer-events-auto overflow-hidden">
           <input
             value={input}
             onChange={e => setInput(e.target.value)}
             onKeyPress={e => e.key === 'Enter' && handleSend()}
-            placeholder={t.placeholder}
-            className="w-full bg-dama-bg border-none rounded-full py-4 pl-6 pr-14 text-sm focus:ring-2 focus:ring-dama-sakura shadow-inner"
+            placeholder="溫柔提問..."
+            className="flex-1 bg-transparent border-none rounded-full py-4 pl-6 pr-14 text-sm focus:ring-0 placeholder-gray-300 font-medium text-gray-600"
           />
           <button
             onClick={handleSend}
             disabled={!input.trim() || isLoading}
-            className={`absolute right-2 w-10 h-10 rounded-full flex items-center justify-center transition-all ${input.trim() ? 'bg-dama-sakura text-white shadow-md' : 'bg-dama-brown/10 text-dama-brown/20'}`}
+            className={`absolute right-1.5 w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-sm ${input.trim()
+              ? 'bg-[#F0F2F5] text-gray-400'
+              : 'bg-gray-50 text-gray-200'
+              }`}
           >
-            <span className="material-symbols-outlined">send</span>
+            <span className="material-symbols-outlined text-2xl">send</span>
           </button>
         </div>
       </div>
