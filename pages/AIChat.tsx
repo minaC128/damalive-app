@@ -296,7 +296,7 @@ const AIChat: React.FC<{
                     setInput(suggestion);
                     setTimeout(handleSend, 50);
                   }}
-                  className="px-6 py-4 bg-[#FEF9F6] border border-[#F5CBA7]/20 rounded-[22px] text-[14px] text-[#5C4D4D] font-bold hover:bg-[#FAD4C0] transition-all shadow-sm active:scale-95 text-center"
+                  className="px-6 py-4 bg-[#FEF9F6] border border-[#F5CBA7]/20 rounded-[22px] text-[13px] text-[#5C4D4D] font-bold hover:bg-[#FAD4C0] transition-all shadow-sm active:scale-95 text-center"
                 >
                   {suggestion}
                 </button>
@@ -397,7 +397,7 @@ const AIChat: React.FC<{
                       <div className="w-12 h-12 rounded-full bg-[#fdf2f2] flex items-center justify-center shrink-0">
                         <span className="material-symbols-outlined text-[#FFBACA] text-2xl">chat_bubble</span>
                       </div>
-                      <div className="flex-1 min-w-0 pr-10">
+                      <div className="flex-1 min-w-0 pr-10 text-left">
                         <p className="text-base font-bold text-[#5c4d4d] truncate">{s.lastMessage}</p>
                         <p className="text-xs text-gray-300 font-medium mt-1 uppercase tracking-tight">
                           {s.timestamp && !isNaN(s.timestamp)
@@ -408,11 +408,12 @@ const AIChat: React.FC<{
                     </div>
                     <button
                       type="button"
+                      onMouseDown={(e) => e.stopPropagation()}
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDeleteSession(e, s.id);
                       }}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 p-3 text-gray-400 hover:text-red-500 transition-colors shrink-0 bg-gray-50/80 rounded-full z-20 shadow-sm"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 p-3 text-gray-400 hover:text-red-500 transition-colors shrink-0 bg-gray-50 rounded-full z-[60] shadow-sm pointer-events-auto"
                       title="刪除對話"
                     >
                       <span className="material-symbols-outlined text-xl">delete</span>
