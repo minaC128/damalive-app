@@ -8,24 +8,22 @@ dotenv.config({ path: '.env.local' });
 async function testGemini() {
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-        console.error('❌ 沒有 GEMINI_API_KEY');
+        console.error('MISSING_API_KEY');
         return;
     }
 
+    const { GoogleGenerativeAI } = await import('@google/generative-ai');
     const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
-    // 試試看 gemini-1.5-flash
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-
-    console.log('正在測試 gemini-1.5-flash 回應...');
+    console.log('Testing...');
     try {
-        const result = await model.generateContent('哈囉！請簡短自我介紹。');
-        const response = await result.response;
-        const text = response.text();
-        console.log('✅ 測試成功！回應內容：', text);
+        const result = await model.generateContent('Hi');
+        console.log('SUCCESS:', (await result.response).text().substring(0, 20));
     } catch (error: any) {
-        console.error('❌ 測試失敗:', error.message);
-        if (error.stack) console.error(error.stack);
+        console.error('ERROR_START');
+        console.error(error.message);
+        console.error('ERROR_END');
     }
 }
 

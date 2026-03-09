@@ -31,7 +31,7 @@ app.post('/api/chat', async (req, res) => {
         const { GoogleGenerativeAI } = await import('@google/generative-ai');
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({
-            model: 'gemini-1.5-flash',
+            model: 'gemini-flash-latest',
             systemInstruction: systemInstruction,
         });
 
@@ -63,8 +63,8 @@ app.post('/api/chat', async (req, res) => {
             errorMsg = "小達今天聊得有點累了，請稍後再回來找我喔！🧸✨";
         } else if (rawError.includes('API key not valid')) {
             errorMsg = '❌ API Key 無效，請確認 .env.local 中的設定。';
-        } else if (rawError.includes('not found')) {
-            errorMsg = `❌ 模型錯誤: ${rawError}`;
+        } else if (rawError.includes('not found') || rawError.includes('404')) {
+            errorMsg = `❌ 模型設定錯誤: ${rawError}`;
         }
 
         res.status(500).json({

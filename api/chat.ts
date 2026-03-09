@@ -24,7 +24,7 @@ export const handler = async (event: any) => {
 
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({
-            model: 'gemini-1.5-flash',
+            model: 'gemini-flash-latest',
             systemInstruction: systemInstruction,
         });
 
@@ -60,7 +60,7 @@ export const handler = async (event: any) => {
     } catch (error: any) {
         console.error('Chat API Error:', error);
 
-        let errorMsg = `哎呀，小達的連線暫時有些擁擠，請稍等幾秒鐘再試試看喔！🧸✨`;
+        let errorMsg = `哎呀，小達的系統正在進行微調（連線異常），請稍等幾秒鐘再試試看喔！🧸✨`;
         const rawError = error?.message || '';
 
         if (rawError.includes('SAFETY')) {
