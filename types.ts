@@ -51,13 +51,17 @@ export interface MoodRecord {
 export interface KnowledgeItem {
   id: string;
   title: string;
-  subtitle: string;
+  subtitle?: string;
   content: string;
-  fullContent: string;
-  tips: string[];
-  source: string;
-  icon: string;
-  color: string;
+  fullContent?: string;
+  tips?: string[];
+  source?: string;
+  icon?: string;
+  color?: string;
+  category?: string;      // Added for context filtering
+  period_type?: string;   // Added for DailyKnowledgeCard
+  period_value?: string | number; // Added for DailyKnowledgeCard
+  source_title?: string;  // Added for DailyKnowledgeCard
   // Stage filtering (optional)
   minWeek?: number;  // For pregnancy (1-40)
   maxWeek?: number;

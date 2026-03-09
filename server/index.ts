@@ -26,22 +26,14 @@ app.post('/api/chat', async (req, res) => {
 
         const { query, history } = req.body;
 
+        const systemInstruction = "你是「小達」，溫柔可愛的 AI 護理顧問。1. 你的回答必須基於衛教知識，語氣溫柔、加上表情符號 (🧸, ✨)。2. 若遇到緊急醫療關鍵字 (出血/發燒等)，請優先回答：⚠️ 這可能是緊急情況，請立即就醫！\n\n# 衛教資料庫 (重要參考)\n- 產後憂鬱：接受不完美，尋求支持。\n- 新生兒睡眠：每天約16-18小時。\n- 哭泣語言：分辨肚子餓、尿布濕、想睡覺。\n- 哺乳技巧：親餵、瓶餵都有技巧，爸爸也可協助。\n- 緊急狀況：若寶寶發燒、活動力極差，請立即就醫。";
+
         const { GoogleGenerativeAI } = await import('@google/generative-ai');
         const genAI = new GoogleGenerativeAI(apiKey);
         const model = genAI.getGenerativeModel({
             model: 'gemini-1.5-flash',
+            systemInstruction: systemInstruction,
         });
-
-        const systemPrompt = "你是「小達」，溫柔可愛的 AI 護理顧問。1. 你的回答必須基於衛教知識，語氣溫柔、加上表情符號 (🧸, ✨)。2. 若遇到緊急醫療關鍵字 (出血/發燒等)，請優先回答：⚠️ 這可能是緊急情況，請立即就醫！\n\n";
-
-        const KNOWLEDGE_BASE = `
-# 衛教資料庫 (重要參考)
-- 產後憂鬱：接受不完美，尋求支持。
-- 新生兒睡眠：每天約16-18小時。
-- 哭泣語言：分辨肚子餓、尿布濕、想睡覺。
-- 哺乳技巧：親餵、瓶餵都有技巧，爸爸也可協助。
-- 緊急狀況：若寶寶發燒、活動力極差，請立即就醫。
-`;
 
         const isEmergency = /出血|痛|發燒|破水|不動|急診/.test(query);
 
@@ -55,7 +47,7 @@ app.post('/api/chat', async (req, res) => {
             history: chatHistory,
         });
 
-        const result = await chat.sendMessage(systemPrompt + query);
+        const result = await chat.sendMessage(query);
         const responseText = result.response.text();
 
         res.json({ text: responseText, isEmergency });
@@ -65,7 +57,11 @@ app.post('/api/chat', async (req, res) => {
         let errorMsg = '哎呀，小達連線稍微斷了，請稍後再試！🧸';
         const rawError = error?.message || '';
 
-        if (rawError.includes('API key not valid')) {
+        if (rawError.includes('SAFETY')) {
+            errorMsg = "抱歉，這個話題可能涉及敏感內容，小達暫時無法回答。建議諮詢專業醫療人員喔！🧸";
+        } else if (rawError.includes('quota') || rawError.includes('429')) {
+            errorMsg = "小達今天聊得有點累了，請稍後再回來找我喔！🧸✨";
+        } else if (rawError.includes('API key not valid')) {
             errorMsg = '❌ API Key 無效，請確認 .env.local 中的設定。';
         } else if (rawError.includes('not found')) {
             errorMsg = `❌ 模型錯誤: ${rawError}`;

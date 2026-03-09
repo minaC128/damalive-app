@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Vanilla CSS System */
 
 html.font-size-small {
     font-size: 12px;
