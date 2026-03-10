@@ -1,8 +1,0 @@
-{
-  "name": "DAMALIVE -DEMO",
-  "description": "專為新手爸媽設計的健康護理與情緒安撫指南。",
-  "requestFramePermissions": [
-    "camera",
-    "microphone"
-  ]
-}
