@@ -131,7 +131,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen max-w-md mx-auto relative bg-dama-bg shadow-2xl overflow-hidden">
+    <div className="flex flex-col min-h-screen w-full max-w-md md:max-w-3xl lg:max-w-5xl mx-auto relative bg-dama-bg shadow-2xl overflow-hidden">
       {syncStatus && (
         <div className={`fixed top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full text-[10px] font-bold z-[60] shadow-sm transition-all duration-300 flex items-center gap-2 ${syncStatus === 'syncing' ? 'bg-[#4A3C3C] text-white' : 'bg-dama-matcha text-white'
           }`}>

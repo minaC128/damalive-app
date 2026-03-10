@@ -334,8 +334,8 @@ const AIChat: React.FC<{
       </div>
 
       {/* Input Area */}
-      <div className="fixed bottom-24 left-0 right-0 p-4 z-20 pointer-events-none">
-        <div className="max-w-md mx-auto relative flex items-center bg-[#F9F6F4] rounded-full shadow-lg border border-white/50 p-1 pointer-events-auto overflow-hidden">
+      <div className="fixed bottom-24 left-1/2 -translate-x-1/2 w-full max-w-md md:max-w-3xl lg:max-w-5xl px-4 z-20 pointer-events-none">
+        <div className="relative flex items-center bg-[#F9F6F4] rounded-full shadow-lg border border-white/50 p-1 pointer-events-auto overflow-hidden">
           <input
             value={input}
             onChange={e => setInput(e.target.value)}

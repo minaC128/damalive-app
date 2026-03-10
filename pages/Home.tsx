@@ -244,7 +244,7 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
 
       <section className="flex flex-col items-center mb-10">
         <div
-          className="perspective-1000 w-full aspect-[4/3] max-w-[320px] cursor-pointer group"
+          className="perspective-1000 w-full aspect-[4/3] max-w-[320px] md:max-w-md cursor-pointer group"
           onClick={() => setIsFlipped(!isFlipped)}
         >
           <div className={`relative w-full h-full transition-all duration-700 preserve-3d ${isFlipped ? 'rotate-y-180' : ''}`}>

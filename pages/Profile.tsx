@@ -359,9 +359,9 @@ const Profile: React.FC<{
             </div>
           </div>
         )}
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {dbData.notes.length === 0 ? (
-            <div className="bg-white/40 border border-dashed border-dama-sakura/30 p-8 rounded-[32px] text-center">
+            <div className="col-span-1 md:col-span-2 lg:col-span-3 bg-white/40 border border-dashed border-dama-sakura/30 p-8 rounded-[32px] text-center">
               <p className="text-xs text-dama-brown/40 font-bold italic whitespace-pre-wrap">{tp.noNotes}</p>
             </div>
           ) : (

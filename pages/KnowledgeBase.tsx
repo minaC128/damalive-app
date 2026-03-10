@@ -130,7 +130,7 @@ const KnowledgeBase: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile
         ))}
       </div>
 
-      <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {shuffledItems.map((item, idx) => {
           const isExpanded = expandedItem === item.id;
           const isSaved = (user.savedKnowledgeIds || []).includes(item.id);
@@ -139,7 +139,7 @@ const KnowledgeBase: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile
             <div
               key={item.id}
               onClick={() => setExpandedItem(isExpanded ? null : item.id)}
-              className="bg-white rounded-[40px] shadow-sm border border-dama-sakura/5 overflow-hidden transition-all duration-500 cursor-pointer active:scale-[0.98] group"
+              className="bg-white rounded-[40px] shadow-sm border border-dama-sakura/5 overflow-hidden transition-all duration-500 cursor-pointer active:scale-[0.98] group h-fit"
               style={{ animationDelay: `${idx * 150}ms` }}
             >
               <div className={`p-6 ${item.color} relative overflow-hidden transition-all duration-500 ${isExpanded ? 'pb-8' : ''}`}>

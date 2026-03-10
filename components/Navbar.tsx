@@ -20,7 +20,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate, language = 'zh
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white/95 backdrop-blur-md border-t border-accent-pink/30 pb-8 pt-3 px-4 flex justify-between items-center z-50 rounded-t-[40px] shadow-[0_-10px_30px_rgba(242,206,206,0.2)]">
+    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md md:max-w-3xl lg:max-w-5xl bg-white/95 backdrop-blur-md border-t border-accent-pink/30 pb-8 pt-3 px-4 md:px-12 flex justify-between items-center z-50 rounded-t-[40px] shadow-[0_-10px_30px_rgba(242,206,206,0.2)]">
       {navItems.map((item) => (
         <button
           key={item.id}

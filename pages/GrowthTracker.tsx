@@ -289,7 +289,7 @@ const GrowthTracker: React.FC<{ user: UserProfile }> = ({ user }) => {
           <h3 className="text-lg font-bold text-dama-brown">媽咪專屬週報</h3>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-white p-5 rounded-[32px] border border-dama-sakura/10 shadow-sm hover:shadow-md transition-shadow">
             <div className="flex items-center gap-2 mb-3 text-dama-matcha">
               <span className="material-symbols-outlined text-xl">accessibility_new</span>
