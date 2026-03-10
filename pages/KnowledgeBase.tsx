@@ -98,9 +98,9 @@ const KnowledgeBase: React.FC<{ user: UserProfile, onUpdateUser: (u: UserProfile
   };
 
   const tabs = [
-    { id: 'nutrition' as const, label: user.isPostpartum ? '營養與安全' : t.tagNutrition, icon: 'restaurant_menu' },
-    { id: 'exercise' as const, label: user.isPostpartum ? '照顧技巧' : t.tagExercise, icon: 'fitness_center' },
-    { id: 'wellness' as const, label: user.isPostpartum ? '發展與身心' : t.tagWellness, icon: 'favorite' },
+    { id: 'nutrition' as const, label: user.isPostpartum ? t.tagPostNutrition : t.tagNutrition, icon: 'restaurant_menu' },
+    { id: 'exercise' as const, label: user.isPostpartum ? t.tagPostExercise : t.tagExercise, icon: 'fitness_center' },
+    { id: 'wellness' as const, label: user.isPostpartum ? t.tagPostWellness : t.tagWellness, icon: 'favorite' },
   ];
 
   return (

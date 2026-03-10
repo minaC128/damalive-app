@@ -76,6 +76,9 @@ export const translations = {
             tagNutrition: '營養補充',
             tagExercise: '運動指南',
             tagWellness: '身心調適',
+            tagPostNutrition: '營養與安全',
+            tagPostExercise: '照顧技巧',
+            tagPostWellness: '發展與身心',
             fullStory: '詳細知識內容',
             slogan: '「 每天一點新知識，陪妳溫柔啟航 」'
         },
@@ -191,6 +194,9 @@ export const translations = {
             tagNutrition: 'Nutrition',
             tagExercise: 'Exercise',
             tagWellness: 'Wellness',
+            tagPostNutrition: 'Safety & Nutrition',
+            tagPostExercise: 'Care Skills',
+            tagPostWellness: 'Development',
             fullStory: 'Detailed Information',
             slogan: '\"A little knowledge every day for a gentle journey.\"'
         },
@@ -303,9 +309,12 @@ export const translations = {
         },
         knowledge: {
             title: '知識ベース',
-            tagNutrition: '栄養不足',
+            tagNutrition: '栄養補給',
             tagExercise: '運動',
             tagWellness: '健康',
+            tagPostNutrition: '栄養と安全',
+            tagPostExercise: 'ケアのコツ',
+            tagPostWellness: '発達と心身',
             fullStory: '詳細内容',
             slogan: '「毎日の知識で、優しい育児のスタートを」'
         },
