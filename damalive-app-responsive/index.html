@@ -1,0 +1,105 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DAMALIVE</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&family=Kosugi+Maru&display=swap" rel="stylesheet" />
+    
+    <!-- 載入完整的 Material Symbols Outlined，包含所有變量軸 (FILL, wght, GRAD, opsz) -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" />
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "dama-sakura": "#FFB7C5",
+                        "dama-matcha": "#91D18B",
+                        "dama-cream": "#FFFDD0",
+                        "dama-brown": "#5c4d4d",
+                        "dama-bg": "#FAF7F2",
+                        "accent-pink": "#F2CECE"
+                    },
+                    fontFamily: {
+                        "rounded": ["Quicksand", "Noto Sans TC", "sans-serif"],
+                        "display": ["Fredoka", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* 強制圖標樣式，確保跨瀏覽器相容性與變量支援 */
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined' !important;
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-smoothing: antialiased;
+            text-rendering: optimizeLegibility;
+            -moz-osx-font-smoothing: grayscale;
+            font-feature-settings: 'liga';
+            /* 預設不填滿 */
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* 支援 Navbar 等組件的填滿效果 */
+        .fill-1 {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24 !important;
+        }
+
+        /* 3D 翻轉效果 CSS */
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        .preserve-3d {
+            transform-style: preserve-3d;
+        }
+        .backface-hidden {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        .rotate-y-180 {
+            transform: rotateY(180deg);
+        }
+    </style>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .dango-shadow {
+                box-shadow: 0 10px 25px -5px rgba(242, 206, 206, 0.4);
+            }
+            .dashed-border {
+                background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='40' ry='40' stroke='%23F2CECEFF' stroke-width='4' stroke-dasharray='12%2c 12' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+            }
+            .no-scrollbar::-webkit-scrollbar { display: none; }
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "framer-motion": "https://esm.sh/framer-motion@^11.0.0",
+    "recharts": "https://esm.sh/recharts@^2.12.0",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.49.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+<body class="bg-dama-bg font-rounded text-dama-brown overflow-x-hidden">
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>

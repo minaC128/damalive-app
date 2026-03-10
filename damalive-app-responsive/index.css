@@ -1,0 +1,20 @@
+/* Vanilla CSS System */
+
+html.font-size-small {
+    font-size: 12px;
+}
+
+html.font-size-medium {
+    font-size: 15px;
+}
+
+html.font-size-large {
+    font-size: 21px;
+}
+
+/* v4 UI Refinement */
+.bg-dotted-grid {
+    background-image: radial-gradient(#f0e6e0 1px, transparent 1px);
+    background-size: 20px 20px;
+    background-color: #faf7f5;
+}
