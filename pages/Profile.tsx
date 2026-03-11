@@ -135,11 +135,14 @@ const Profile: React.FC<{
 
   const weeklyTrendData = useMemo(() => {
     const chartData = [];
-    const today = new Date();
     for (let i = 6; i >= 0; i--) {
       const d = new Date();
-      d.setDate(today.getDate() - i);
-      const dateStr = d.toISOString().split('T')[0];
+      d.setDate(d.getDate() - i);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const dateStr = `${year}-${month}-${day}`;
+      
       const record = dbData.moods.find(m => m.date === dateStr);
       chartData.push({
         name: d.toLocaleDateString(lang === 'zh' ? 'zh-TW' : 'en-US', { weekday: 'short' }),
@@ -459,6 +462,8 @@ const Profile: React.FC<{
                 tickLine={false}
                 tick={{ fill: '#8B6E60', fontSize: 10, fontWeight: 'bold' }}
                 dy={10}
+                padding={{ left: 15, right: 15 }}
+                interval={0}
               />
               <YAxis hide domain={[0, 5]} />
               <Tooltip
