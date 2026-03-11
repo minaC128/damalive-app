@@ -642,7 +642,7 @@ const Profile: React.FC<{
                     <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">{t.lmpLabel}</label>
                     <input
                       type="date"
-                      value={form.lmpDate}
+                      value={form.lmpDate || ''}
                       onChange={e => {
                         const newVal = e.target.value;
                         setForm({ ...form, lmpDate: newVal, dueDate: calculateDueDate(newVal) });
@@ -654,7 +654,7 @@ const Profile: React.FC<{
                     <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">{t.dueLabel}</label>
                     <input
                       type="date"
-                      value={form.dueDate}
+                      value={form.dueDate || ''}
                       onChange={e => {
                         const newVal = e.target.value;
                         setForm({ ...form, dueDate: newVal, lmpDate: calculateLMP(newVal) });

@@ -105,7 +105,8 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
 
         // 新增：針對孕期 1-10 個月使用特定的插圖 (覆蓋 Poppy Seed)
         if (!user.isPostpartum) {
-          const pregMonth = Math.ceil(currentWeek / 4);
+          let pregMonth = Math.ceil(currentWeek / 4);
+          if (pregMonth > 10) pregMonth = 10;
           if (pregMonth >= 1 && pregMonth <= 10) {
             setGeneratedImg(`/images/preg_month_${pregMonth}.png`);
             setIsGenerating(false);
@@ -174,7 +175,7 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
       } catch (error: any) {
         console.warn("Using fallback illustration:", error);
         // 換成更可愛的寶寶備用圖
-        const fallbackUrl = `https://api.dicebear.com/7.x/adventurer/svg?seed=${fruitStage}&backgroundColor=f2cece&scale=120`;
+        const fallbackUrl = user.isPostpartum ? '/images/baby_1m.png' : `/images/${fruitStage.replace(' ', '_')}.png`;
         setGeneratedImg(fallbackUrl);
         setIsGenerating(false);
       }
@@ -261,7 +262,7 @@ const Home: React.FC<{ user: UserProfile, onSyncStatus: any }> = ({ user, onSync
                     className="w-full h-full object-contain p-4 rounded-[32px] animate-in fade-in duration-1000"
                     alt="Illustration"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = `https://api.dicebear.com/7.x/adventurer/svg?seed=${fruitStage}&backgroundColor=f2cece&scale=120`;
+                      (e.target as HTMLImageElement).src = user.isPostpartum ? '/images/baby_1m.png' : `/images/${fruitStage.replace(' ', '_')}.png`;
                     }}
                   />
                 )}

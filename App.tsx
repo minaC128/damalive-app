@@ -40,7 +40,7 @@ const App: React.FC = () => {
           const defaultProfile: UserProfile = {
             uid: session.user.id,
             name: session.user.email?.split('@')[0] || 'User',
-            avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${session.user.email}`,
+            avatar: `https://api.dicebear.com/7.x/micah/svg?seed=${session.user.email}&backgroundColor=f2cece,e1e2cf,fad7c1`,
             birthDate: '',
             isPostpartum: false,
             email: session.user.email,
