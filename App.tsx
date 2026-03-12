@@ -8,6 +8,7 @@ import KnowledgeBase from './pages/KnowledgeBase';
 import Profile from './pages/Profile';
 import Navbar from './components/Navbar';
 import LoginOverlay from './components/LoginOverlay';
+import ResetPasswordOverlay from './components/ResetPasswordOverlay';
 import OnboardingTour from './components/OnboardingTour';
 import { Page, UserProfile } from './types';
 import { getAllData } from './services/dbService';
@@ -20,6 +21,7 @@ const App: React.FC = () => {
   const [syncStatus, setSyncStatus] = useState<'syncing' | 'synced' | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [showTour, setShowTour] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
 
   // 監聽 Supabase Auth 狀態
   useEffect(() => {
@@ -59,6 +61,8 @@ const App: React.FC = () => {
       if (event === 'SIGNED_OUT') {
         setUser(null);
         setCurrentPage('home');
+      } else if (event === 'PASSWORD_RECOVERY') {
+        setIsResettingPassword(true);
       }
     });
 
@@ -105,6 +109,15 @@ const App: React.FC = () => {
           <p className="text-sm font-bold text-dama-brown/40">載入中...</p>
         </div>
       </div>
+    );
+  }
+
+  if (isResettingPassword) {
+    return (
+      <ResetPasswordOverlay 
+        onSuccess={() => setIsResettingPassword(false)} 
+        preferredLanguage={user?.preferredLanguage || 'zh'} 
+      />
     );
   }
 
