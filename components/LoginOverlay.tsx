@@ -12,6 +12,7 @@ interface LoginOverlayProps {
 const LoginOverlay: React.FC<LoginOverlayProps> = ({ onLogin }) => {
   const [isLoginView, setIsLoginView] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -24,6 +25,23 @@ const LoginOverlay: React.FC<LoginOverlayProps> = ({ onLogin }) => {
     e.preventDefault();
     setError('');
     setLoading(true);
+
+    if (isForgotPassword) {
+      try {
+        const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: window.location.origin
+        });
+        if (resetError) throw resetError;
+        alert(lang === 'zh' ? '重設密碼信件已發送，請檢查您的信箱。' : lang === 'ja' ? 'パスワードリセットメールを送信しました。受信ボックスをご確認ください。' : 'Password reset email sent. Please check your inbox.');
+        setIsForgotPassword(false);
+      } catch (err: any) {
+        console.error('Reset password error:', err);
+        setError(err.message || (lang === 'zh' ? '發送失敗，請確認信箱是否正確' : lang === 'ja' ? '送信に失敗しました' : 'Failed to send reset email'));
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
 
     try {
       if (isSignUp) {
@@ -168,7 +186,14 @@ const LoginOverlay: React.FC<LoginOverlayProps> = ({ onLogin }) => {
           </>
         ) : (
           <form onSubmit={handleAuth} className="w-full space-y-4 animate-in slide-in-from-right-4 duration-300">
-            <h2 className="text-xl font-bold text-dama-brown">{isSignUp ? (lang === 'zh' ? '建立帳號' : 'Sign Up') : (lang === 'zh' ? '歡迎回來' : 'Welcome')}</h2>
+            <h2 className="text-xl font-bold text-dama-brown">
+              {isForgotPassword
+                ? (lang === 'zh' ? '重設密碼' : lang === 'ja' ? 'パスワードリセット' : 'Reset Password')
+                : isSignUp
+                  ? (lang === 'zh' ? '建立帳號' : 'Sign Up')
+                  : (lang === 'zh' ? '歡迎回來' : 'Welcome')
+              }
+            </h2>
 
             {error && (
               <div className="bg-red-50 text-red-600 text-xs font-bold p-3 rounded-2xl border border-red-200">
@@ -187,18 +212,21 @@ const LoginOverlay: React.FC<LoginOverlayProps> = ({ onLogin }) => {
                 required
               />
             </div>
-            <div className="text-left space-y-1">
-              <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="••••••"
-                className="w-full bg-dama-bg border-none rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-dama-sakura"
-                required
-                minLength={6}
-              />
-            </div>
+
+            {!isForgotPassword && (
+              <div className="text-left space-y-1">
+                <label className="text-[10px] font-bold text-dama-brown/40 uppercase ml-2">Password</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="••••••"
+                  className="w-full bg-dama-bg border-none rounded-2xl px-5 py-3 text-sm focus:ring-2 focus:ring-dama-sakura"
+                  required
+                  minLength={6}
+                />
+              </div>
+            )}
             {!import.meta.env.VITE_SUPABASE_URL && (
               <div className="mb-6 bg-red-50 border border-red-100 p-4 rounded-2xl text-red-500 text-xs font-bold text-center leading-relaxed">
                 Supabase 尚未設定！請確認環境變數是否包含 VITE_SUPABASE_URL。
@@ -209,23 +237,51 @@ const LoginOverlay: React.FC<LoginOverlayProps> = ({ onLogin }) => {
               disabled={loading}
               className="w-full bg-dama-sakura text-white py-4 rounded-full font-bold shadow-lg shadow-dama-sakura/20 active:scale-95 transition-all mt-2 disabled:opacity-50"
             >
-              {loading ? (lang === 'zh' ? '處理中...' : '...') : (isSignUp ? (lang === 'zh' ? '註冊' : 'Sign Up') : (lang === 'zh' ? '登入' : 'Login'))}
+              {loading
+                ? (lang === 'zh' ? '處理中...' : '...')
+                : isForgotPassword
+                  ? (lang === 'zh' ? '發送重設信' : lang === 'ja' ? '送信' : 'Send Reset Link')
+                  : isSignUp
+                    ? (lang === 'zh' ? '註冊' : 'Sign Up')
+                    : (lang === 'zh' ? '登入' : 'Login')
+              }
             </button>
-            <div className="flex justify-between">
+            <div className="flex justify-between flex-wrap gap-2">
               <button
                 type="button"
-                onClick={() => setIsLoginView(false)}
+                onClick={() => {
+                  if (isForgotPassword) {
+                    setIsForgotPassword(false);
+                  } else {
+                    setIsLoginView(false);
+                  }
+                  setError('');
+                }}
                 className="text-xs text-dama-brown/40 font-bold hover:text-dama-sakura transition-colors"
               >
                 {lang === 'zh' ? '返回' : 'Back'}
               </button>
-              <button
-                type="button"
-                onClick={() => { setIsSignUp(!isSignUp); setError(''); }}
-                className="text-xs text-dama-sakura font-bold hover:text-dama-brown transition-colors"
-              >
-                {isSignUp ? (lang === 'zh' ? '已有帳號？登入' : 'Login') : (lang === 'zh' ? '沒有帳號？註冊' : 'Register')}
-              </button>
+              
+              {!isForgotPassword && (
+                <div className="flex gap-4">
+                  {!isSignUp && (
+                    <button
+                      type="button"
+                      onClick={() => { setIsForgotPassword(true); setError(''); }}
+                      className="text-xs text-dama-brown/60 font-bold hover:text-dama-sakura transition-colors"
+                    >
+                      {lang === 'zh' ? '忘記密碼？' : lang === 'ja' ? 'パスワードを忘れた？' : 'Forgot Password?'}
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => { setIsSignUp(!isSignUp); setError(''); setIsForgotPassword(false); }}
+                    className="text-xs text-dama-sakura font-bold hover:text-dama-brown transition-colors"
+                  >
+                    {isSignUp ? (lang === 'zh' ? '已有帳號？登入' : 'Login') : (lang === 'zh' ? '沒有帳號？註冊' : 'Register')}
+                  </button>
+                </div>
+              )}
             </div>
           </form>
         )}
